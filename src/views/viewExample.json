@@ -1,0 +1,12 @@
+{
+  "tabs": [
+    {
+      "kind": "tab",
+      "views": ["load"]
+    },
+    {
+      "kind": "tab",
+      "views": ["sync"]
+    }
+  ]
+}

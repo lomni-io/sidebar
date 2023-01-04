@@ -1,0 +1,78 @@
+.bottom-button-container{
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+
+  &.lm-justify_right{
+    justify-content: flex-end;
+  }
+
+  &.lm-justify_left{
+    justify-content: flex-start;
+  }
+
+  button:hover:enabled{
+    filter: var(--hover);
+    cursor: pointer;
+  }
+
+  button{
+    border-radius: 25px;
+    padding: 0 5px 0 5px;
+
+    margin-right: 5px;
+    font-size: 0.85em;
+    background-color: transparent;
+  }
+
+  button:disabled{
+    user-select: none;
+    opacity: 0.4;
+  }
+
+  .yellow{
+    color: var(--yellow_60);
+    border: var(--yellow_60) 1px solid;
+  }
+  .grey{
+    color: var(--text_color);
+    border: var(--text_color) 1px solid;
+  }
+  .blue{
+    color: var(--blue_60);
+    border: var(--blue_60) 1px solid;
+  }
+}
+
+.lm-form_line{
+
+  .lm-columns{
+    display: flex;
+    .lm-column{
+      width: 100%;
+      padding: 0 5px 0 5px;
+    }
+  }
+
+  label{
+    margin-right: 10px;
+    color: var(--text_color);
+    font-size: 0.8em;
+  }
+
+  select, input{
+    width: 100%;
+    font-size: 1em;
+    background-color: transparent;
+    border-radius: 5px;
+    outline:none;
+    padding: 0;
+
+    color: var(--text_color);
+    border: var(--text_color) 1px solid;
+
+    &:disabled{
+      opacity: 0.4;
+    }
+  }
+}

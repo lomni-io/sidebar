@@ -1,0 +1,24 @@
+{
+  "frames": {
+    "jfsjfjs9939jfj": {
+      "url": "https://en.wikipedia.org/wiki/Main_Page",
+      "title": "this is a title test",
+      "tags": ["#wiki", "#intro"]
+    },
+    "https://en.wikipedia.org/wiki/Stack_Overflow": {
+      "url": "https://en.wikipedia.org/wiki/Stack_Overflow",
+      "title": "this is another important text",
+      "tags": ["#wiki", "#stackOverflow"]
+    },
+    "https://www.w3schools.com/jsref/jsref_trim_string.asp": {
+      "url": "https://www.w3schools.com/jsref/jsref_trim_string.asp",
+      "title": "about this thing is w3schools that is not important",
+      "tags": ["#how-to", "#html"]
+    },
+    "https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_sticky_element": {
+      "url": "https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_sticky_element",
+      "title": "another thing to do",
+      "tags": ["#how-to", "#html"]
+    }
+  }
+}

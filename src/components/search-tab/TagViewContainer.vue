@@ -52,7 +52,7 @@ export default {
 }
 
 a{
-  font-size: 0.7em;
+  font-size: 0.8em;
 }
 
 

@@ -71,7 +71,7 @@ export default defineComponent( {
 .text-area{
   color: var(--text_color);
   min-height: 4em;
-  font-size: 0.8em;
+  font-size: 0.9em;
   font-family: monospace;
   outline: none;
   border: 1px solid var(--background_input);
@@ -92,7 +92,7 @@ export default defineComponent( {
     height: 12px;
     color: var(--yellow_60);
     border-radius: 10px;
-    font-size: 10px;
+    font-size: 0.8em;
     &:hover{
       cursor: pointer;
       filter: var(--hover);
@@ -104,7 +104,7 @@ export default defineComponent( {
     height: 12px;
     color: var(--red_60);
     border-radius: 10px;
-    font-size: 10px;
+    font-size: 0.8em;
     &:hover{
       cursor: pointer;
       filter: var(--hover);

@@ -116,7 +116,7 @@ export default {
     margin-left: 5px;
     padding-left: 3px;
     padding-right: 3px;
-    font-size: 0.7em;
+    font-size: 0.9em;
     background-color: var(--gray_1);
     border-radius: 5px;
     cursor: pointer;

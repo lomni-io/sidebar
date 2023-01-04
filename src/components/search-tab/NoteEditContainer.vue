@@ -115,7 +115,7 @@ export default defineComponent( {
     height: 12px;
     color: var(--red_60);
     border-radius: 10px;
-    font-size: 10px;
+    font-size: 0.8em;
     &:hover{
       cursor: pointer;
       filter: var(--hover);
@@ -127,7 +127,7 @@ export default defineComponent( {
     height: 12px;
     color: var(--blue_60);
     border-radius: 10px;
-    font-size: 10px;
+    font-size: 0.8em;
     &:hover{
       cursor: pointer;
       filter: var(--hover);
@@ -139,7 +139,7 @@ export default defineComponent( {
     height: 12px;
     color: var(--yellow_60);
     border-radius: 10px;
-    font-size: 10px;
+    font-size: 0.8em;
     &.disabled{
       opacity: 0.2;
     }

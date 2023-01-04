@@ -53,7 +53,7 @@ export default {
     height: 12px;
     color: var(--yellow_60);
     border-radius: 10px;
-    font-size: 10px;
+    font-size: 0.8em;
     &:hover{
       cursor: pointer;
       filter: var(--hover);

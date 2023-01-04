@@ -106,7 +106,7 @@ export default {
       margin-right: 5px;
     }
     small{
-      font-size: 0.7em;
+      font-size: 0.8em;
       color: var(--text_color);
     }
   }
@@ -123,7 +123,7 @@ export default {
       height: 12px;
       color: var(--blue_60);
       border-radius: 10px;
-      font-size: 10px;
+      font-size: 0.8em;
       &:hover{
         cursor: pointer;
         filter: var(--hover);
@@ -135,7 +135,7 @@ export default {
       height: 12px;
       color: var(--yellow_60);
       border-radius: 10px;
-      font-size: 10px;
+      font-size: 0.8em;
       &:hover{
         cursor: pointer;
         filter: var(--hover);
@@ -147,7 +147,7 @@ export default {
       height: 12px;
       color: var(--red_60);
       border-radius: 10px;
-      font-size: 10px;
+      font-size: 0.8em;
       &:hover{
         cursor: pointer;
         filter: var(--hover);
@@ -176,7 +176,7 @@ h1:hover{
 
 textarea{
   width: calc(100% - 5px);
-  font-size: 0.8em;
+  font-size: 0.9em;
   outline: none;
   background-color: transparent;
   color: var(--text_color);

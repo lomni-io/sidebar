@@ -1,8 +1,15 @@
 <template>
   <div id="radar">
 
-    <TabFrameSearch></TabFrameSearch>
-    <TabSyncOptions></TabSyncOptions>
+    <div v-if="hasPlugin">
+      <TabFrameSearch></TabFrameSearch>
+      <TabSyncOptions></TabSyncOptions>
+    </div>
+
+    <div v-if="!hasPlugin">
+      need to install plugin
+    </div>
+
 
   </div>
 </template>
@@ -18,6 +25,7 @@ export default {
   components: {TabSyncOptions, TabFrameSearch},
   data() {
     return {
+      hasPlugin: false
     }
   },
   methods: {
@@ -26,9 +34,12 @@ export default {
   },
   mounted() {
 
-    this.port.postMessage({kind: "all-tabs-request"});
+    if (this.port) {
+      this.hasPlugin = true
+      this.port.postMessage({kind: "all-tabs-request"});
+      store.dispatch('loadState')
+    }
 
-    store.dispatch('loadState')
   }
 }
 

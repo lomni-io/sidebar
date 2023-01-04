@@ -4,7 +4,7 @@
   "version": "0.1.4",
   "description": "Your unique sidebar liked omni URLs. ",
   "externally_connectable": {
-    "matches": ["http://localhost:8080/*"]
+    "matches": ["http://localhost:8080/*", "https://lomni-io.github.io/*", "https://lomni.io/*"]
   },
   "background":{
     "service_worker": "background.js"

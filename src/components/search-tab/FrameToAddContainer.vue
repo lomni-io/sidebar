@@ -98,7 +98,7 @@ export default {
   margin-bottom: 10px;
 
   small{
-    font-size: 0.7em;
+    font-size: 0.9em;
     color: var(--text_color);
 
     img{
@@ -138,7 +138,7 @@ export default {
       margin-right: 5px;
     }
     small{
-      font-size: 0.7em;
+      font-size: 0.8em;
       color: var(--text_color);
     }
   }
@@ -153,7 +153,7 @@ export default {
       height: 12px;
       color:  var(--green_60_60);
       border-radius: 10px;
-      font-size: 10px;
+      font-size: 0.8em;
       &:hover{
         cursor: pointer;
         filter: var(--hover);

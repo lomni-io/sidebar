@@ -26,9 +26,13 @@ export default {
   },
   mounted() {
 
-    this.port.postMessage({kind: "all-tabs-request"});
+    if (this.port) {
+      this.port.postMessage({kind: "all-tabs-request"});
+      store.dispatch('loadState')
+    }else{
+      window.location.href = '/plugin-install';
+    }
 
-    store.dispatch('loadState')
   }
 }
 

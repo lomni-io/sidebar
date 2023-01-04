@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
 import mitt from 'mitt';
 import {GithubAuth} from "@/views/gh_auth";
 import "v-contextmenu/dist/themes/dark.css";
@@ -11,15 +10,26 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {faArrowUpRightFromSquare, faEdit, faEye, faFloppyDisk, faTrash, faTv} from '@fortawesome/free-solid-svg-icons'
 import {store} from "@/store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import router from "@/router";
 library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare)
 
 const emitter = mitt();
-const port = new ChromePort("eocdachjdgfoghncgldeaikbhbapfeam", emitter)
-port.connect()
+
+
 
 const app = createApp(App)
+
+try {
+    const port = new ChromePort("eocdachjdgfoghncgldeaikbhbapfeam", emitter)
+    port.connect()
+    app.config.globalProperties.port = port;
+}catch (e) {
+    console.log('error!')
+}
+
+
 app.config.globalProperties.emitter = emitter;
-app.config.globalProperties.port = port;
+
 app.config.globalProperties.github = new GithubAuth();
 
 setInterval(() => {

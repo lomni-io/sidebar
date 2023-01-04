@@ -30,6 +30,7 @@ export class ChromePort {
             }, 100)
             console.log('port.onDisconnect')
         })
+
     }
 
     postMessage(msg: any){

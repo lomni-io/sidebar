@@ -1,18 +1,17 @@
-import {createRouter, createWebHistory, RouteRecordRaw} from 'vue-router'
-import HomeView from "@/views/HomeView.vue";
-import RadarView from "@/views/RadarView.vue";
+// @ts-ignore
+import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 
 
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   {
     path: '/radar',
     name: 'radar',
-    component: () => RadarView
+    component: () => import("../views/RadarView.vue"),
   },
   {
-    path: '/',
-    name: 'home',
-    component: () => HomeView
+    path: '/plugin-install',
+    name: 'plugin install',
+    component: () => import("../views/PluginInstallView.vue"),
   },
 ]
 

@@ -4,17 +4,4 @@ module.exports = defineConfig({
   devServer: {
     allowedHosts: 'all',
   },
-  crossorigin: 'anonymous',
-  pages: {
-    index: {
-      entry: 'src/main.ts',
-      template: 'public/index.html',
-      filename: 'index.html',
-    },
-    // popup: {
-    //   entry: 'src/main.ts',
-    //   template: 'public/index.html',
-    //   filename: 'popup.html',
-    // },
-  },
 })

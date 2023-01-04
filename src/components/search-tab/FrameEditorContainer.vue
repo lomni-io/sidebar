@@ -106,7 +106,7 @@ export default {
       margin-right: 5px;
     }
     small{
-      font-size: 0.9em;
+      font-size: 0.8em;
       color: var(--text_color);
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+  <RadarView></RadarView>
 </template>
 
 <style lang="scss">
@@ -53,3 +53,9 @@ body{
 }
 
 </style>
+<script>
+import RadarView from "@/views/RadarView";
+export default {
+  components: {RadarView}
+}
+</script>

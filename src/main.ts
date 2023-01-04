@@ -10,7 +10,6 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {faArrowUpRightFromSquare, faEdit, faEye, faFloppyDisk, faTrash, faTv} from '@fortawesome/free-solid-svg-icons'
 import {store} from "@/store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import router from "@/router";
 library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare)
 
 const emitter = mitt();
@@ -39,4 +38,4 @@ setInterval(() => {
 }, 500)
 
 
-app.use(store).component("font-awesome-icon", FontAwesomeIcon).use(router).mount('#app')
+app.use(store).component("font-awesome-icon", FontAwesomeIcon).mount('#app')

@@ -124,7 +124,7 @@ export default {
 
 .pagination-container{
   text-align: center;
-  font-size: 0.8em;
+  font-size: 0.9em;
   span{
     text-decoration-line: underline;
     cursor: pointer;

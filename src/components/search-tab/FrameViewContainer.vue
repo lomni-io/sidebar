@@ -100,7 +100,7 @@ export default {
       margin-right: 5px;
     }
     small{
-      font-size: 0.7em;
+      font-size: 0.9em;
       color: var(--text_color);
     }
   }
@@ -112,11 +112,9 @@ export default {
     }
 
     .frame-header-status{
-      width: 12px;
-      height: 12px;
       color: var(--gray_1);
       border-radius: 10px;
-      font-size: 10px;
+      font-size: 0.8em;
       &.active{
         color: var(--blue_60);
       }
@@ -131,7 +129,7 @@ export default {
       height: 12px;
       color: var(--yellow_60);
       border-radius: 10px;
-      font-size: 10px;
+      font-size: 0.8em;
       &:hover{
         cursor: pointer;
         filter: var(--hover);

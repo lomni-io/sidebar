@@ -67,7 +67,7 @@ export default {
 }
 
 .tag-add {
-  font-size: 0.7em;
+  font-size: 0.9em;
   background-color: var(--bg1);
   border-radius: 3px;
   color: var(--text_color);
@@ -85,7 +85,7 @@ export default {
 }
 
 .tag {
-  font-size: 0.7em;
+  font-size: 0.8em;
   background-color: var(--bg1);
   border-radius: 3px;
   color: var(--text_color);
@@ -120,7 +120,7 @@ export default {
 
 
 a{
-  font-size: 0.8em;
+  font-size: 0.9em;
 }
 
 

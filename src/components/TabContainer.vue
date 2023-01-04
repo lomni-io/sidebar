@@ -89,7 +89,7 @@ input {
     text-overflow: ellipsis;
     background: var(--background_tab);
     border-bottom: solid var(--gray_1) 1px;
-    font-size: 0.65em;
+    font-size: 0.8em;
     font-weight: bold;
     max-height: 1.2em;
     overflow: hidden;

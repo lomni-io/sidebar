@@ -34,7 +34,7 @@ export default {
 
 textarea{
   width: calc(100% - 5px);
-  font-size: 0.8em;
+  font-size: 0.9em;
   outline: none;
   background-color: transparent;
   color: var(--text_color);

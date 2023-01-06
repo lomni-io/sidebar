@@ -12,8 +12,11 @@
             <font-awesome-icon icon="tv" />
           </div>
 
-          <div class="frame-header-edit" @click="toEditMode()" title="edit frame">
+          <div class="frame-header-edit" @click="toEditMode()" v-if="!isNewFrame" title="edit frame">
                 <font-awesome-icon icon="edit" />
+          </div>
+          <div class="frame-header-add" @click="addNewTab()" v-if="isNewFrame" title="add new frame">
+            <font-awesome-icon icon="square-plus" />
           </div>
         </div>
       </div>
@@ -26,23 +29,29 @@
   </div>
 </template>
 
-<script>
-import TagViewContainer from "@/components/search-tab/TagViewContainer";
+<script lang="ts">
 import {store} from "@/store";
+import {defineComponent} from "vue";
+import {Tab} from "@/store/entity";
+import TagViewContainer from "@/components/search-tab/TagViewContainer.vue";
+import {WebFrameData} from "@/entity/frame";
 
-export default {
+export default defineComponent( {
   name: "FrameViewContainer",
   components: {TagViewContainer},
   emits: ['toEditMode', 'goToPage', 'selectTag'],
   props: ['frame'],
   computed: {
+    isNewFrame(){
+      return this.frame.preProcessedTags.some((tag:string) => tag === '@newTab')
+    },
     isOpened(){
       const tabs = store.getters.allTabs
-      return tabs.some(tab => tab.url === this.frame.url)
+      return tabs.some((tab: Tab) => tab.url === this.frame.url) as Tab
     },
-    tab(){
+    tab():Tab{
       const tabs = store.getters.allTabs
-      return tabs.find(tab => tab.url === this.frame.url)
+      return tabs.find((tab: Tab) => tab.url === this.frame.url)
     },
     isSelected(){
       const tab = store.getters.activeTab
@@ -55,20 +64,33 @@ export default {
   methods: {
     goToPage(){
       if (this.tab){
+        // @ts-ignore
         this.port.postMessage({kind: "open-request-existing-tab", tab: this.tab.id});
       }else{
+        // @ts-ignore
         this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url});
       }
     },
-    clickedTag(tag){
+    clickedTag(tag: string){
       this.$emit('selectTag', tag)
       // this.emitter.emit('frame-add-tag-to-selection', {id: this.id, tag: tag})
     },
     toEditMode(){
       this.$emit('toEditMode')
+    },
+    addNewTab(){
+      const frame: WebFrameData = {
+        url: this.tab.url,
+        title: this.tab.title,
+        tags: [],
+        favIconUrl: this.tab.favIconUrl,
+        updatedAt: Date.now()
+      }
+      store.dispatch('upsertFrame', frame)
     }
   },
-}
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -128,6 +150,18 @@ export default {
       width: 12px;
       height: 12px;
       color: var(--yellow_60);
+      border-radius: 10px;
+      font-size: 0.8em;
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-add{
+      width: 12px;
+      height: 12px;
+      color:  var(--green_60_60);
       border-radius: 10px;
       font-size: 0.8em;
       &:hover{

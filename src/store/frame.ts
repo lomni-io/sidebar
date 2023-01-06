@@ -31,7 +31,7 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
                 domain: extractRootDomain(webFrame.url),
                 updatedAt: frame.updatedAt,
                 url: webFrame.url,
-                kind: 'url'
+                kind: 'url',
             })
         }
 
@@ -44,12 +44,31 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
                 preProcessedTags: ['@note'],
                 tags: frame.tags,
                 updatedAt: frame.updatedAt,
-                kind: 'note'
+                kind: 'note',
             })
         }
 
         frame.tags = frame.tags.sort((x,y) => (tagsCard.get(x)||0) < (tagsCard.get(y)||0) ? 1 : -1)
     })
+
+    tabs.filter(tab => tab.url && !frames.some(frame => (<WebFrameData>frame).url === tab.url)).forEach(notAddedTab => {
+        const processedTags = getDomainsFromUrl(notAddedTab.url).map((x:string) => addPreprocessedPrefix(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1)
+
+        const finalTags = ['@openTab', '@newTab']
+        finalTags.push(...processedTags)
+
+        finalFrameList.push({
+            favIconUrl: notAddedTab.favIconUrl,
+            title: notAddedTab.title,
+            preProcessedTags: finalTags,
+            tags: [],
+            domain: extractRootDomain(notAddedTab.url),
+            updatedAt: 0,
+            url: notAddedTab.url,
+            kind: 'url',
+        })
+    })
+
     return finalFrameList
 }
 

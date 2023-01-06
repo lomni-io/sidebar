@@ -7,10 +7,18 @@ import {ChromePort} from "@/chrome-port/port";
 import "@/assets/styles/button.scss";
 import "@/assets/styles/color.scss";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import {faArrowUpRightFromSquare, faEdit, faEye, faFloppyDisk, faTrash, faTv} from '@fortawesome/free-solid-svg-icons'
+import {
+    faArrowUpRightFromSquare,
+    faCirclePlus,
+    faEdit,
+    faEye,
+    faFloppyDisk, faPlus, faSquarePlus,
+    faTrash,
+    faTv
+} from '@fortawesome/free-solid-svg-icons'
 import {store} from "@/store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare)
+library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare, faSquarePlus)
 
 const emitter = mitt();
 

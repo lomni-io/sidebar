@@ -1,39 +1,62 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy Page
 
 on:
+
+  push:
+    branches:
+      - 'main'
+      - 'rc/**'
+      - 'releases/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+
+  build:
+
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build
+    - run: npm run test:unit
+
+    - uses: actions/checkout@v3
+      with:
+        ref: gh-pages
+        clean: false
+    - name: Push
+      run: |
+        branch=${GITHUB_REF##*/}
+        mkdir -p docs
+        if [ $branch = 'main' ]; then
+          cp -R dist/* docs && sed -i 's/TO_REPLACE_HERE/sidebar/g' docs/index.html
+        else
+          mkdir -p docs/$branch
+          cp -R dist/* docs/$branch && sed -i "s/TO_REPLACE_HERE/sidebar\/$branch/g" docs/$branch/index.html
+        fi
+
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add docs/*
+        git commit -m "robot commit"
+        git push

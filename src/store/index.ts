@@ -63,6 +63,9 @@ export const store = createStore<State>({
     frames: function (state) {
       return enrichFrames(state.frames, state.tabs)
     },
+    rawFrames: function (state) {
+      return state.frames
+    },
   },
   mutations: {
     SET_STORAGE(state, storage) {

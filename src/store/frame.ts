@@ -26,7 +26,7 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
             finalFrameList.push({
                 favIconUrl: webFrame.favIconUrl,
                 title: webFrame.title,
-                preProcessedTags: processedTags.map((x:string) => addHashTag(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1),
+                preProcessedTags: processedTags.map((x:string) => addPreprocessedPrefix(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1),
                 tags: frame.tags,
                 domain: extractRootDomain(webFrame.url),
                 updatedAt: frame.updatedAt,
@@ -41,7 +41,7 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
             finalFrameList.push({
                 id: noteFrame.id,
                 content: noteFrame.content,
-                preProcessedTags: ['#note'],
+                preProcessedTags: ['@note'],
                 tags: frame.tags,
                 updatedAt: frame.updatedAt,
                 kind: 'note'
@@ -53,9 +53,13 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
     return finalFrameList
 }
 
+function addPreprocessedPrefix(value: string): string{
+    return '@'+value
+}
+
 export function generateActiveTag(url: string, tabs: Tab[]): string|null{
     if (tabs.some(x => x.url === url)) {
-        return '#openTab'
+        return 'openTab'
     }
     return null
 }

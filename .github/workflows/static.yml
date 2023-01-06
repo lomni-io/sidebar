@@ -49,10 +49,10 @@ jobs:
         branch=${GITHUB_REF##*/}
         mkdir -p docs
         if [ $branch = 'main' ]; then
-          cp -R dist/* docs && gsed -i 's/TO_REPLACE_HERE/sidebar/g' docs/index.html
+          cp -R dist/* docs && sed -i 's/TO_REPLACE_HERE/sidebar/g' docs/index.html
         else
           mkdir -p docs/$branch
-          cp -R dist/* docs/$branch && gsed -i "s/TO_REPLACE_HERE/sidebar\/$branch/g" docs/$branch/index.html
+          cp -R dist/* docs/$branch && sed -i "s/TO_REPLACE_HERE/sidebar\/$branch/g" docs/$branch/index.html
         fi
 
         git config user.name github-actions

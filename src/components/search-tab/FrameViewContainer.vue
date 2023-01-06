@@ -124,6 +124,10 @@ export default defineComponent( {
     small{
       font-size: 0.8em;
       color: var(--text_color);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 60vw;
     }
   }
 

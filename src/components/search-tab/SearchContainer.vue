@@ -43,9 +43,6 @@ export default {
     },
   },
   methods:{
-    addHashTag(input){
-      return addHashTag(input)
-    },
     addTag(tag){
       this.selectedTags.push(tag.name)
       this.$emit('selectedTags', this.selectedTags);
@@ -57,7 +54,7 @@ export default {
         e.preventDefault()
       }
       if (e.code === 'Enter' && this.searchInput.length > 1) {
-        this.selectedTags.push(this.addHashTag(this.searchInput))
+        this.selectedTags.push(addHashTag(this.searchInput))
         this.$emit('selectedTags', this.selectedTags);
         e.preventDefault()
       }
@@ -87,11 +84,15 @@ export default {
 .tag-input{
   margin: 0;
   background-color: var(--background_input);
-  border-bottom-left-radius: 3px;
-  border-top-left-radius: 3px;
   color: var(--text_color);
   font-weight: bold;
-  padding: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+
+  &:first-child{
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+  }
 
   span{
     margin-left: 5px;

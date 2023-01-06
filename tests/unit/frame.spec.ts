@@ -60,6 +60,57 @@ describe('enrichFrames', () => {
         ]
         expect(enrichFrames(frames)).toStrictEqual(expected)
     })
+    test('test add activeTab pre processed', () => {
+        const frames = [
+            {
+                title: 'a',
+                favIconUrl: 'a',
+                url: 'https://test2.ski.com',
+                tags: ['#ski2023'],
+                updatedAt: 1,
+            },
+            {
+                title: 'a',
+                favIconUrl: 'a',
+                url: 'https://test.ski.com/abc',
+                tags: ['#24k', '#ski2023', '#abcc'],
+                updatedAt: 1,
+            },
+        ]
+
+        const activeTabs = [
+            {
+                title: 'abv',
+                url: 'https://test.ski.com/abc',
+                active: false,
+                favIconUrl: 'url favicon'
+            }
+        ]
+
+        const expected = [
+            {
+                title: 'a',
+                url: 'https://test2.ski.com',
+                favIconUrl: 'a',
+                kind: 'url',
+                domain: 'test2.ski.com',
+                preProcessedTags: ['#ski', '#test2'],
+                tags: ['#ski2023'],
+                updatedAt: 1,
+            },
+            {
+                title: 'a',
+                url: 'https://test.ski.com/abc',
+                favIconUrl: 'a',
+                kind: 'url',
+                domain: 'test.ski.com',
+                preProcessedTags: ['#openTab','#ski', '#test'],
+                tags: ['#ski2023', '#abcc', '#24k'],
+                updatedAt: 1,
+            },
+        ]
+        expect(enrichFrames(frames, activeTabs)).toStrictEqual(expected)
+    })
     test('test web and note frame', () => {
         const frames = [
             {

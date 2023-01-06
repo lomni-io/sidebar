@@ -2,8 +2,9 @@
 import {extractRootDomain, getDomainsFromUrl} from "@/components/url";
 import {addHashTag} from "@/components/search-tab/filters";
 import {FrameRender, FramesData, NoteFrameData, WebFrameData} from "@/entity/frame";
+import {Tab} from "@/store/entity";
 
-export function enrichFrames(frames : FramesData): FrameRender[]{
+export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender[]{
     const finalFrameList = new Array<FrameRender>()
     if (frames.length === 0){
         return []
@@ -17,10 +18,15 @@ export function enrichFrames(frames : FramesData): FrameRender[]{
         const isWebFrame = !!(<WebFrameData>frame).url
         if (isWebFrame){
             const webFrame = (<WebFrameData>frame)
+            const processedTags = getDomainsFromUrl(webFrame.url)
+            const openTabTag = generateActiveTag(webFrame.url, tabs)
+            if (openTabTag) {
+                processedTags.push(openTabTag)
+            }
             finalFrameList.push({
                 favIconUrl: webFrame.favIconUrl,
                 title: webFrame.title,
-                preProcessedTags: getDomainsFromUrl(webFrame.url).map((x:string) => addHashTag(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1),
+                preProcessedTags: processedTags.map((x:string) => addHashTag(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1),
                 tags: frame.tags,
                 domain: extractRootDomain(webFrame.url),
                 updatedAt: frame.updatedAt,
@@ -45,6 +51,13 @@ export function enrichFrames(frames : FramesData): FrameRender[]{
         frame.tags = frame.tags.sort((x,y) => (tagsCard.get(x)||0) < (tagsCard.get(y)||0) ? 1 : -1)
     })
     return finalFrameList
+}
+
+export function generateActiveTag(url: string, tabs: Tab[]): string|null{
+    if (tabs.some(x => x.url === url)) {
+        return '#openTab'
+    }
+    return null
 }
 
 export function generateTagCardinality(tags: string[]){

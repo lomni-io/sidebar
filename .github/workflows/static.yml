@@ -40,12 +40,6 @@ jobs:
     - run: npm run build
     - run: npm run test:unit
 
-     - name: Extract branch name
-     shell: bash
-     run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-     id: extract_branch
-
-
     - uses: actions/checkout@v3
       with:
         ref: gh-pages

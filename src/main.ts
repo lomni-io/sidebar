@@ -14,12 +14,10 @@ library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare
 
 const emitter = mitt();
 
-
-
 const app = createApp(App)
 
 try {
-    const port = new ChromePort("eocdachjdgfoghncgldeaikbhbapfeam", emitter)
+    const port = new ChromePort(process.env.VUE_APP_CHROME_EXTENSION_ID, emitter)
     port.connect()
     app.config.globalProperties.port = port;
 }catch (e) {

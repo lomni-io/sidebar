@@ -38,6 +38,9 @@ describe('urls', () => {
     test('americanas', () => {
         expect(getDomainsFromUrl("https://americanas.com.br")).toStrictEqual(["americanas"])
     })
+    test('ap,namecheap', () => {
+        expect(getDomainsFromUrl("https://ap.www.namecheap.com")).toStrictEqual(["ap", "namecheap"])
+    })
     //
     test('stackoverflow', () => {
         expect(getDomainsFromUrl("https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects")).toStrictEqual(["stackoverflow"])

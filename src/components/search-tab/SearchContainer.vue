@@ -2,7 +2,7 @@
   <div class="header">
     <div class="tag-input-container">
       <p class="tag-input" v-for="(tag, index) in selectedTags" :key="index"><span v-on:click="removeTag(tag)">{{tag}}</span></p>
-      <input v-model="searchInput" v-on:keydown="keydown" ref="input"/>
+      <input :class="{'no-tags': selectedTags.length === 0}" v-model="searchInput" v-on:keydown="keydown" ref="input"/>
     </div>
     <TagListContainer :initial-show="10" @addTag="addTag" :tags="this.setDomainsAndTags" class="tag-list-container"></TagListContainer>
   </div>
@@ -87,8 +87,11 @@ export default {
 .tag-input{
   margin: 0;
   background-color: var(--background_input);
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
   color: var(--text_color);
   font-weight: bold;
+  padding: 5px;
 
   span{
     margin-left: 5px;
@@ -113,6 +116,11 @@ input{
   outline:none;
   font-size: 0.9em;
   width: 98%;
+  padding: 5px;
+  &.no-tags{
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+  }
 }
 
 </style>

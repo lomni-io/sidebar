@@ -226,6 +226,44 @@ describe('enrichFrames', () => {
         ]
         expect(enrichFrames(frames)).toStrictEqual(expected)
     })
+    test('test web and note frame and empty tags', () => {
+        const frames = [
+            {
+                title: 'a',
+                favIconUrl: 'a',
+                url: 'https://test2.ski.com',
+                tags: [],
+                updatedAt: 1,
+            },
+            {
+                id: '123',
+                content: 'abc',
+                tags: [],
+                updatedAt: 1,
+            },
+        ]
+        const expected = [
+            {
+                title: 'a',
+                url: 'https://test2.ski.com',
+                favIconUrl: 'a',
+                kind: 'url',
+                domain: 'test2.ski.com',
+                preProcessedTags: ['@emptyTags','@ski', '@test2'],
+                tags: [],
+                updatedAt: 1,
+            },
+            {
+                id: '123',
+                content: 'abc',
+                kind: "note",
+                tags: [],
+                preProcessedTags: ['@emptyTags','@note'],
+                updatedAt: 1,
+            },
+        ]
+        expect(enrichFrames(frames)).toStrictEqual(expected)
+    })
     test('test empty frames', () => {
         const frames: FramesData = []
         const expected: FramesData = []

@@ -18,15 +18,21 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
         const isWebFrame = !!(<WebFrameData>frame).url
         if (isWebFrame){
             const webFrame = (<WebFrameData>frame)
-            const processedTags = getDomainsFromUrl(webFrame.url)
+
+            let processedTags = getDomainsFromUrl(webFrame.url).map((x:string) => addPreprocessedPrefix(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1)
+
             const openTabTag = generateActiveTag(webFrame.url, tabs)
             if (openTabTag) {
-                processedTags.push(openTabTag)
+                processedTags = [openTabTag, ...processedTags]
             }
+            if (frame.tags.length === 0){
+                processedTags = ['@emptyTags', ...processedTags]
+            }
+
             finalFrameList.push({
                 favIconUrl: webFrame.favIconUrl,
                 title: webFrame.title,
-                preProcessedTags: processedTags.map((x:string) => addPreprocessedPrefix(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1),
+                preProcessedTags: processedTags,
                 tags: frame.tags,
                 domain: extractRootDomain(webFrame.url),
                 updatedAt: frame.updatedAt,
@@ -38,10 +44,15 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
         const isNoteFrame = !!(<NoteFrameData>frame).content
         if (isNoteFrame){
             const noteFrame = (<NoteFrameData>frame)
+
+            let processedTags = ['@note']
+            if (noteFrame.tags.length === 0){
+                processedTags = ['@emptyTags', ...processedTags]
+            }
             finalFrameList.push({
                 id: noteFrame.id,
                 content: noteFrame.content,
-                preProcessedTags: ['@note'],
+                preProcessedTags: processedTags,
                 tags: frame.tags,
                 updatedAt: frame.updatedAt,
                 kind: 'note',
@@ -78,7 +89,7 @@ function addPreprocessedPrefix(value: string): string{
 
 export function generateActiveTag(url: string, tabs: Tab[]): string|null{
     if (tabs.some(x => x.url === url)) {
-        return 'openTab'
+        return '@openTab'
     }
     return null
 }

@@ -54,7 +54,7 @@ export function setVisibleTags(frames: FrameWithTags[], tags: string[], input: s
             }
         })
         frame.preProcessedTags.forEach(tag => {
-            if (input.length > 1 && !tag.toLowerCase().includes(input)) {
+            if (input.length >= 1 && !tag.toLowerCase().includes(input)) {
                 return
             }
 

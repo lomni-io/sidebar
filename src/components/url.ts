@@ -13,9 +13,7 @@ function getDomains(url:string):string{
         return ''
     }
     url = url.substring(8)
-    if (url.startsWith("www.")){
-        url = url.substring(4)
-    }
+    url = url.replace('www.', '')
     return url.split("/")[0]
 }
 

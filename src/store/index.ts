@@ -3,6 +3,7 @@ import {extractRootDomain} from "@/components/url";
 import {enrichFrames} from "@/store/frame";
 import retryTimes = jest.retryTimes;
 import {FramesData, NoteFrameData, WebFrameData} from "@/entity/frame";
+import {Tab} from "@/store/entity";
 
 // import md5 from "md5";
 
@@ -11,7 +12,7 @@ import {FramesData, NoteFrameData, WebFrameData} from "@/entity/frame";
 export interface State {
   storage: any,
   frames: FramesData,
-  tabs:   any[],
+  tabs:   Tab[],
   clipboard: string|null
 }
 
@@ -49,7 +50,6 @@ export const store = createStore<State>({
     activeTab: function (state) {
       const tab = state.tabs.find(tab => tab.active)
       if (tab && tab.url){
-        tab.domain = extractRootDomain(tab.url)
         return tab
       }
       return null
@@ -61,7 +61,10 @@ export const store = createStore<State>({
 
     // add preProcessedTags
     frames: function (state) {
-      return enrichFrames(state.frames)
+      return enrichFrames(state.frames, state.tabs)
+    },
+    rawFrames: function (state) {
+      return state.frames
     },
   },
   mutations: {

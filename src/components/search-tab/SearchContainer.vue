@@ -2,7 +2,7 @@
   <div class="header">
     <div class="tag-input-container">
       <p class="tag-input" v-for="(tag, index) in selectedTags" :key="index"><span v-on:click="removeTag(tag)">{{tag}}</span></p>
-      <input v-model="searchInput" v-on:keydown="keydown" ref="input"/>
+      <input :class="{'no-tags': selectedTags.length === 0}" v-model="searchInput" v-on:keydown="keydown" ref="input"/>
     </div>
     <TagListContainer :initial-show="10" @addTag="addTag" :tags="this.setDomainsAndTags" class="tag-list-container"></TagListContainer>
   </div>
@@ -43,9 +43,6 @@ export default {
     },
   },
   methods:{
-    addHashTag(input){
-      return addHashTag(input)
-    },
     addTag(tag){
       this.selectedTags.push(tag.name)
       this.$emit('selectedTags', this.selectedTags);
@@ -57,7 +54,7 @@ export default {
         e.preventDefault()
       }
       if (e.code === 'Enter' && this.searchInput.length > 1) {
-        this.selectedTags.push(this.addHashTag(this.searchInput))
+        this.selectedTags.push(addHashTag(this.searchInput))
         this.$emit('selectedTags', this.selectedTags);
         e.preventDefault()
       }
@@ -89,6 +86,13 @@ export default {
   background-color: var(--background_input);
   color: var(--text_color);
   font-weight: bold;
+  padding-top: 5px;
+  padding-bottom: 5px;
+
+  &:first-child{
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+  }
 
   span{
     margin-left: 5px;
@@ -113,6 +117,11 @@ input{
   outline:none;
   font-size: 0.9em;
   width: 98%;
+  padding: 5px;
+  &.no-tags{
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+  }
 }
 
 </style>

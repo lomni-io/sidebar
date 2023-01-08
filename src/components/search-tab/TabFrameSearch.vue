@@ -8,7 +8,6 @@
 
       <TabContainer title="frames"  default-activation="true" padding="5px" padding-left="15px" :is-inner="true">
         <FramesContainer :selected-tags="selectedTags" @selectTag="selectTag"></FramesContainer>
-        <FrameToAddContainer :tags="selectedTags"></FrameToAddContainer>
       </TabContainer>
 
       <TabContainer title="new note" padding="5px" padding-left="15px" :disabled="selectedTags.length === 0" :is-inner="true">
@@ -24,11 +23,10 @@
 import TabContainer from "@/components/TabContainer";
 import SearchContainer from "@/components/search-tab/SearchContainer";
 import FramesContainer from "@/components/search-tab/FramesContainer";
-import FrameToAddContainer from "@/components/search-tab/FrameToAddContainer";
 import NewNoteContainer from "@/components/search-tab/NewNoteContainer";
 export default {
   name: "TabFrameSearch",
-  components: {NewNoteContainer, FrameToAddContainer, FramesContainer, SearchContainer, TabContainer},
+  components: {NewNoteContainer, FramesContainer, SearchContainer, TabContainer},
   data() {
     return {
       tagToAdd: null,

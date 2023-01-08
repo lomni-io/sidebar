@@ -9,6 +9,9 @@ on:
       - 'rc/**'
       - 'releases/**'
 
+  release:
+    types: [published]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -48,11 +51,15 @@ jobs:
       run: |
         branch=${GITHUB_REF##*/}
         mkdir -p docs
+        
         if [ $branch = 'main' ]; then
           cp -R dist/* docs && sed -i 's/TO_REPLACE_HERE/sidebar/g' docs/index.html
-        else
+        elif [[ $GITHUB_REF == *"refs/tags"* ]]; then
           mkdir -p docs/$branch
           cp -R dist/* docs/$branch && sed -i "s/TO_REPLACE_HERE/sidebar\/$branch/g" docs/$branch/index.html
+        else
+          mkdir -p docs/beta-$branch
+          cp -R dist/* docs/beta-$branch && sed -i "s/TO_REPLACE_HERE/sidebar\/beta-$branch/g" docs/beta-$branch/index.html
         fi
 
         git config user.name github-actions

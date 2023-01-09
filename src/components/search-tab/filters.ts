@@ -1,6 +1,7 @@
 import {FrameRender, TagsCounter} from "@/entity/frame";
 
 interface FrameWithTags {
+    pinned?: boolean
     tags: string[]
     preProcessedTags: string[]
 }
@@ -10,7 +11,7 @@ export function framesFiltered(frames: FrameWithTags[], tags: string[]): FrameRe
     // const selectedTags = tags.filter(x => x.startsWith("#"))
     if (tags.length > 0) {
         framesCopy = framesCopy.filter(frame => tags.every(
-            tag => frame.tags.includes(tag) || frame.preProcessedTags.includes(tag)
+            tag => frame.tags.includes(tag) || frame.preProcessedTags.includes(tag) || frame.pinned
         ))
     }
 
@@ -18,7 +19,13 @@ export function framesFiltered(frames: FrameWithTags[], tags: string[]): FrameRe
 }
 
 export function framesSort(frames: FrameRender[]): FrameRender[]{
-    return frames.sort((x,y) => x.tags.length > y.tags.length ? 1 : -1)
+    return frames.sort((x,y) => {
+        if (x.pinned || y.pinned){
+            return x.pinned ? -1 : 1
+        }
+        const tagLength = x.tags.length > y.tags.length
+        return tagLength ? 1 : -1
+    })
 }
 
 export function addHashTag(tag: string): string {

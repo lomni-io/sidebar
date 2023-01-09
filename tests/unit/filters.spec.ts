@@ -73,6 +73,21 @@ describe('framesFiltered', () => {
 
         expect(framesFiltered(frames,tags)).toStrictEqual(expected)
     })
+    it('test_6 wieh pinned', () => {
+        const frames = [
+            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1'], pinned: true},
+            {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
+            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain2']}
+        ]
+
+        const tags = ['@domain2', '#tag4']
+
+        const expected = [
+            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1'], pinned: true},
+        ]
+
+        expect(framesFiltered(frames,tags)).toStrictEqual(expected)
+    })
 })
 
 describe('setVisibleTags', () => {
@@ -247,28 +262,32 @@ describe('framesSort', () => {
                 kind: 'url',
                 tags: ['#tag4', '#tag1'],
                 preProcessedTags: [],
-                updatedAt: 10
+                updatedAt: 10,
+                pinned: false
             },
             {
                 url: 'url1_b',
                 kind: 'url',
                 tags: ['#tag1', '#tag3'],
                 preProcessedTags: [],
-                updatedAt: 12
+                updatedAt: 12,
+                pinned: false
             },
             {
                 url: 'url4_parent',
                 kind: 'url',
                 tags: ['#tag4'],
                 preProcessedTags: [],
-                updatedAt: 10
+                updatedAt: 10,
+                pinned: false
             },
             {
                 url: 'url1_parent',
                 kind: 'url',
                 tags: ['#tag1'],
                 preProcessedTags: [],
-                updatedAt: 10
+                updatedAt: 10,
+                pinned: false
             },
         ]
 
@@ -279,6 +298,7 @@ describe('framesSort', () => {
                 kind: 'url',
                 tags: ['#tag1'],
                 preProcessedTags: [],
+                pinned: false,
                 updatedAt: 10
             },
             {
@@ -286,6 +306,7 @@ describe('framesSort', () => {
                 kind: 'url',
                 tags: ['#tag4'],
                 preProcessedTags: [],
+                pinned: false,
                 updatedAt: 10
             },
             {
@@ -293,6 +314,7 @@ describe('framesSort', () => {
                 kind: 'url',
                 tags: ['#tag1', '#tag3'],
                 preProcessedTags: [],
+                pinned: false,
                 updatedAt: 12
             },
             {
@@ -300,6 +322,82 @@ describe('framesSort', () => {
                 kind: 'url',
                 tags: ['#tag4', '#tag1'],
                 preProcessedTags: [],
+                pinned: false,
+                updatedAt: 10
+            },
+        ]
+
+        expect(framesSort(frames)).toStrictEqual(expected)
+    })
+
+    it('test_2 with pinned', () => {
+        const frames = [
+            {
+                url: 'url1_a',
+                kind: 'url',
+                tags: ['#tag4', '#tag1'],
+                preProcessedTags: [],
+                updatedAt: 10,
+                pinned: false
+            },
+            {
+                url: 'url1_b',
+                kind: 'url',
+                tags: ['#tag1', '#tag3'],
+                preProcessedTags: [],
+                updatedAt: 12,
+                pinned: true
+            },
+            {
+                url: 'url4_parent',
+                kind: 'url',
+                tags: ['#tag4'],
+                preProcessedTags: [],
+                updatedAt: 10,
+                pinned: false
+            },
+            {
+                url: 'url1_parent',
+                kind: 'url',
+                tags: ['#tag1'],
+                preProcessedTags: [],
+                updatedAt: 10,
+                pinned: false
+            },
+        ]
+
+
+        const expected = [
+            {
+                url: 'url1_b',
+                kind: 'url',
+                tags: ['#tag1', '#tag3'],
+                preProcessedTags: [],
+                pinned: true,
+                updatedAt: 12
+            },
+            {
+                url: 'url1_parent',
+                kind: 'url',
+                tags: ['#tag1'],
+                preProcessedTags: [],
+                pinned: false,
+                updatedAt: 10
+            },
+            {
+                url: 'url4_parent',
+                kind: 'url',
+                tags: ['#tag4'],
+                preProcessedTags: [],
+                pinned: false,
+                updatedAt: 10
+            },
+            {
+                url: 'url1_a',
+                kind: 'url',
+                tags: ['#tag4', '#tag1'],
+                preProcessedTags: [],
+                pinned: false,
                 updatedAt: 10
             },
         ]

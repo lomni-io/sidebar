@@ -21,7 +21,9 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
 
             let processedTags = getDomainsFromUrl(webFrame.url).map((x:string) => addPreprocessedPrefix(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1)
 
-            const openTabTag = generateActiveTag(webFrame.url, tabs)
+            const tab = tabs.find(tab => tab.url === webFrame.url)
+
+            const openTabTag = generateActiveTag(webFrame.url, tab)
             if (openTabTag) {
                 processedTags = [openTabTag, ...processedTags]
             }
@@ -37,6 +39,7 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
                 domain: extractRootDomain(webFrame.url),
                 updatedAt: frame.updatedAt,
                 url: webFrame.url,
+                pinned: tab ? tab.pinned : false,
                 kind: 'url',
             })
         }
@@ -54,6 +57,7 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
                 content: noteFrame.content,
                 preProcessedTags: processedTags,
                 tags: frame.tags,
+                pinned: false,
                 updatedAt: frame.updatedAt,
                 kind: 'note',
             })
@@ -62,6 +66,7 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
         frame.tags = frame.tags.sort((x,y) => (tagsCard.get(x)||0) < (tagsCard.get(y)||0) ? 1 : -1)
     })
 
+    // frames that not exist
     tabs.filter(tab => tab.url && !frames.some(frame => (<WebFrameData>frame).url === tab.url)).forEach(notAddedTab => {
         const processedTags = getDomainsFromUrl(notAddedTab.url).map((x:string) => addPreprocessedPrefix(x)).sort((x,y) => tagsCard.get(x)||0 < (tagsCard.get(y)||0) ? 1 : -1)
 
@@ -75,6 +80,7 @@ export function enrichFrames(frames : FramesData, tabs: Tab[] = []): FrameRender
             tags: [],
             domain: extractRootDomain(notAddedTab.url),
             updatedAt: 0,
+            pinned: notAddedTab.pinned,
             url: notAddedTab.url,
             kind: 'url',
         })
@@ -87,11 +93,8 @@ function addPreprocessedPrefix(value: string): string{
     return '@'+value
 }
 
-export function generateActiveTag(url: string, tabs: Tab[]): string|null{
-    if (tabs.some(x => x.url === url)) {
-        return '@openTab'
-    }
-    return null
+export function generateActiveTag(url: string, tab: Tab|undefined): string|null{
+    return tab ? '@openTab' : null
 }
 
 export function generateTagCardinality(tags: string[]){

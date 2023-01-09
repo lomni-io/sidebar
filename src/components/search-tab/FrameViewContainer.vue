@@ -11,7 +11,12 @@
           <div class="frame-header-status" :class="{'active': isOpened}" title="current status">
             <font-awesome-icon icon="tv" />
           </div>
-
+          <div class="frame-header-pinned pinned" v-if="isPinned" @click="unpinTab" title="unpin current tab">
+            <font-awesome-icon icon="thumbtack" />
+          </div>
+          <div class="frame-header-pinned" v-if="!isPinned"  @click="pinTab" title="pin current tab">
+            <font-awesome-icon icon="thumbtack" />
+          </div>
           <div class="frame-header-edit" @click="toEditMode()" v-if="!isNewFrame" title="edit frame">
                 <font-awesome-icon icon="edit" />
           </div>
@@ -49,6 +54,10 @@ export default defineComponent( {
       const tabs = store.getters.allTabs
       return tabs.some((tab: Tab) => tab.url === this.frame.url) as Tab
     },
+    isPinned(){
+      const tabs = store.getters.allTabs
+      return tabs.some((tab: Tab) => tab.url === this.frame.url && tab.pinned) as Tab
+    },
     tab():Tab{
       const tabs = store.getters.allTabs
       return tabs.find((tab: Tab) => tab.url === this.frame.url)
@@ -70,6 +79,14 @@ export default defineComponent( {
         // @ts-ignore
         this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url});
       }
+    },
+    pinTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "pin-tab", tab: this.tab.id});
+    },
+    unpinTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "unpin-tab", tab: this.tab.id});
     },
     clickedTag(tag: string){
       this.$emit('selectTag', tag)
@@ -137,11 +154,25 @@ export default defineComponent( {
       margin-right: 5px;
     }
 
+    font-size: 0.8em;
+    border-radius: 10px;
+
     .frame-header-status{
       color: var(--gray_1);
-      border-radius: 10px;
-      font-size: 0.8em;
+
       &.active{
+        color: var(--blue_60);
+      }
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-pinned{
+      color: var(--gray_1);
+
+      &.pinned{
         color: var(--blue_60);
       }
       &:hover{
@@ -154,8 +185,6 @@ export default defineComponent( {
       width: 12px;
       height: 12px;
       color: var(--yellow_60);
-      border-radius: 10px;
-      font-size: 0.8em;
       &:hover{
         cursor: pointer;
         filter: var(--hover);
@@ -166,8 +195,6 @@ export default defineComponent( {
       width: 12px;
       height: 12px;
       color:  var(--green_60_60);
-      border-radius: 10px;
-      font-size: 0.8em;
       &:hover{
         cursor: pointer;
         filter: var(--hover);

@@ -4,4 +4,5 @@ export interface Tab{
     active: boolean,
     title: string,
     favIconUrl: string
+    pinned: boolean
 }

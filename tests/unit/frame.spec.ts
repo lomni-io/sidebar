@@ -35,6 +35,7 @@ describe('enrichFrames', () => {
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023'],
+                pinned: false,
                 updatedAt: 1,
             },
             {
@@ -45,6 +46,7 @@ describe('enrichFrames', () => {
                 domain: 'test.ski.com',
                 preProcessedTags: ['@ski', '@test'],
                 tags: ['#ski2023', '#24k', '#abcc'],
+                pinned: false,
                 updatedAt: 1,
             },
             {
@@ -55,6 +57,7 @@ describe('enrichFrames', () => {
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023', '#24k'],
+                pinned: false,
                 updatedAt: 1,
             }
         ]
@@ -84,7 +87,8 @@ describe('enrichFrames', () => {
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
                 active: false,
-                favIconUrl: 'url favicon'
+                favIconUrl: 'url favicon',
+                pinned: false
             }
         ]
 
@@ -97,6 +101,7 @@ describe('enrichFrames', () => {
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023'],
+                pinned: false,
                 updatedAt: 1,
             },
             {
@@ -107,6 +112,7 @@ describe('enrichFrames', () => {
                 domain: 'test.ski.com',
                 preProcessedTags: ['@openTab','@ski', '@test'],
                 tags: ['#ski2023', '#abcc', '#24k'],
+                pinned: false,
                 updatedAt: 1,
             },
         ]
@@ -136,21 +142,24 @@ describe('enrichFrames', () => {
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
                 active: false,
-                favIconUrl: 'url favicon'
+                favIconUrl: 'url favicon',
+                pinned: false
             },
             {
                 id: '2',
                 title: 'newHere',
                 url: 'https://test.ski.com/newHere',
                 active: false,
-                favIconUrl: 'url favicon new'
+                favIconUrl: 'url favicon new',
+                pinned: false
             },
             {
                 id: '4',
                 title: 'not show this one',
                 url: '',
                 active: false,
-                favIconUrl: 'url favicon new'
+                favIconUrl: 'url favicon new',
+                pinned: false
             }
         ]
 
@@ -163,6 +172,7 @@ describe('enrichFrames', () => {
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023'],
+                pinned: false,
                 updatedAt: 1,
             },
             {
@@ -173,6 +183,7 @@ describe('enrichFrames', () => {
                 domain: 'test.ski.com',
                 preProcessedTags: ['@openTab','@ski', '@test'],
                 tags: ['#ski2023', '#abcc', '#24k'],
+                pinned: false,
                 updatedAt: 1,
             },
             {
@@ -183,6 +194,7 @@ describe('enrichFrames', () => {
                 domain: 'test.ski.com',
                 preProcessedTags: ['@openTab', '@newTab','@ski', '@test'],
                 tags: [],
+                pinned: false,
                 updatedAt: 0,
             },
         ]
@@ -211,6 +223,7 @@ describe('enrichFrames', () => {
                 favIconUrl: 'a',
                 kind: 'url',
                 domain: 'test2.ski.com',
+                pinned: false,
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023'],
                 updatedAt: 1,
@@ -220,6 +233,7 @@ describe('enrichFrames', () => {
                 content: 'abc',
                 kind: "note",
                 tags: ['#myNote'],
+                pinned: false,
                 preProcessedTags: ['@note'],
                 updatedAt: 1,
             },
@@ -250,6 +264,7 @@ describe('enrichFrames', () => {
                 kind: 'url',
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@emptyTags','@ski', '@test2'],
+                pinned: false,
                 tags: [],
                 updatedAt: 1,
             },
@@ -259,6 +274,7 @@ describe('enrichFrames', () => {
                 kind: "note",
                 tags: [],
                 preProcessedTags: ['@emptyTags','@note'],
+                pinned: false,
                 updatedAt: 1,
             },
         ]

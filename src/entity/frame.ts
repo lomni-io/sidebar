@@ -3,14 +3,15 @@
 export interface FrameRender {
     id?: string|null
     url?: string|null
-    favIconUrl?: string|null,
+    favIconUrl?: string|null
     title?: string|null
     tags: string[]
     kind: string
     domain?: string|null
     preProcessedTags: string[]
-    content?: string|null,
+    content?: string|null
     comment?: string|null
+    pinned: boolean
     updatedAt: number
 }
 

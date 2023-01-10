@@ -19,7 +19,7 @@
         </div>
       </div>
       <h1 class="frame-title" v-on:click="goToPage()">{{newFrame.title}}</h1>
-      <textarea v-model="newFrame.comment" placeholder="add comments here"></textarea>
+<!--      <textarea v-model="newFrame.comment" placeholder="add comments here"></textarea>-->
       <div class="tags">
         <TagEditorContainer @addTag="addTag" @removeTag="removeTag" :current-tags="newFrame.tags" :frames="frames"></TagEditorContainer>
       </div>

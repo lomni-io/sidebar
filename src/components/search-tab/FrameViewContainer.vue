@@ -8,14 +8,14 @@
         </div>
         <div class="frame-header-right">
 
+          <div class="frame-header-pinned pinned" v-if="isOpened && isPinned" @click="unpinTab" title="unpin current tab">
+            <font-awesome-icon icon="thumbtack" />
+          </div>
+          <div class="frame-header-pinned" v-if="isOpened && !isPinned"  @click="pinTab" title="pin current tab">
+            <font-awesome-icon icon="thumbtack" />
+          </div>
           <div class="frame-header-status" :class="{'active': isOpened}" title="current status">
             <font-awesome-icon icon="tv" />
-          </div>
-          <div class="frame-header-pinned pinned" v-if="isPinned" @click="unpinTab" title="unpin current tab">
-            <font-awesome-icon icon="thumbtack" />
-          </div>
-          <div class="frame-header-pinned" v-if="!isPinned"  @click="pinTab" title="pin current tab">
-            <font-awesome-icon icon="thumbtack" />
           </div>
           <div class="frame-header-edit" @click="toEditMode()" v-if="!isNewFrame" title="edit frame">
                 <font-awesome-icon icon="edit" />

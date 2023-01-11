@@ -27,7 +27,7 @@
 <script lang="ts">
 
 import {defineComponent} from "vue";
-import TagContainer from "@/components/v2/search/TagContainer.vue";
+import TagContainer from "@/components/v2/TagContainer.vue";
 import {store} from "@/store";
 import {DragItem} from "@/store/dragItem";
 

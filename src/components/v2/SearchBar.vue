@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import TagListContainer from "@/components/v2/search/TagListContainer.vue";
+import TagListContainer from "@/components/v2/TagListContainer.vue";
 
 export default defineComponent( {
   name: "SearchBar",

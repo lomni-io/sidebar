@@ -13,10 +13,10 @@
 </template>
 
 <script>
-import TabContainer from "@/components/v2/search/TabContainer";
-import SearchBar from "@/components/v2/search/SearchBar";
-import CurrentTabs from "@/components/v2/search/CurrentActiveTabs";
-import FramesContainer from "@/components/v2/search/FramesContainer";
+import TabContainer from "@/components/v2/TabContainer";
+import SearchBar from "@/components/v2/SearchBar";
+import CurrentTabs from "@/components/v2/CurrentActiveTabs";
+import FramesContainer from "@/components/v2/FramesContainer";
 
 export default {
   name: "SearchContainer",

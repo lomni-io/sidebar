@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import FrameUnit from "@/components/v2/search/FrameUnit.vue";
+import FrameUnit from "@/components/v2/FrameUnit.vue";
 
 export default defineComponent( {
   name: "FramesContainer",

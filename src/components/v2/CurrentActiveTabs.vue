@@ -34,11 +34,11 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import ScafoldBar from "@/components/v2/search/ScafoldBar.vue";
-import FrameUnit from "@/components/v2/search/FrameUnit.vue";
-import FrameDropArea from "@/components/v2/search/FrameDropArea.vue";
-import NewGroupContainer from "@/components/v2/search/NewGroupContainer.vue";
-import TagContainer from "@/components/v2/search/TagContainer.vue";
+import ScafoldBar from "@/components/v2/ScafoldBar.vue";
+import FrameUnit from "@/components/v2/FrameUnit.vue";
+import FrameDropArea from "@/components/v2/FrameDropArea.vue";
+import NewGroupContainer from "@/components/v2/NewGroupContainer.vue";
+import TagContainer from "@/components/v2/TagContainer.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",

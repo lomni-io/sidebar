@@ -9,7 +9,7 @@ const renderData = require('./renderData.json')
 
 import {defineComponent} from "vue";
 import NavBar from "@/components/v2/NavBar.vue";
-import SearchContainer from "@/components/v2/search/SearchContainer.vue";
+import SearchContainer from "@/components/v2/SearchContainer.vue";
 
 export default defineComponent( {
   name: "SidebarView",

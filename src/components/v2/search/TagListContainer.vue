@@ -38,15 +38,16 @@ export default {
 .tags {
   list-style: none;
   margin: 0;
-  overflow: hidden;
   padding: 0;
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
+  overflow: hidden;
+  //height: 60px;
 }
 
 .tags li {
-  float: left;
+
 }
 
 .tag {

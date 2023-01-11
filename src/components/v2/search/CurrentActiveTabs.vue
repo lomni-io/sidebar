@@ -1,10 +1,8 @@
 <template>
   <div class="container">
-    <ScafoldBar title="pinned" color="blue">
-      <div v-for="(frame, index) in window.pinneds" :key="index">
-        <FrameUnit :frame="frame"></FrameUnit>
-      </div>
-    </ScafoldBar>
+    <div v-for="(frame, index) in window.pinneds" :key="index">
+      <FrameUnit :frame="frame"></FrameUnit>
+    </div>
 
 <!--  TABS HERE  -->
     <div v-for="(tab, index) in window.tabs" :key="index">

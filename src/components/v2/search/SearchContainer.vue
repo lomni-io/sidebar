@@ -8,7 +8,7 @@
     </TabContainer>
   </div>
   <TabContainer title="frames" :default-activation="true">
-    <FramesContainer></FramesContainer>
+    <FramesContainer :frames="renderData.frames"></FramesContainer>
   </TabContainer>
 </template>
 

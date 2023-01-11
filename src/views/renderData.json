@@ -30,7 +30,8 @@
       ]
     }
   ],
-  "framesGrouped": [
-    {"kind":  "group", "tags": ["tag1"]}
+  "frames": [
+    {"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"]},
+    {"domain":  "chrome.com", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my current title", "tags":  ["#tag1", "#tag2"], "isPinned":  true}
   ]
 }

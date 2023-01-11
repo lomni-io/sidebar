@@ -4,7 +4,7 @@
       <div class="input" :class="color">+</div>
       <label :class="color">{{title}}</label>
     </div>
-    <div class="content" :class="color">
+    <div class="content" :class="color" >
       <slot></slot>
     </div>
   </div>

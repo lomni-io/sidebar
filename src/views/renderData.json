@@ -1,0 +1,36 @@
+{
+  "tags": [
+    {"name":  "#tag1", "count": 3},
+    {"name":  "#tagTest", "count": 5},
+    {"name":  "#tagMenu", "count": 12},
+    {"name":  "#tagVith", "count": 3},
+    {"name":  "#tagAbig", "count": 9},
+    {"name":  "#tagTmp", "count": 3},
+    {"name":  "#tagTest", "count": 5},
+    {"name":  "#tagThau", "count": 12},
+    {"name":  "#tagVJuo", "count": 3},
+    {"name":  "#tagAbig", "count": 9},
+    {"name":  "#tagMenu", "count": 12},
+    {"name":  "#tagVith", "count": 3},
+    {"name":  "#tagAbig", "count": 9}
+  ],
+  "windows": [
+    {
+      "name": "window main",
+      "pinneds": [
+        {"domain":  "chrome.com", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my current title", "tags":  ["#tag1", "#tag2"], "isPinned":  true},
+        {"domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"], "isPinned":  true}
+      ],
+      "tabs": [
+        {"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"]},
+        {"kind": "group", "name": "deploy", "color":  "red", "frames": [
+          {"kind": "frame", "domain":  "lomni.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myNew", "#tag2"]}
+        ]},
+        {"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"]}
+      ]
+    }
+  ],
+  "framesGrouped": [
+    {"kind":  "group", "tags": ["tag1"]}
+  ]
+}

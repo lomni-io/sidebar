@@ -3,11 +3,14 @@
 
   * {
 
-    --bg1: hsl(200, 5%, 20%);
+    --bg1: #212124;
     --background_tab: hsl(200, 35%, 20%);
     --background_inner_tab: hsl(170, 20%, 19%);
-    --background_main: hsl(200, 15%, 12%);
-    --background_input: hsl(200, 15%, 20%);
+    --background_dark: hsl(240, 4%, 8%);
+    --background_main: hsl(240, 4%, 14%);
+    --background_input: hsl(240, 3%, 17%);
+    --background_tag: hsl(240, 5%, 25%);
+    --background_input_border: hsl(240, 5%, 30%);
 
     --text_color: hsl(200, 12%, 70%);
 

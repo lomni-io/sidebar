@@ -1,5 +1,5 @@
 <template>
-  <RadarView></RadarView>
+  <SidebarView></SidebarView>
 </template>
 
 <style lang="scss">
@@ -23,6 +23,7 @@ input{
 body{
   background-color: var(--background_main);
   margin: 0;
+  overflow : auto;
 }
 
 #app {
@@ -54,8 +55,8 @@ body{
 
 </style>
 <script>
-import RadarView from "@/views/RadarView";
+import SidebarView from "@/views/SidebarView";
 export default {
-  components: {RadarView}
+  components: {SidebarView}
 }
 </script>

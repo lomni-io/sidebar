@@ -4,7 +4,7 @@
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
     </li>
     <li v-for="(tag, index) in tags" :key="index">
-      <a class="tag" @click="clickedTag(tag)" draggable="true" @dragstart="dragstart" id="tag">{{tag}}</a>
+      <a class="tag" @click="clickedTag(tag)" draggable="true" @dragstart="dragstart" id="tag" :class="color">{{tag}}</a>
     </li>
   </ul>
 </template>
@@ -12,7 +12,7 @@
 <script>
 export default {
   name: "TagContainer",
-  props: ['tags', 'fixedTags'],
+  props: ['tags', 'fixedTags', 'color'],
   methods: {
     clickedTag(tag){
       this.$emit('clickedTag', tag)
@@ -23,7 +23,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 .tags {
   list-style: none;
@@ -46,6 +46,10 @@ export default {
   padding: 0 0.5em 0 0.5em;
   text-decoration: none;
   -webkit-transition: color 0.2s;
+
+  &.red{
+    color: var(--red_60);
+  }
 }
 
 .fixed{

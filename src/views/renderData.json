@@ -19,11 +19,11 @@
       "name": "window main",
       "pinneds": [
         {"id": 1, "domain":  "chrome.com", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my current title", "tags":  ["#tag1", "#tag2"], "isPinned":  true},
-        {"id": 2,"domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"], "isPinned":  true}
+        {"id": 2,"domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2","#myTag", "#tag2","#myTag", "#tag2","#myTag", "#tag2"], "isPinned":  true}
       ],
       "tabs": [
         {"id": 3,"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my title", "tags":  ["#myTag", "#tag2"]},
-        {"kind": "group", "name": "deploy", "color":  "red", "frames": [
+        {"kind": "group", "name": "deploy", "color":  "red", "tags": ["#tag1", "#tag2"], "frames": [
           {"id": 4,"kind": "frame", "domain":  "lomni.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "no title that can supress", "tags":  ["#myNew", "#tag2"]}
         ]},
         {"id": 5,"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "mine here", "tags":  ["#myTag", "#tag2"]}

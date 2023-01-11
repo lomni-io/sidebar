@@ -28,8 +28,13 @@ export default {
 .tags {
   list-style: none;
   margin: 0;
-  overflow: hidden;
+  display: flex;
+  overflow-x: auto;
   padding: 0;
+}
+
+.tags::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
 }
 
 .tags li {
@@ -42,7 +47,6 @@ export default {
   background-color: var(--background_tag);
   border-radius: 3px;
   color: var(--text_color);
-  display: inline-block;
   padding: 0 0.5em 0 0.5em;
   text-decoration: none;
   -webkit-transition: color 0.2s;

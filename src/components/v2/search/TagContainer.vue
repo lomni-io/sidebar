@@ -34,7 +34,8 @@ export default {
 }
 
 .tags::-webkit-scrollbar {
-  display: none;  /* Safari and Chrome */
+  //display: none;  /* Safari and Chrome */
+  height: 5px;
 }
 
 .tags li {

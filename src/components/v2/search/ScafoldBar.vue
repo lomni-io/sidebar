@@ -1,10 +1,17 @@
 <template>
-  <div class="scafold-container">
+  <div class="scafold-container" v-on:focusout="goToViewMode">
     <div class="header">
-      <div class="input" :class="color">+</div>
-      <label :class="color">{{title}}</label>
+      <div class="input" v-if="!isFolded && !editMode" @click="fold" :class="color">+</div>
+      <div class="input" v-if="isFolded && !editMode" @click="unFold" :class="color">-</div>
+      <label :class="color" @click="goToEditMode" v-if="!editMode">{{title}}</label>
+      <div class="edit-mode-container" v-if="editMode" ref="input">
+        <div class="input edit-mode" :class="color" >e</div>
+        <input v-model="newTitle" :class="color" >
+      </div>
+
+<!--      <div :class="color" class="color-picker"></div>-->
     </div>
-    <div class="content" :class="color" >
+    <div class="content" :class="color" v-if="!isFolded">
       <slot></slot>
     </div>
   </div>
@@ -15,7 +22,35 @@ import {defineComponent} from "vue";
 
 export default defineComponent( {
   name: "ScafoldBar",
-  props: ['title', 'color']
+  props: ['title', 'color'],
+  data() {
+    return {
+      editMode: false,
+      newTitle: null,
+      isFolded: false
+    }
+  },
+  methods: {
+    fold(){
+      this.isFolded = true
+    },
+    unFold(){
+      this.isFolded = false
+    },
+    goToViewMode(){
+      this.editMode = false
+    },
+    goToEditMode(){
+      this.editMode = true
+      this.newTitle = this.title
+
+      this.$nextTick(() => {
+        const html = this.$refs.input as HTMLInputElement
+        html.focus()
+      });
+
+    }
+  }
 })
 
 </script>
@@ -23,6 +58,7 @@ export default defineComponent( {
 <style scoped lang="scss">
 
 .scafold-container{
+  user-select: none;
   margin-bottom: 5px;
 }
 
@@ -58,6 +94,20 @@ label{
   }
 }
 
+.color-picker{
+  cursor: pointer;
+  width: 25px;
+  height: 6px;
+  border-radius: 4px;
+  margin-left: 20px;
+  &.blue{
+    background-color: var(--blue_60);
+  }
+  &.red{
+    background-color: var(--red_60);
+  }
+}
+
 .input{
   width: 12px;
   height: 12px;
@@ -79,6 +129,32 @@ label{
     color: var(--red_60);
     border: 1px solid var(--red_60);
   }
+}
+
+.edit-mode{
+  &.blue{
+    background-color: var(--blue_60);
+    border: 1px solid var(--blue_60);
+  }
+  &.red{
+    background-color: var(--red_60);
+    border: 1px solid var(--red_60);
+  }
+}
+
+input{
+  outline: none;
+  font-size: 0.9em;
+  &.red{
+    color: var(--red_60);
+  }
+  &.blue{
+    color: var(--blue_60);
+  }
+}
+
+.edit-mode-container{
+  display: flex;
 }
 
 </style>

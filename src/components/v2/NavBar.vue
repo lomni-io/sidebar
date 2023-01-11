@@ -1,6 +1,7 @@
 <template>
   <ul>
-    <li class="active">Search</li>
+    <li class="active">Tabs</li>
+    <li>Frames</li>
     <li>Sync</li>
   </ul>
 </template>

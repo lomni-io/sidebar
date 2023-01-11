@@ -1,5 +1,5 @@
 <template>
-  <div class="frame-info-container" draggable="true">
+  <div class="frame-info-container" draggable="true" @dragleave="dragleave" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame"  >
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
@@ -28,12 +28,38 @@
 
 import {defineComponent} from "vue";
 import TagContainer from "@/components/v2/search/TagContainer.vue";
+import {store} from "@/store";
+import {DragItem} from "@/store/dragItem";
 
 export default defineComponent( {
   name: "FrameUnit",
   components: {TagContainer},
   props: ['frame'],
+  computed: {
+
+  },
   methods: {
+    dragstart(e: any){
+      if (e.toElement.id === 'frame'){
+        let frame = this.$refs.frame as HTMLDivElement
+        frame.style.opacity = '0.4'
+
+        const dragItem: DragItem = {
+          kind: 'frame',
+          object: this.frame,
+        }
+        store.dispatch('setDragItem', dragItem)
+      }
+    },
+    dragleave(){
+
+    },
+    dragend(){
+      let frame = this.$refs.frame as HTMLDivElement
+      frame.style.opacity = '1'
+
+      store.dispatch('setDragItem', null)
+    },
     pinTab(){
       // @ts-ignore
       this.port.postMessage({kind: "pin-tab", tab: this.tab.id});

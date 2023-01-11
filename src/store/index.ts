@@ -4,6 +4,7 @@ import {enrichFrames} from "@/store/frame";
 import retryTimes = jest.retryTimes;
 import {FramesData, NoteFrameData, WebFrameData} from "@/entity/frame";
 import {Tab} from "@/store/entity";
+import {DragItem} from "@/store/dragItem";
 
 // import md5 from "md5";
 
@@ -14,11 +15,14 @@ export interface State {
   frames: FramesData,
   tabs:   Tab[],
   clipboard: string|null
+  dragItem: DragItem|null,
 }
 
 export const store = createStore<State>({
   state () {
     return {
+
+      dragItem: null,
 
       storage: {
         kind: 'local',
@@ -44,6 +48,9 @@ export const store = createStore<State>({
     }
   },
   getters: {
+    dragItem: function (state) {
+      return state.dragItem
+    },
     storage: function (state) {
       return state.storage
     },
@@ -68,6 +75,9 @@ export const store = createStore<State>({
     },
   },
   mutations: {
+    SET_DRAG_ITEM(state, item) {
+      state.dragItem = item
+    },
     SET_STORAGE(state, storage) {
       localStorage.setItem('storage', JSON.stringify(storage))
       state.storage = storage
@@ -129,6 +139,9 @@ export const store = createStore<State>({
     }
   },
   actions: {
+    setDragItem(context, item){
+      context.commit('SET_DRAG_ITEM', item)
+    },
     setClipboard(context, clipboard){
       if (context.state.clipboard !== clipboard){
         context.commit('SET_CLIPBOARD', clipboard)

@@ -18,20 +18,20 @@
     {
       "name": "window main",
       "pinneds": [
-        {"domain":  "chrome.com", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my current title", "tags":  ["#tag1", "#tag2"], "isPinned":  true},
-        {"domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"], "isPinned":  true}
+        {"id": 1, "domain":  "chrome.com", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my current title", "tags":  ["#tag1", "#tag2"], "isPinned":  true},
+        {"id": 2,"domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"], "isPinned":  true}
       ],
       "tabs": [
-        {"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"]},
+        {"id": 3,"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my title", "tags":  ["#myTag", "#tag2"]},
         {"kind": "group", "name": "deploy", "color":  "red", "frames": [
-          {"kind": "frame", "domain":  "lomni.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myNew", "#tag2"]}
+          {"id": 4,"kind": "frame", "domain":  "lomni.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "no title that can supress", "tags":  ["#myNew", "#tag2"]}
         ]},
-        {"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"]}
+        {"id": 5,"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "mine here", "tags":  ["#myTag", "#tag2"]}
       ]
     }
   ],
   "frames": [
-    {"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "other title here", "tags":  ["#myTag", "#tag2"]},
-    {"domain":  "chrome.com", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my current title", "tags":  ["#tag1", "#tag2"], "isPinned":  true}
+    {"id": 6,"kind": "frame", "domain":  "myDomain.io", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "one little title here", "tags":  ["#myTag", "#tag2"]},
+    {"id": 7,"domain":  "chrome.com", "favIconUrl": "https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_10.ico", "title":  "my current title", "tags":  ["#tag1", "#tag2"], "isPinned":  true}
   ]
 }

@@ -4,7 +4,7 @@
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
     </li>
     <li v-for="(tag, index) in tags" :key="index">
-      <a class="tag" @click="clickedTag(tag)" draggable="true">{{tag}}</a>
+      <a class="tag" @click="clickedTag(tag)" draggable="true" @dragstart="dragstart" id="tag">{{tag}}</a>
     </li>
   </ul>
 </template>
@@ -16,6 +16,8 @@ export default {
   methods: {
     clickedTag(tag){
       this.$emit('clickedTag', tag)
+    },
+    dragstart(){
     }
   }
 }

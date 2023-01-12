@@ -1,16 +1,18 @@
 <template>
   <div class="search-container">
     <div class="tag-input-container">
-      <p class="tag-input" v-for="(tag, index) in selectedTags" :key="index"><span v-on:click="removeTag(tag)">{{tag}}</span></p>
-      <input :class="{'no-tags': selectedTags.length === 0}" v-model="searchInput" v-on:keydown="keydown" ref="input"/>
+      <p class="tag-input" v-for="(tag, index) in renderData.search" :key="index"><span v-on:click="removeTag(tag)">{{tag}}</span></p>
+      <input v-model="searchInput" v-on:keydown="keydown" ref="input"/>
     </div>
-    <TagListContainer :initial-show="10" :tags="renderData.tags" class="tag-list-container"></TagListContainer>
+    <TagListContainer :tags="showTags" class="tag-list-container" @addTag="addTag"></TagListContainer>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/v2/TagListContainer.vue";
+import {store} from "@/store";
+import {Tag} from "@/store/renderData";
 
 export default defineComponent( {
   name: "SearchBar",
@@ -19,12 +21,23 @@ export default defineComponent( {
   data() {
     return {
       searchInput: '',
-      selectedTags: [],
+    }
+  },
+  computed: {
+    showTags(){
+      if (this.searchInput.length > 0){
+        return this.renderData.tags.filter((tag: Tag) => tag.name.toLowerCase().includes(this.searchInput.toLowerCase()))
+      }
+      return this.renderData.tags
     }
   },
   methods:{
     removeTag(tag: string){
-      console.log(tag)
+      store.dispatch('removeSearchItem', tag)
+    },
+    addTag(tag: string){
+      this.searchInput = ''
+      store.dispatch('addSearchItem', tag)
     },
     keydown(){
 
@@ -82,7 +95,7 @@ export default defineComponent( {
     margin-left: 5px;
     padding-left: 3px;
     padding-right: 3px;
-    font-size: 0.9em;
+    font-size: 0.8em;
     background-color: var(--gray_1);
     border-radius: 5px;
     cursor: pointer;
@@ -101,7 +114,7 @@ input{
   border-top-right-radius: 3px;
   outline:none;
   color: var(--text_color);
-  font-size: 0.9em;
+  font-size: 0.8em;
   width: 98%;
 }
 

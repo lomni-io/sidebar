@@ -1,4 +1,5 @@
 import {extractRootDomain, getDomainsFromUrl} from "@/components/url";
+import {FrameRender} from "@/entity/frame";
 
 export interface RenderData {
     search: string[]
@@ -85,9 +86,9 @@ export function createRenderData(framesData: (GroupFrameData|WebFrameData)[], ta
     const enriched = enrichFrames(framesData, tabs)
     return {
         search: searchInput,
-        tags: createTags(enriched),
+        tags: createTags(enriched, searchInput),
         windows: createWindows(tabs, tabGroups, enriched),
-        frames: enriched
+        frames: framesFiltered(enriched, searchInput) as (GroupFrameRender|WebFrameRender)[]
     }
 }
 
@@ -96,12 +97,19 @@ export interface Taggeable {
     preProcessedTags: string[]
 }
 
-export function createTags(framesData: Taggeable[]): Tag[]{
-    const finalList: Tag[] = []
+export function createTags(framesData: Taggeable[], searchTags: string[] = []): Tag[]{
+    let finalList: Tag[] = []
 
-    framesData.forEach(frame => {
+    const framesFiltered = filterFramesBySelection(framesData, searchTags)
+
+    framesFiltered.forEach(frame => {
 
         frame.tags.forEach(tag => {
+
+            // remove if tag is on selected
+            if (searchTags.includes(tag)) {
+                return;
+            }
 
             const tagIdx = finalList.findIndex(x => x.name === tag)
             if (tagIdx === -1) {
@@ -111,6 +119,12 @@ export function createTags(framesData: Taggeable[]): Tag[]{
             }
         })
         frame.preProcessedTags.forEach(tag => {
+
+            // remove if tag is on selected
+            if (searchTags.includes(tag)) {
+                return;
+            }
+
             const tagIdx = finalList.findIndex(x => x.name === tag)
             if (tagIdx === -1) {
                 finalList.push({name: tag, count: 1, kind: 'preProcessed'})
@@ -119,6 +133,13 @@ export function createTags(framesData: Taggeable[]): Tag[]{
             }
         })
     })
+
+    // filter items that not bring less results
+    if (searchTags.length > 0){
+        finalList = finalList.filter(item => {
+            return item.count < framesFiltered.length
+        })
+    }
 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
@@ -273,4 +294,36 @@ export function generateTagCardinality(tags: string[]){
     const count = new Map<String, number>()
     tags.forEach(i => { count.set(i, (count.get(i)||0) + 1)});
     return count
+}
+
+interface FrameWithTags {
+    tags: string[]
+    preProcessedTags: string[]
+}
+
+export function filterFramesBySelection(frames: FrameWithTags[], tags: string[]): FrameWithTags[] {
+    const tagsHash = tags.filter(x => x.startsWith("#"))
+    const tagsAt = tags.filter(x => x.startsWith("@"))
+    return frames = frames.filter(frame => {
+        const hasTagAt = tagsAt.length > 0 ? tagsAt.every(tag => frame.preProcessedTags.includes(tag)) : true
+        const hasTagHash = tagsHash.length > 0 ? tagsHash.every(tag => frame.tags.includes(tag)) : true
+        return hasTagAt && hasTagHash
+    })
+}
+
+export function framesFiltered(frames: FrameWithTags[], tags: string[]): FrameWithTags[]{
+    if (tags.length > 0) {
+        frames = frames.filter(frame => tags.every(
+            tag => frame.tags.includes(tag) || frame.preProcessedTags.includes(tag)
+        ))
+    }
+
+    return framesSort(frames)
+}
+
+export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
+    return frames.sort((x,y) => {
+        const tagLength = x.tags.length > y.tags.length
+        return tagLength ? 1 : -1
+    })
 }

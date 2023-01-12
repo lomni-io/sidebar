@@ -79,6 +79,17 @@ export const store = createStore<State>({
     },
   },
   mutations: {
+    ADD_SEARCH_ITEM(state, item){
+      if (!state.search.some(x => x === item)){
+        state.search.push(item)
+      }
+    },
+    REMOVE_SEARCH_ITEM(state, item){
+      const idx = state.search.findIndex(x => x === item)
+      if (~idx){
+        state.search.splice(idx, 1)
+      }
+    },
     SET_DRAG_ITEM(state, item) {
       state.dragItem = item
     },
@@ -127,6 +138,12 @@ export const store = createStore<State>({
     },
   },
   actions: {
+    addSearchItem(context, item){
+      context.commit('ADD_SEARCH_ITEM', item)
+    },
+    removeSearchItem(context, item){
+      context.commit('REMOVE_SEARCH_ITEM', item)
+    },
     setDragItem(context, item){
       context.commit('SET_DRAG_ITEM', item)
     },

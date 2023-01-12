@@ -90,7 +90,7 @@ export default defineComponent( {
 }
 
 .current-selected{
-  color: var(--pink1);
+  color: var(--pink);
 }
 
 .frame-header{
@@ -127,7 +127,7 @@ export default defineComponent( {
       color: var(--gray_1);
 
       &.active{
-        color: var(--blue_60);
+        color: var(--blue);
       }
       &:hover{
         cursor: pointer;
@@ -139,7 +139,7 @@ export default defineComponent( {
       color: var(--gray_1);
 
       &.pinned{
-        color: var(--blue_60);
+        color: var(--blue);
       }
       &:hover{
         cursor: pointer;
@@ -150,7 +150,7 @@ export default defineComponent( {
     .frame-header-edit{
       width: 12px;
       height: 12px;
-      color: var(--yellow_60);
+      color: var(--yellow);
       &:hover{
         cursor: pointer;
         filter: var(--hover);
@@ -160,7 +160,7 @@ export default defineComponent( {
     .frame-header-add{
       width: 12px;
       height: 12px;
-      color:  var(--green_60_60);
+      color:  var(--green);
       &:hover{
         cursor: pointer;
         filter: var(--hover);

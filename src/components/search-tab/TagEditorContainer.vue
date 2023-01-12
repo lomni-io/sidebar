@@ -100,7 +100,7 @@ export default {
       width: 15px;
       height: 15px;
       border-radius: 10px;
-      background-color: var(--green_60_60);
+      background-color: var(--green);
       cursor: pointer;
     }
   }

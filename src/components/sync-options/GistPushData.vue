@@ -132,15 +132,15 @@ export default {
   justify-content: center;
 
   .add{
-    color: var(--green_60_60);
+    color: var(--green);
   }
 
   .remove{
-    color: var(--red_60);
+    color: var(--red);
   }
 
   .change{
-    color: var(--blue_60);
+    color: var(--blue);
   }
 
   .overview-item{
@@ -149,7 +149,7 @@ export default {
 }
 
 .error{
-  color: var(--red_60);
+  color: var(--red);
   text-align: center;
 }
 
@@ -167,7 +167,7 @@ export default {
     max-width: 60vw;
 
     &.remove{
-      color: var(--red_60);
+      color: var(--red);
     }
   }
 }

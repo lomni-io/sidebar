@@ -9,7 +9,7 @@
 }
 
 h1{
-  color: var(--blue1);
+  color: var(--blue);
 }
 
 input{

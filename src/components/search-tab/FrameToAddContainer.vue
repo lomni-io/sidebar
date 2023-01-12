@@ -108,7 +108,7 @@ export default {
   }
   h1{
     font-size: 1.1em;
-    color: var(--pink1);
+    color: var(--pink);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -151,7 +151,7 @@ export default {
     .frame-header-add{
       width: 12px;
       height: 12px;
-      color:  var(--green_60_60);
+      color:  var(--green);
       border-radius: 10px;
       font-size: 0.8em;
       &:hover{

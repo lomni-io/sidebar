@@ -90,7 +90,7 @@ export default defineComponent( {
   .frame-header-apply{
     width: 12px;
     height: 12px;
-    color: var(--yellow_60);
+    color: var(--yellow);
     border-radius: 10px;
     font-size: 0.8em;
     &:hover{
@@ -102,7 +102,7 @@ export default defineComponent( {
   .frame-header-remove{
     width: 12px;
     height: 12px;
-    color: var(--red_60);
+    color: var(--red);
     border-radius: 10px;
     font-size: 0.8em;
     &:hover{

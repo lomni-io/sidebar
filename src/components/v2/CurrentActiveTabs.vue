@@ -16,7 +16,7 @@
 
 <!--   GROUP TABS HERE   -->
       <div v-if="tab.kind === 'group'">
-        <ScafoldBar :title="tab.title" :color="tab.color">
+        <ScafoldBar :title="tab.title" :color="tab.color" :collapsed="tab.collapsed" :group-id="tab.id" :count-frames="tab.frames.length">
           <div v-for="(frame, index) in tab.frames" :key="index">
             <FrameDropArea></FrameDropArea>
             <FrameUnit :frame="frame"></FrameUnit>
@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import ScafoldBar from "@/components/v2/ScafoldBar.vue";
+import ScafoldBar from "@/components/v2/TabGroupScaffold.vue";
 import FrameUnit from "@/components/v2/FrameUnit.vue";
 import FrameDropArea from "@/components/v2/FrameDropArea.vue";
 import NewGroupContainer from "@/components/v2/NewGroupContainer.vue";

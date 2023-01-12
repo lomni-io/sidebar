@@ -53,7 +53,7 @@ export default {
   -webkit-transition: color 0.2s;
 
   &.red{
-    color: var(--red_60);
+    color: var(--red);
   }
 }
 

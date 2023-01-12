@@ -1,23 +1,50 @@
 <template>
   <ul class="tags">
+
+    <li @dragover="dragover" @dragleave="dragleave" @drop="onDrop" @dragover.prevent @dragenter.prevent>
+      <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="dragItem && dragItem.kind === 'tag'" >add here</a>
+    </li>
+
     <li v-for="(tag, index) in fixedTags" :key="index">
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
     </li>
     <li v-for="(tag, index) in tags" :key="index">
-      <a class="tag" @click="clickedTag(tag)" draggable="true" @dragstart="dragstart" id="tag" :class="color">{{tag}}</a>
+      <a class="tag" @click="clickedTag(tag)" id="tag" :class="color">{{tag}}</a>
     </li>
   </ul>
 </template>
 
 <script>
+import {store} from "@/store";
+
 export default {
   name: "TagContainer",
+  emits: ['addTag'],
   props: ['tags', 'fixedTags', 'color'],
+  data() {
+    return {
+      isDraggingOver: false
+    }
+  },
+  computed: {
+    dragItem(){
+      return store.getters.dragItem
+    }
+  },
   methods: {
     clickedTag(tag){
       this.$emit('clickedTag', tag)
     },
-    dragstart(){
+    dragover(){
+      this.isDraggingOver = true
+    },
+    dragleave(){
+      this.isDraggingOver = false
+    },
+    onDrop(){
+      if (this.dragItem && this.dragItem.kind === 'tag'){
+        this.$emit('addTag', this.dragItem.object)
+      }
     }
   }
 }
@@ -52,6 +79,11 @@ export default {
   text-decoration: none;
   -webkit-transition: color 0.2s;
 
+  &.new{
+    background-color: transparent;
+    border: 1px dashed var(--background_tag);
+  }
+
   &.red{
     color: var(--red);
   }
@@ -69,6 +101,10 @@ a{
 
 .tag:hover {
   filter: var(--hover);
+}
+
+.drag-over{
+  color: var(--blue);
 }
 
 

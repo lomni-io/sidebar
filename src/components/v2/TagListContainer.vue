@@ -2,12 +2,14 @@
   <ul class="tags">
     <li v-for="(tag, index) in tags" :key="index">
       <a v-if="tag.kind === 'preProcessed'" href="#" class="tag" :style="getCount(tag.count)" v-on:click="selectTag(tag)" draggable="false">{{tag.name}}</a>
-      <a v-if="tag.kind === 'tag'" href="#" class="tag" :style="getCount(tag.count)" v-on:click="selectTag(tag)" draggable="true">{{tag.name}}</a>
+      <a v-if="tag.kind === 'tag'" href="#" class="tag" :style="getCount(tag.count)" v-on:click="selectTag(tag)" draggable="true" @dragstart="dragstart(tag.name)" @dragend="dragend">{{tag.name}}</a>
     </li>
   </ul>
 </template>
 
 <script>
+
+import {store} from "@/store";
 
 export default {
   name: "TagListContainer",
@@ -27,7 +29,18 @@ export default {
     },
     selectTag(tag){
       this.$emit('addTag', tag.name)
-    }
+    },
+    dragstart(tagName){
+      const dragItem = {
+        kind: 'tag',
+        object: tagName,
+      }
+
+      store.dispatch('setDragItem', dragItem)
+    },
+    dragend(){
+      store.dispatch('setDragItem', null)
+    },
   }
 }
 </script>

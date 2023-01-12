@@ -41,9 +41,15 @@ export default {
   padding: 0;
   display: flex;
   justify-content: flex-start;
-  flex-wrap: wrap;
-  overflow: hidden;
+  //flex-wrap: wrap;
+  overflow-x: auto;
+  //overflow: hidden;
   //height: 60px;
+}
+
+.tags::-webkit-scrollbar {
+  //display: none;  /* Safari and Chrome */
+  height: 5px;
 }
 
 .tags li {

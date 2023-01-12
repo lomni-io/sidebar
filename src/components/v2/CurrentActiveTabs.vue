@@ -9,14 +9,14 @@
     <div v-for="(tab, index) in window.tabs" :key="index">
 
 <!--   NORMAL TABS HERE   -->
-      <div v-if="tab.kind === 'frame'">
+      <div v-if="tab.kind === 'web'">
         <FrameDropArea></FrameDropArea>
         <FrameUnit :frame="tab"></FrameUnit>
       </div>
 
 <!--   GROUP TABS HERE   -->
       <div v-if="tab.kind === 'group'">
-        <ScafoldBar :title="tab.name" :color="tab.color">
+        <ScafoldBar :title="tab.title" :color="tab.color">
           <div v-for="(frame, index) in tab.frames" :key="index">
             <FrameDropArea></FrameDropArea>
             <FrameUnit :frame="frame"></FrameUnit>

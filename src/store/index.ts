@@ -1,17 +1,19 @@
 import {ActionContext, createStore} from 'vuex'
 import {DragItem} from "@/store/dragItem";
-import {enrichFrames, GroupFrameData, Tab, WebFrameData} from "@/store/renderData";
+import {createRenderData, enrichFrames, GroupFrameData, Tab, TabGroup, WebFrameData} from "@/store/renderData";
 
 // import md5 from "md5";
 
 
 // define your typings for the store state
 export interface State {
-  storage: any,
-  frames: (GroupFrameData|WebFrameData)[],
-  tabs:   Tab[],
+  storage: any
+  frames: (GroupFrameData|WebFrameData)[]
+  tabs:   Tab[]
+  tabGroups: TabGroup[]
   clipboard: string|null
   dragItem: DragItem|null,
+  search: string[]
 }
 
 export const store = createStore<State>({
@@ -39,7 +41,9 @@ export const store = createStore<State>({
         currentSelectedFrameIdx: -1,
       },
 
-      tabs: []
+      tabs: [],
+      tabGroups: [],
+      search: []
 
     }
   },
@@ -60,6 +64,11 @@ export const store = createStore<State>({
 
     allTabs: function (state) {
       return state.tabs
+    },
+
+    renderData: function (state) {
+      console.log(createRenderData(state.frames, state.tabs, state.tabGroups, state.search))
+      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search)
     },
 
     // add preProcessedTags
@@ -108,6 +117,9 @@ export const store = createStore<State>({
     SET_ALL_TABS(state, data) {
       state.tabs = data
     },
+    SET_ALL_TAB_GROUPS(state, data){
+      state.tabGroups = data
+    },
     SET_NOTE(state, note) {
       note.updatedAt = Date.now()
 
@@ -126,6 +138,9 @@ export const store = createStore<State>({
     },
     setAllTabs(context, data){
       context.commit('SET_ALL_TABS', data)
+    },
+    setAllTabGroups(context, data){
+      context.commit('SET_ALL_TAB_GROUPS', data)
     },
     upsertFrame(context, frame: WebFrameData){
       context.commit('SET_FRAME', frame)

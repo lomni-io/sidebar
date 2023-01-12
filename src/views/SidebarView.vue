@@ -22,7 +22,8 @@ import {defineComponent} from "vue";
 import TabsView from "@/views/TabsView.vue";
 import FramesView from "@/views/FramesView.vue";
 import PluginInstallView from "@/views/PluginInstallView.vue";
-const renderData = require('./renderData.json')
+import {store} from "@/store";
+// const renderData = require('./renderData.json')
 
 export default defineComponent( {
   name: "SidebarView",
@@ -35,7 +36,7 @@ export default defineComponent( {
   },
   computed: {
     renderData(){
-      return renderData
+      return store.getters.renderData
     }
   },
   methods: {
@@ -50,7 +51,9 @@ export default defineComponent( {
       this.hasPlugin = true
       // @ts-ignore
       this.port.postMessage({kind: "all-tabs-request"});
-      // store.dispatch('loadState')
+      // @ts-ignore
+      this.port.postMessage({kind: "all-tab-groups-request"});
+      store.dispatch('loadState')
     }
 
   }

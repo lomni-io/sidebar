@@ -7,17 +7,21 @@
       <CurrentTabs :window="window"></CurrentTabs>
     </TabContainer>
   </div>
+  <TabContainer title="frames" :default-activation="true">
+    <FramesContainer :frames="renderData.frames"></FramesContainer>
+  </TabContainer>
 </template>
 
 <script>
 import TabContainer from "@/components/v2/TabContainer";
 import SearchBar from "@/components/v2/SearchBar";
 import CurrentTabs from "@/components/v2/CurrentActiveTabs";
+import FramesContainer from "@/components/v2/FramesContainer";
 
 export default {
   name: "TabsView",
   props: ['renderData'],
-  components: {CurrentTabs, TabContainer,SearchBar}
+  components: {FramesContainer, CurrentTabs, TabContainer,SearchBar}
 }
 </script>
 

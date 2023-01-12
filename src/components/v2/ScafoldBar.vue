@@ -1,8 +1,8 @@
 <template>
   <div class="scafold-container" v-on:focusout="goToViewMode">
     <div class="header">
-      <div class="input" v-if="!isFolded && !editMode" @click="fold" :class="color">+</div>
-      <div class="input" v-if="isFolded && !editMode" @click="unFold" :class="color">-</div>
+      <div class="input" v-if="!isFolded && !editMode" @click="collapse(true)" :class="color">+</div>
+      <div class="input" v-if="isFolded && !editMode" @click="collapse(false)" :class="color">-</div>
       <label :class="color" @click="goToEditMode" v-if="!editMode">{{title}}</label>
       <div class="edit-mode-container" v-if="editMode" ref="input">
         <div class="input edit-mode" :class="color" >e</div>
@@ -22,7 +22,7 @@ import {defineComponent} from "vue";
 
 export default defineComponent( {
   name: "ScafoldBar",
-  props: ['title', 'color'],
+  props: ['title', 'color', 'collapsed'],
   data() {
     return {
       editMode: false,
@@ -31,11 +31,8 @@ export default defineComponent( {
     }
   },
   methods: {
-    fold(){
-      this.isFolded = true
-    },
-    unFold(){
-      this.isFolded = false
+    collapse(isCollapsed: boolean){
+      this.isFolded = isCollapsed
     },
     goToViewMode(){
       this.editMode = false

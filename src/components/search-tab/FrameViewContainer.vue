@@ -37,9 +37,9 @@
 <script lang="ts">
 import {store} from "@/store";
 import {defineComponent} from "vue";
-import {Tab} from "@/store/entity";
 import TagViewContainer from "@/components/search-tab/TagViewContainer.vue";
 import {WebFrameData} from "@/entity/frame";
+import {Tab} from "@/store/renderData";
 
 export default defineComponent( {
   name: "FrameViewContainer",

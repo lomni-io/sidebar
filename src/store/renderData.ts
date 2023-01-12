@@ -41,7 +41,7 @@ export interface Window {
 }
 
 export interface GroupFrameData {
-    name:  string
+    title:  string
     color: string
     frames: string[] // only URL
     tags: string[]
@@ -58,13 +58,13 @@ export interface WebFrameData{
 
 export interface GroupFrameRender {
     id: number
-    name:  string
+    title:  string
     color: string
+    collapsed: boolean
     frames: WebFrameRender[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
-    windowId: number
 }
 
 export interface WebFrameRender {
@@ -78,7 +78,6 @@ export interface WebFrameRender {
     isOpened: boolean
     isSelected: boolean
     kind: string
-    windowId: number
 }
 
 export function createRenderData(framesData: (GroupFrameData|WebFrameData)[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
@@ -124,53 +123,45 @@ export function createTags(framesData: Taggeable[]): Tag[]{
 }
 
 export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered: (GroupFrameRender|WebFrameRender)[]): Window[]{
-    // add groups
-    const pinnedsRender: WebFrameRender[] = []
-    const tabsRender: (GroupFrameRender|WebFrameRender)[] = []
-    const windowsMap = new Map<number, boolean>()
-
+    const windows: Window[] = []
     tabs.forEach(tab => {
-        windowsMap.set(tab.windowId, true)
-        const webFrame = mountWebFrame(tab, framesRendered)
-
-        const tabGroup = tabGroups.find(g => g.id === tab.groupId)
-        if (tab.groupId !== -1 && tabGroup){
-            const groupRender = tabsRender.find(g => (<GroupFrameRender>g).id === tab.groupId) as GroupFrameRender
-            if (groupRender){
-                groupRender.frames.push(webFrame)
-            }else{
-                tabsRender.push({
-                    id: tabGroup.id,
-                    windowId: tabGroup.windowId,
-                    name:  tabGroup.title,
-                    color: tabGroup.color,
-                    frames: [webFrame],
-                    tags: [],
-                    preProcessedTags: ['@group'],
-                    kind: 'group'
-                })
+        let window = windows.find(w => w.id === tab.windowId)
+        if (!window){
+            window = {
+                name: 'main',
+                id: tab.windowId,
+                pinneds: [],
+                tabs: []
             }
-        }
-        if (tab.groupId === -1 && !tab.pinned){
-            tabsRender.push(webFrame)
+            windows.push(window)
         }
 
         if (tab.pinned){
-            pinnedsRender.push(webFrame)
+            window.pinneds.push(mountWebFrame(tab, framesRendered))
+            return
         }
-    })
+        if (tab.groupId === -1){
+            window.tabs.push(mountWebFrame(tab, framesRendered))
+        }
 
-    const windows: Window[] = []
-    windowsMap.forEach((val,windowId) => {
-        const tabsFiltered = tabsRender.filter(x => x.windowId === windowId)
-        const pinnedFiltered = pinnedsRender.filter(x => x.windowId === windowId)
-
-        windows.push({
-            id: windowId,
-            name: 'main ' + windowId,
-            tabs: tabsFiltered,
-            pinneds: pinnedFiltered
-        })
+        const tabGroup = tabGroups.find(tabGroup => tabGroup.id === tab.groupId)
+        if (tabGroup){
+            const groupRender = window.tabs.find(wTab => (<GroupFrameRender>wTab).id === tab.groupId) as GroupFrameRender
+            if (groupRender){
+                groupRender.frames.push(mountWebFrame(tab, framesRendered))
+            }else{
+                window.tabs.push({
+                    id: tab.groupId,
+                    title:  tabGroup.title,
+                    color: tabGroup.color,
+                    collapsed: tabGroup.collapsed,
+                    frames: [mountWebFrame(tab, framesRendered)],
+                    tags: [],
+                    preProcessedTags: ['@group'],
+                    kind: 'group',
+                })
+            }
+        }
     })
 
     return windows
@@ -202,7 +193,6 @@ export function enrichFrames(framesData: (GroupFrameData|WebFrameData)[], tabs: 
 
             finalWebFrames.push({
                 favIconUrl: webFrame.favIconUrl,
-                windowId: tab ? tab.windowId : -1,
                 title: webFrame.title,
                 preProcessedTags: processedTags,
                 tags: frame.tags,
@@ -226,10 +216,10 @@ export function enrichFrames(framesData: (GroupFrameData|WebFrameData)[], tabs: 
 
             finalGroupFrames.push({
                 id: -1,
-                name: groupFrame.name,
+                collapsed: false,
+                title: groupFrame.title,
                 color: groupFrame.color,
                 preProcessedTags: ['@group'],
-                windowId: -1,
                 tags: frame.tags,
                 kind: 'group',
                 frames: mountWebFrames(groupFrame.frames, finalWebFrames)
@@ -264,7 +254,6 @@ export function mountWebFrame(tab:Tab, webFrames: (GroupFrameRender|WebFrameRend
     }
     return {
         url: tab.url,
-        windowId: -1,
         favIconUrl: tab.favIconUrl,
         title: tab.title,
         tags: [],

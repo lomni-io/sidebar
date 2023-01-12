@@ -1,10 +1,6 @@
 import {ActionContext, createStore} from 'vuex'
-import {extractRootDomain} from "@/components/url";
-import {enrichFrames} from "@/store/frame";
-import retryTimes = jest.retryTimes;
-import {FramesData, NoteFrameData, WebFrameData} from "@/entity/frame";
-import {Tab} from "@/store/entity";
 import {DragItem} from "@/store/dragItem";
+import {enrichFrames, GroupFrameData, Tab, WebFrameData} from "@/store/renderData";
 
 // import md5 from "md5";
 
@@ -12,7 +8,7 @@ import {DragItem} from "@/store/dragItem";
 // define your typings for the store state
 export interface State {
   storage: any,
-  frames: FramesData,
+  frames: (GroupFrameData|WebFrameData)[],
   tabs:   Tab[],
   clipboard: string|null
   dragItem: DragItem|null,
@@ -96,7 +92,7 @@ export const store = createStore<State>({
     SET_FRAME(state, frame:WebFrameData) {
       frame.updatedAt = Date.now()
 
-      const frameIdx = state.frames.findIndex((x:WebFrameData|NoteFrameData) => {
+      const frameIdx = state.frames.findIndex((x:GroupFrameData|WebFrameData) => {
         return (<WebFrameData>x).url === frame.url
       })
       if (~frameIdx){
@@ -118,25 +114,6 @@ export const store = createStore<State>({
       state.frames.push(note)
       localStorage.setItem('frames', JSON.stringify(state.frames))
     },
-    UPDATE_NOTE(state, note: NoteFrameData){
-      const frameIdx = state.frames.findIndex(x => {
-        return (<NoteFrameData>x).id === note.id
-      })
-      if (~frameIdx) {
-        // has frame
-        state.frames[frameIdx] = note
-      }
-      localStorage.setItem('frames', JSON.stringify(state.frames))
-    },
-    REMOVE_NOTE(state, note){
-      const index = state.frames.findIndex(x => {
-        return (<NoteFrameData>x).id === note.id
-      })
-      if (~index){
-        state.frames.splice(index, 1)
-      }
-      localStorage.setItem('frames', JSON.stringify(state.frames))
-    }
   },
   actions: {
     setDragItem(context, item){
@@ -153,16 +130,7 @@ export const store = createStore<State>({
     upsertFrame(context, frame: WebFrameData){
       context.commit('SET_FRAME', frame)
     },
-    insertNote(context, note: NoteFrameData){
-      context.commit('SET_NOTE', note)
-    },
-    updateNote(context, note: NoteFrameData){
-      context.commit('UPDATE_NOTE', note)
-    },
-    removeNote(context, note: NoteFrameData){
-      context.commit('REMOVE_NOTE', note)
-    },
-    setFrames(context, frames: FramesData){
+    setFrames(context, frames: GroupFrameData|WebFrameData){
       context.commit('SET_FRAMES', frames)
     },
 

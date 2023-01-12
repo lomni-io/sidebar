@@ -78,7 +78,6 @@ describe('enrichFrames', () => {
                 isPinned: false,
                 isOpened: false,
                 isSelected: false,
-                updatedAt: 1,
             },
             {
                 title: 'a',
@@ -91,7 +90,6 @@ describe('enrichFrames', () => {
                 isPinned: false,
                 isOpened: false,
                 isSelected: false,
-                updatedAt: 1,
             },
             {
                 title: 'a',
@@ -104,7 +102,6 @@ describe('enrichFrames', () => {
                 isPinned: false,
                 isOpened: false,
                 isSelected: false,
-                updatedAt: 1,
             }
         ]
         expect(enrichFrames(frames)).toStrictEqual(expected)
@@ -153,7 +150,6 @@ describe('enrichFrames', () => {
                 isPinned: false,
                 isOpened: false,
                 isSelected: false,
-                updatedAt: 1,
             },
             {
                 title: 'a',
@@ -166,7 +162,6 @@ describe('enrichFrames', () => {
                 isPinned: false,
                 isOpened: true,
                 isSelected: false,
-                updatedAt: 1,
             },
         ]
         expect(enrichFrames(frames, activeTabs)).toStrictEqual(expected)
@@ -237,7 +232,6 @@ describe('enrichFrames', () => {
                 isPinned: false,
                 isOpened: false,
                 isSelected: false,
-                updatedAt: 1,
             },
             {
                 title: 'a',
@@ -250,7 +244,6 @@ describe('enrichFrames', () => {
                 isPinned: false,
                 isOpened: true,
                 isSelected: false,
-                updatedAt: 1,
             },
         ]
         expect(enrichFrames(frames, activeTabs)).toStrictEqual(expected)
@@ -266,7 +259,7 @@ describe('enrichFrames', () => {
             },
             {
                 id: 12,
-                name: '123',
+                title: '123',
                 color: 'red',
                 frames: ['https://test2.ski.com'],
                 tags: ['#myGroup'],
@@ -285,11 +278,12 @@ describe('enrichFrames', () => {
                 isSelected: false,
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023'],
-                updatedAt: 1,
             },
             {
-                name: '123',
+                title: '123',
+                id: -1,
                 color: 'red',
+                collapsed: false,
                 frames: [
                     {
                         title: 'a',
@@ -302,13 +296,11 @@ describe('enrichFrames', () => {
                         isSelected: false,
                         preProcessedTags: ['@ski', '@test2'],
                         tags: ['#ski2023'],
-                        updatedAt: 1,
                     }
                 ],
                 tags: ['#myGroup'],
                 kind: 'group',
                 preProcessedTags: ['@group'],
-                updatedAt: 1,
             },
         ]
         expect(enrichFrames(frames)).toStrictEqual(expected)
@@ -324,7 +316,7 @@ describe('enrichFrames', () => {
             },
             {
                 id: 12,
-                name: '123',
+                title: '123',
                 color: 'red',
                 frames: ['https://test2.ski.com/nops'],
                 tags: [],
@@ -343,16 +335,16 @@ describe('enrichFrames', () => {
                 isOpened: false,
                 isSelected: false,
                 tags: [],
-                updatedAt: 1,
             },
             {
-                name: '123',
+                id: -1,
+                title: '123',
+                collapsed: false,
                 color: 'red',
                 frames: [],
                 tags: [],
                 preProcessedTags: ['@group'],
                 kind: 'group',
-                updatedAt: 1,
             },
         ]
         expect(enrichFrames(frames)).toStrictEqual(expected)
@@ -447,13 +439,12 @@ describe('createWindows', () => {
                 isOpened: false,
                 isSelected: false,
                 tags: [],
-                updatedAt: 1,
             },
         ]
 
         const expected = [
             {
-                name:  'main 1',
+                name:  'main',
                 id: 12,
                 pinneds: [
                     {
@@ -467,7 +458,6 @@ describe('createWindows', () => {
                         kind: "web",
                         preProcessedTags: ["@test", "@ski"],
                         tags: [],
-                        updatedAt: 0,
                     },
                 ],
                 tabs: [
@@ -482,7 +472,6 @@ describe('createWindows', () => {
                         kind: "web",
                         preProcessedTags: ["@test", "@ski"],
                         tags: [],
-                        updatedAt: 0,
                     },
                     {
                         title: 'a',
@@ -495,12 +484,11 @@ describe('createWindows', () => {
                         kind: "web",
                         preProcessedTags: ["@ski","@test2"],
                         tags: [],
-                        updatedAt: 1,
                     },
                 ],
             },
             {
-                name:  'main 2',
+                name:  'main',
                 id: 13,
                 pinneds: [],
                 tabs: [
@@ -515,14 +503,16 @@ describe('createWindows', () => {
                         kind: "web",
                         preProcessedTags: ["@test", "@ski"],
                         tags: [],
-                        updatedAt: 0,
                     },
                     {
+                        id: 1,
                         kind: "group",
                         title: 'my group',
                         collapsed: false,
                         color: 'red',
-                        tabs: [
+                        preProcessedTags: ["@group"],
+                        tags: [],
+                        frames: [
                             {
                                 title: 'abv',
                                 url: 'https://test.ski.com/otherWindow',
@@ -534,7 +524,6 @@ describe('createWindows', () => {
                                 kind: "web",
                                 preProcessedTags: ["@test", "@ski"],
                                 tags: [],
-                                updatedAt: 0,
                             },
                         ]
                     },

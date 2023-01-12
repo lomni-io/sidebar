@@ -59,11 +59,11 @@ export default {
 
 .hover-area{
   width: 80%;
-  height: 50px;
+  height: 60px;
   position: absolute;
   /*background-color: red;*/
   margin-left: -5px;
-  margin-top: -25px;
+  margin-top: -30px;
   z-index: 10000000;
 }
 

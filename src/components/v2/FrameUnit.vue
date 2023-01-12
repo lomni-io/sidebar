@@ -1,5 +1,6 @@
 <template>
-  <div class="frame-info-container" draggable="true" @dragleave="dragleave" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame"  >
+  <div class="frame-info-container" draggable="true" @dragleave="dragleave" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+    <div class="drop-area" :class="{'drag-over': dragItem && dragItem.kind === 'frame' && dragItem.dropperId === frameId}" v-if="dragItem && dragItem.kind === 'frame' && dragItem.draggerId !== frameId" @dragover="dragover"></div>
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
@@ -38,8 +39,15 @@ export default defineComponent( {
   name: "FrameUnit",
   components: {TagContainer},
   props: ['frame'],
+  data() {
+    return {
+      frameId: Math.floor(Math.random() * 1000000000).toFixed(0)
+    }
+  },
   computed: {
-
+    dragItem(){
+      return store.getters.dragItem
+    }
   },
   methods: {
     dragstart(e: any){
@@ -48,6 +56,7 @@ export default defineComponent( {
         frame.style.opacity = '0.4'
 
         const dragItem: DragItem = {
+          draggerId: this.frameId,
           kind: 'frame',
           object: this.frame,
         }
@@ -56,6 +65,9 @@ export default defineComponent( {
     },
     dragleave(){
 
+    },
+    dragover(){
+      store.dispatch('setDropperId', this.frameId)
     },
     dragend(){
       let frame = this.$refs.frame as HTMLDivElement
@@ -105,6 +117,7 @@ export default defineComponent( {
   background-color: var(--background_input);
   border-radius: 5px;
   margin-bottom: 5px;
+  position: relative;
 }
 
 .current-selected{
@@ -215,6 +228,23 @@ h1:hover{
 }
 .frame-tags{
 
+}
+
+.drop-area{
+  background-color: inherit;
+  opacity: 0.2;
+  border-radius: 5px;
+  margin-left: -5px;
+  margin-top: -5px;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+
+  &.drag-over{
+    opacity: 0.2;
+    background-color: var(--blue);
+    filter: var(--hover);
+  }
 }
 
 </style>

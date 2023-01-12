@@ -9,7 +9,7 @@
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
     </li>
     <li v-for="(tag, index) in tags" :key="index">
-      <a class="tag" @click="clickedTag(tag)" id="tag" :class="color">{{tag}}</a>
+      <a class="tag" @click="clickedTag(tag)" id="tag" :class="color" draggable="true">{{tag}}</a>
     </li>
   </ul>
 </template>

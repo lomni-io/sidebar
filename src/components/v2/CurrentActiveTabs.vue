@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
-      <FrameDropArea></FrameDropArea>
+<!--      <FrameDropArea></FrameDropArea>-->
       <FrameUnit :frame="frame"></FrameUnit>
     </div>
 
@@ -10,7 +10,7 @@
 
 <!--   NORMAL TABS HERE   -->
       <div v-if="tab.kind === 'web'">
-        <FrameDropArea></FrameDropArea>
+<!--        <FrameDropArea></FrameDropArea>-->
         <FrameUnit :frame="tab"></FrameUnit>
       </div>
 
@@ -18,7 +18,7 @@
       <div v-if="tab.kind === 'group'">
         <ScafoldBar :title="tab.title" :color="tab.color" :collapsed="tab.collapsed" :group-id="tab.id" :count-frames="tab.frames.length">
           <div v-for="(frame, index) in tab.frames" :key="index">
-            <FrameDropArea></FrameDropArea>
+<!--            <FrameDropArea></FrameDropArea>-->
             <FrameUnit :frame="frame"></FrameUnit>
           </div>
           <TagContainer :tags="tab.tags" :color="tab.color"></TagContainer>
@@ -36,14 +36,13 @@
 import {defineComponent} from "vue";
 import ScafoldBar from "@/components/v2/TabGroupScaffold.vue";
 import FrameUnit from "@/components/v2/FrameUnit.vue";
-import FrameDropArea from "@/components/v2/FrameDropArea.vue";
 import NewGroupContainer from "@/components/v2/NewGroupContainer.vue";
 import TagContainer from "@/components/v2/TagContainer.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
   props: ['window'],
-  components: {TagContainer, NewGroupContainer, FrameDropArea, FrameUnit, ScafoldBar}
+  components: {TagContainer, NewGroupContainer, FrameUnit, ScafoldBar}
 })
 
 </script>

@@ -93,6 +93,19 @@ export const store = createStore<State>({
     SET_DRAG_ITEM(state, item) {
       state.dragItem = item
     },
+    SET_DROPER_ID(state, id){
+      setTimeout(function (){
+        if (state.dragItem && state.dragItem.lastUpdate){
+          if (Date.now() - 80 > state.dragItem.lastUpdate){
+            state.dragItem.dropperId = null
+          }
+        }
+      }, 100)
+      if (state.dragItem){
+        state.dragItem.dropperId = id
+        state.dragItem.lastUpdate = Date.now()
+      }
+    },
     SET_STORAGE(state, storage) {
       localStorage.setItem('storage', JSON.stringify(storage))
       state.storage = storage
@@ -146,6 +159,9 @@ export const store = createStore<State>({
     },
     setDragItem(context, item){
       context.commit('SET_DRAG_ITEM', item)
+    },
+    setDropperId(context, id){
+      context.commit('SET_DROPER_ID', id)
     },
     setClipboard(context, clipboard){
       if (context.state.clipboard !== clipboard){

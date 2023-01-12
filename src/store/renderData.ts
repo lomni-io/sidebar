@@ -68,6 +68,7 @@ export interface GroupFrameRender {
 }
 
 export interface WebFrameRender {
+    id: string
     url: string
     favIconUrl: string
     title: string
@@ -192,6 +193,7 @@ export function enrichFrames(framesData: (GroupFrameData|WebFrameData)[], tabs: 
             const tab = tabs.find(tab => tab.url === webFrame.url)
 
             finalWebFrames.push({
+                id: tab ? tab.id : '',
                 favIconUrl: webFrame.favIconUrl,
                 title: webFrame.title,
                 preProcessedTags: processedTags,
@@ -253,6 +255,7 @@ export function mountWebFrame(tab:Tab, webFrames: (GroupFrameRender|WebFrameRend
         return (<WebFrameRender>webFrame)
     }
     return {
+        id: tab.id,
         url: tab.url,
         favIconUrl: tab.favIconUrl,
         title: tab.title,

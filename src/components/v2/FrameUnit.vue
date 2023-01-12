@@ -8,6 +8,9 @@
         </div>
         <div class="frame-header-right">
 
+          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
+            <font-awesome-icon icon="xmark" />
+          </div>
           <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" title="unpin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
@@ -61,15 +64,30 @@ export default defineComponent( {
       store.dispatch('setDragItem', null)
     },
     pinTab(){
-      // @ts-ignore
-      this.port.postMessage({kind: "pin-tab", tab: this.tab.id});
+      if (this.frame.isOpened){
+        // @ts-ignore
+        this.port.postMessage({kind: "pin-tab", tab: this.frame.id});
+      }else{
+        // @ts-ignore
+        this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url, pinned: true});
+      }
     },
     unpinTab(){
       // @ts-ignore
-      this.port.postMessage({kind: "unpin-tab", tab: this.tab.id});
+      this.port.postMessage({kind: "unpin-tab", tab: this.frame.id});
+    },
+    closeTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "close-tabs", tab: this.frame.id});
     },
     goToPage(){
-
+      if (this.frame.isOpened){
+        // @ts-ignore
+        this.port.postMessage({kind: "open-request-existing-tab", tab: this.frame.id});
+      }else{
+        // @ts-ignore
+        this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url});
+      }
     }
   }
 })
@@ -141,6 +159,14 @@ export default defineComponent( {
       &.pinned{
         color: var(--blue);
       }
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-close{
+      color: var(--red);
       &:hover{
         cursor: pointer;
         filter: var(--hover);

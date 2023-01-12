@@ -429,6 +429,7 @@ describe('createWindows', () => {
 
         const frames = [
             {
+                id: '1',
                 title: 'a',
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',

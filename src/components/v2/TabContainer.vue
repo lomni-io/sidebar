@@ -59,7 +59,7 @@ input {
     display: flex;
     color: var(--text_color);
     user-select: none;
-    padding-left: 2px;
+    padding-left: 5px;
     padding-right: 2px;
     justify-content: space-between;
     text-overflow: ellipsis;

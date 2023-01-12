@@ -67,7 +67,6 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      console.log(createRenderData(state.frames, state.tabs, state.tabGroups, state.search))
       return createRenderData(state.frames, state.tabs, state.tabGroups, state.search)
     },
 

@@ -5,6 +5,10 @@
       <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="dragItem && dragItem.kind === 'tag'" >add here</a>
     </li>
 
+<!--    <li @dragover="dragover" @dragleave="dragleave" @drop="onDrop" @dragover.prevent @dragenter.prevent>-->
+<!--      <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="dragItem && dragItem.kind === 'tag'" >remove</a>-->
+<!--    </li>-->
+
     <li v-for="(tag, index) in fixedTags" :key="index">
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
     </li>

@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div class="tag-input-container">
-      <p class="tag-input" v-for="(tag, index) in renderData.search" :key="index"><span v-on:click="removeTag(tag)">{{tag}}</span></p>
+      <p class="tag-input" v-for="(tag, index) in renderData.search" :key="index"><span v-on:click="removeTag(tag)" :draggable="tag.includes('#')" @drag="dragstart(tag)" @dragend="dragend">{{tag}}</span></p>
       <input v-model="searchInput" v-on:keydown="keydown" ref="input"/>
     </div>
     <TagListContainer :tags="showTags" class="tag-list-container" @addTag="addTag"></TagListContainer>
@@ -41,7 +41,18 @@ export default defineComponent( {
     },
     keydown(){
 
-    }
+    },
+    dragstart(tagName: string){
+      const dragItem = {
+        kind: 'tag',
+        object: tagName,
+      }
+
+      store.dispatch('setDragItem', dragItem)
+    },
+    dragend(){
+      store.dispatch('setDragItem', null)
+    },
   }
 })
 </script>
@@ -103,7 +114,7 @@ export default defineComponent( {
     white-space: nowrap;
   }
   span:hover{
-    background-color: var(--red);
+    filter: var(--hover);
   }
 }
 

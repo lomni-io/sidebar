@@ -1,6 +1,6 @@
 import {ActionContext, createStore} from 'vuex'
 import {DragItem} from "@/store/dragItem";
-import {createRenderData, enrichFrames, GroupFrameData, Tab, TabGroup, WebFrameData} from "@/store/renderData";
+import {createRenderData, enrichFrames, Tab, TabGroup, WebFrameData} from "@/store/renderData";
 
 // import md5 from "md5";
 
@@ -8,7 +8,7 @@ import {createRenderData, enrichFrames, GroupFrameData, Tab, TabGroup, WebFrameD
 // define your typings for the store state
 export interface State {
   storage: any
-  frames: (GroupFrameData|WebFrameData)[]
+  frames: WebFrameData[]
   tabs:   Tab[]
   tabGroups: TabGroup[]
   clipboard: string|null
@@ -124,8 +124,8 @@ export const store = createStore<State>({
     SET_FRAME(state, frame:WebFrameData) {
       frame.updatedAt = Date.now()
 
-      const frameIdx = state.frames.findIndex((x:GroupFrameData|WebFrameData) => {
-        return (<WebFrameData>x).url === frame.url
+      const frameIdx = state.frames.findIndex((x:WebFrameData) => {
+        return x.url === frame.url
       })
       if (~frameIdx){
         // has frame
@@ -177,7 +177,7 @@ export const store = createStore<State>({
     upsertFrame(context, frame: WebFrameData){
       context.commit('SET_FRAME', frame)
     },
-    setFrames(context, frames: GroupFrameData|WebFrameData){
+    setFrames(context, frames: WebFrameData){
       context.commit('SET_FRAMES', frames)
     },
 

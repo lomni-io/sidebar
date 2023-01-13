@@ -42,14 +42,6 @@ export interface Window {
     tabs: (GroupFrameRender|WebFrameRender)[]
 }
 
-export interface GroupFrameData {
-    title:  string
-    color: string
-    frames: string[] // only URL
-    tags: string[]
-    updatedAt: number
-}
-
 export interface WebFrameData{
     url:   string
     title: string
@@ -86,7 +78,7 @@ export interface WebFrameRender {
     kind: string
 }
 
-export function createRenderData(framesData: (GroupFrameData|WebFrameData)[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
+export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
     const enriched = enrichFrames(framesData, tabs)
     return {
         search: searchInput,
@@ -193,13 +185,11 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered
     return windows
 }
 
-export function enrichFrames(framesData: (GroupFrameData|WebFrameData)[], tabs: Tab[] = []): (GroupFrameRender|WebFrameRender)[]{
+export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebFrameRender[]{
 
     if (framesData.length === 0){
         return []
     }
-
-    const finalGroupFrames: GroupFrameRender[] = []
     const finalWebFrames: WebFrameRender[] = []
 
     const tags = framesData.map(frame => frame.tags).reduce((acc, val) => {
@@ -239,31 +229,7 @@ export function enrichFrames(framesData: (GroupFrameData|WebFrameData)[], tabs: 
         frame.tags = frame.tags.sort((x,y) => (tagsCard.get(x)||0) < (tagsCard.get(y)||0) ? 1 : -1)
     })
 
-    framesData.forEach(frame => {
-        const isGroupFrame = !!(<GroupFrameData>frame).color
-        if (isGroupFrame){
-            const groupFrame = (<GroupFrameData>frame)
-
-            finalGroupFrames.push({
-                id: -1,
-                collapsed: false,
-                title: groupFrame.title,
-                color: groupFrame.color,
-                preProcessedTags: ['@group'],
-                tags: frame.tags,
-                kind: 'group',
-                frames: mountWebFrames(groupFrame.frames, finalWebFrames)
-            })
-        }
-
-        frame.tags = frame.tags.sort((x,y) => (tagsCard.get(x)||0) < (tagsCard.get(y)||0) ? 1 : -1)
-    })
-
-    const finalFrames: (GroupFrameRender|WebFrameRender)[] = []
-    finalFrames.push(...finalWebFrames)
-    finalFrames.push(...finalGroupFrames)
-
-    return finalFrames
+    return finalWebFrames
 }
 
 export function mountWebFrames(urls:string[], webFrames: WebFrameRender[]): WebFrameRender[]{

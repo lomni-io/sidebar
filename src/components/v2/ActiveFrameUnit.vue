@@ -26,7 +26,7 @@
       </div>
       <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
       <div class="tags">
-        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags"></TagContainer>
+        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag"></TagContainer>
       </div>
     </div>
   </div>
@@ -38,6 +38,7 @@ import {defineComponent} from "vue";
 import TagContainer from "@/components/v2/TagContainer.vue";
 import {store} from "@/store";
 import {DragItem} from "@/store/dragItem";
+import {WebFrameRender} from "@/store/renderData";
 
 export default defineComponent( {
   name: "ActiveFrameUnit",
@@ -121,6 +122,11 @@ export default defineComponent( {
         // @ts-ignore
         this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url});
       }
+    },
+    addTag(tag: string){
+      const newFrame = JSON.parse(JSON.stringify(this.frame)) as WebFrameRender
+      newFrame.tags.push(tag)
+      store.dispatch('upsertFrame', newFrame)
     }
   }
 })

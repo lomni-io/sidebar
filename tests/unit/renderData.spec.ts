@@ -1,7 +1,6 @@
 import {
     createTags, createWindows,
     enrichFrames, filterFramesBySelection, framesFiltered, framesSort, generateTagCardinality,
-    GroupFrameData,
     GroupFrameRender,
     WebFrameData,
     WebFrameRender
@@ -256,14 +255,6 @@ describe('enrichFrames', () => {
                 tags: ['#ski2023'],
                 updatedAt: 1,
             },
-            {
-                id: 12,
-                title: '123',
-                color: 'red',
-                frames: ['https://test2.ski.com'],
-                tags: ['#myGroup'],
-                updatedAt: 1,
-            },
         ]
         const expected = [
             {
@@ -321,14 +312,6 @@ describe('enrichFrames', () => {
                 tags: [],
                 updatedAt: 1,
             },
-            {
-                id: 12,
-                title: '123',
-                color: 'red',
-                frames: ['https://test2.ski.com/nops'],
-                tags: [],
-                updatedAt: 1,
-            },
         ]
         const expected = [
             {
@@ -347,21 +330,11 @@ describe('enrichFrames', () => {
                 isSelected: false,
                 tags: [],
             },
-            {
-                id: -1,
-                title: '123',
-                collapsed: false,
-                color: 'red',
-                frames: [],
-                tags: [],
-                preProcessedTags: ['@group'],
-                kind: 'group',
-            },
         ]
         expect(enrichFrames(frames)).toStrictEqual(expected)
     })
     test('test empty frames', () => {
-        const frames: (GroupFrameData|WebFrameData)[] = []
+        const frames: WebFrameData[] = []
         const expected: (GroupFrameRender|WebFrameRender)[] = []
         expect(enrichFrames(frames)).toStrictEqual(expected)
     })

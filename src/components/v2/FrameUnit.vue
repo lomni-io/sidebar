@@ -233,9 +233,14 @@ export default defineComponent( {
 
 }
 
+
 .frame-title{
+  display: inline-block;
+  max-width: 100%;
   text-align: left;
+  margin: 0;
 }
+
 
 h1{
   font-size: 1.1em;

@@ -37,7 +37,7 @@ export class ChromePort {
 
     }
 
-    postMessage(msg: any){
+    async postMessage(msg: any){
         this.port.postMessage(msg);
     }
 }

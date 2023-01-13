@@ -96,11 +96,11 @@ export const store = createStore<State>({
     SET_DROPER_ID(state, id){
       setTimeout(function (){
         if (state.dragItem && state.dragItem.lastUpdate){
-          if (Date.now() - 80 > state.dragItem.lastUpdate){
+          if (Date.now() - 200 > state.dragItem.lastUpdate){
             state.dragItem.dropperId = null
           }
         }
-      }, 100)
+      }, 300)
       if (state.dragItem){
         state.dragItem.dropperId = id
         state.dragItem.lastUpdate = Date.now()

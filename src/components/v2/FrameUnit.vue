@@ -1,4 +1,6 @@
 <template>
+  <div class="drop-container" v-if="dragItem && dragItem.kind === 'frame' && dragItem.dropperId === frameId" @dragover="dragover"></div>
+
   <div class="frame-info-container" draggable="true" @dragleave="dragleave" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
     <div class="drop-area" :class="{'drag-over': dragItem && dragItem.kind === 'frame' && dragItem.dropperId === frameId}" v-if="dragItem && dragItem.kind === 'frame' && dragItem.draggerId !== frameId" @dragover="dragover"></div>
     <div class="frame-info">
@@ -239,12 +241,11 @@ h1:hover{
   position: absolute;
   height: 100%;
   width: 100%;
+}
 
-  &.drag-over{
-    opacity: 0.2;
-    background-color: var(--blue);
-    filter: var(--hover);
-  }
+.drop-container{
+  width: 100%;
+  height: 80px;
 }
 
 </style>

@@ -16,6 +16,7 @@ export interface Tag {
 
 export interface Tab{
     id: string
+    index: number
     url: string
     active: boolean,
     title: string,
@@ -70,6 +71,9 @@ export interface GroupFrameRender {
 
 export interface WebFrameRender {
     id: string
+    windowId: number
+    groupId: number
+    index: number
     url: string
     favIconUrl: string
     title: string
@@ -215,6 +219,9 @@ export function enrichFrames(framesData: (GroupFrameData|WebFrameData)[], tabs: 
 
             finalWebFrames.push({
                 id: tab ? tab.id : '',
+                index: tab ? tab.index : -1,
+                groupId: tab ? tab.groupId : -1,
+                windowId: tab ? tab.windowId : -1,
                 favIconUrl: webFrame.favIconUrl,
                 title: webFrame.title,
                 preProcessedTags: processedTags,
@@ -277,6 +284,9 @@ export function mountWebFrame(tab:Tab, webFrames: (GroupFrameRender|WebFrameRend
     }
     return {
         id: tab.id,
+        windowId: tab ? tab.windowId : -1,
+        groupId: tab ? tab.groupId : -1,
+        index: tab ? tab.index : -1,
         url: tab.url,
         favIconUrl: tab.favIconUrl,
         title: tab.title,

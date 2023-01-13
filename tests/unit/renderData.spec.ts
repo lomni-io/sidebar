@@ -38,6 +38,9 @@ describe('enrichFrames', () => {
                 title: 'a',
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',
+                groupId: -1,
+                index: -1,
+                windowId: -1,
                 id: '',
                 kind: 'web',
                 domain: 'test2.ski.com',
@@ -51,6 +54,9 @@ describe('enrichFrames', () => {
                 title: 'a',
                 id: '',
                 url: 'https://test.ski.com/abc',
+                groupId: -1,
+                index: -1,
+                windowId: -1,
                 favIconUrl: 'a',
                 kind: 'web',
                 domain: 'test.ski.com',
@@ -63,6 +69,9 @@ describe('enrichFrames', () => {
             {
                 title: 'a',
                 id: '',
+                groupId: -1,
+                index: -1,
+                windowId: -1,
                 url: 'https://test2.ski.com/abc2',
                 favIconUrl: 'a',
                 kind: 'web',
@@ -97,6 +106,7 @@ describe('enrichFrames', () => {
         const activeTabs = [
             {
                 id: '12',
+                index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
                 active: false,
@@ -111,6 +121,9 @@ describe('enrichFrames', () => {
         const expected = [
             {
                 title: 'a',
+                groupId: -1,
+                index: -1,
+                windowId: -1,
                 id: '',
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',
@@ -124,6 +137,9 @@ describe('enrichFrames', () => {
             },
             {
                 title: 'a',
+                groupId: -1,
+                index: 1,
+                windowId: 12,
                 id: '12',
                 url: 'https://test.ski.com/abc',
                 favIconUrl: 'a',
@@ -159,6 +175,7 @@ describe('enrichFrames', () => {
         const activeTabs = [
             {
                 id: '1',
+                index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
                 active: false,
@@ -170,6 +187,7 @@ describe('enrichFrames', () => {
             },
             {
                 id: '2',
+                index: 2,
                 title: 'newHere',
                 url: 'https://test.ski.com/newHere',
                 active: false,
@@ -181,6 +199,7 @@ describe('enrichFrames', () => {
             },
             {
                 id: '4',
+                index: 3,
                 title: 'not show this one',
                 url: '',
                 active: false,
@@ -195,6 +214,9 @@ describe('enrichFrames', () => {
         const expected = [
             {
                 title: 'a',
+                groupId: -1,
+                index: -1,
+                windowId: -1,
                 id: '',
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',
@@ -208,6 +230,9 @@ describe('enrichFrames', () => {
             },
             {
                 title: 'a',
+                groupId: -1,
+                index: 1,
+                windowId: 12,
                 id: '1',
                 url: 'https://test.ski.com/abc',
                 favIconUrl: 'a',
@@ -243,6 +268,9 @@ describe('enrichFrames', () => {
         const expected = [
             {
                 title: 'a',
+                groupId: -1,
+                index: -1,
+                windowId: -1,
                 id: '',
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',
@@ -263,6 +291,9 @@ describe('enrichFrames', () => {
                     {
                         title: 'a',
                         id: '',
+                        groupId: -1,
+                        index: -1,
+                        windowId: -1,
                         url: 'https://test2.ski.com',
                         favIconUrl: 'a',
                         kind: 'web',
@@ -303,6 +334,9 @@ describe('enrichFrames', () => {
             {
                 title: 'a',
                 id: '',
+                groupId: -1,
+                index: -1,
+                windowId: -1,
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',
                 kind: 'web',
@@ -339,6 +373,7 @@ describe('createWindows', () => {
         const activeTabs = [
             {
                 id: '1',
+                index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
                 active: false,
@@ -350,6 +385,7 @@ describe('createWindows', () => {
             },
             {
                 id: '2',
+                index: 2,
                 title: 'newHere',
                 url: 'https://test2.ski.com',
                 active: false,
@@ -361,6 +397,7 @@ describe('createWindows', () => {
             },
             {
                 id: '4',
+                index: 3,
                 title: 'abv',
                 url: 'https://test.ski.com/pinned',
                 active: false,
@@ -372,6 +409,7 @@ describe('createWindows', () => {
             },
             {
                 id: '4',
+                index: 4,
                 title: 'abv',
                 url: 'https://test.ski.com/otherWindow',
                 active: false,
@@ -383,6 +421,7 @@ describe('createWindows', () => {
             },
             {
                 id: '4',
+                index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/otherWindow',
                 active: false,
@@ -407,6 +446,9 @@ describe('createWindows', () => {
         const frames = [
             {
                 id: '1',
+                index: 1,
+                windowId: 1,
+                groupId: 5,
                 title: 'a',
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',
@@ -428,6 +470,9 @@ describe('createWindows', () => {
                     {
                         title: 'abv',
                         id: "4",
+                        groupId: -1,
+                        index: 3,
+                        windowId: 12,
                         url: 'https://test.ski.com/pinned',
                         domain: "test.ski.com",
                         favIconUrl: 'url favicon',
@@ -445,6 +490,9 @@ describe('createWindows', () => {
                         url: 'https://test.ski.com/abc',
                         domain: "test.ski.com",
                         id: "1",
+                        groupId: -1,
+                        index: 1,
+                        windowId: 12,
                         favIconUrl: 'url favicon',
                         isOpened: true,
                         isPinned: false,
@@ -457,6 +505,9 @@ describe('createWindows', () => {
                         title: 'a',
                         url: 'https://test2.ski.com',
                         id: "1",
+                        groupId: 5,
+                        index: 1,
+                        windowId: 1,
                         domain: "test2.ski.com",
                         favIconUrl: 'a',
                         isOpened: false,
@@ -475,6 +526,9 @@ describe('createWindows', () => {
                 tabs: [
                     {
                         title: 'abv',
+                        groupId: -1,
+                        index: 4,
+                        windowId: 13,
                         url: 'https://test.ski.com/otherWindow',
                         id: "4",
                         domain: "test.ski.com",
@@ -498,6 +552,9 @@ describe('createWindows', () => {
                             {
                                 title: 'abv',
                                 id: "4",
+                                groupId: 1,
+                                index: 1,
+                                windowId: 13,
                                 url: 'https://test.ski.com/otherWindow',
                                 domain: "test.ski.com",
                                 favIconUrl: 'url favicon',

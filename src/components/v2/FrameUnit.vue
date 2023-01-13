@@ -1,7 +1,7 @@
 <template>
-  <div class="drop-container" v-if="dragItem && dragItem.kind === 'frame' && dragItem.dropperId === frameId" @dragover="dragover"></div>
+  <div class="drop-container" v-if="dragItem && dragItem.kind === 'frame' && dragItem.dropperId === frameId" @dragover="dragover" @drop="onDrop" @dragover.prevent @dragenter.prevent ></div>
 
-  <div class="frame-info-container" draggable="true" @dragleave="dragleave" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+  <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
     <div class="drop-area" :class="{'drag-over': dragItem && dragItem.kind === 'frame' && dragItem.dropperId === frameId}" v-if="dragItem && dragItem.kind === 'frame' && dragItem.draggerId !== frameId" @dragover="dragover"></div>
     <div class="frame-info">
       <div class="frame-header">
@@ -65,8 +65,24 @@ export default defineComponent( {
         store.dispatch('setDragItem', dragItem)
       }
     },
-    dragleave(){
+    onDrop(){
+      if (this.dragItem && this.dragItem.kind === 'frame'){
+        const dragFrame = this.dragItem.object
 
+        if (dragFrame.isOpened){
+          // @ts-ignore
+          this.port.postMessage({kind: "move-tab", tab: dragFrame.id, windowId: this.frame.windowId, index: this.frame.index});
+          if (this.frame.groupId > -1){
+            // @ts-ignore
+            this.port.postMessage({kind: "group-tabs", tabs: dragFrame.id, groupId: this.frame.groupId});
+          }
+        }else{
+          // TODO maybe do this on front end with THEN
+          // @ts-ignore
+          this.port.postMessage({kind: "open-and-update", url: dragFrame.url, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
+        }
+
+      }
     },
     dragover(){
       store.dispatch('setDropperId', this.frameId)

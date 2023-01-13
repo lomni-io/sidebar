@@ -5,10 +5,12 @@
     <div class="drop-area" :class="{'drag-over': isDropArea}" v-if="isDroppable" @dragover="dragover"></div>
     <div class="frame-info">
       <div class="frame-header">
-        <div class="frame-header-left">
+        <div class="frame-header-left" v-on:click.exact="goToPage">
           <img :src="frame.favIconUrl" width="16">
-          <small>{{frame.domain}}</small>
+          <small v-if="!minimized">{{frame.domain}}</small>
+          <small v-if="minimized" :class="{'current-selected': frame.isSelected}">{{frame.title}}</small>
         </div>
+
         <div class="frame-header-right">
 
           <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
@@ -22,7 +24,7 @@
           </div>
         </div>
       </div>
-      <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</h1>
+      <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
       <div class="tags">
         <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags"></TagContainer>
       </div>
@@ -40,7 +42,7 @@ import {DragItem} from "@/store/dragItem";
 export default defineComponent( {
   name: "ActiveFrameUnit",
   components: {TagContainer},
-  props: ['frame'],
+  props: ['frame', 'minimized'],
   data() {
     return {
       frameId: Math.floor(Math.random() * 1000000000).toFixed(0)
@@ -77,11 +79,7 @@ export default defineComponent( {
 
         if (dragFrame.isOpened){
           // @ts-ignore
-          this.port.postMessage({kind: "move-tab", tab: dragFrame.id, windowId: this.frame.windowId, index: this.frame.index});
-          if (this.frame.groupId > -1){
-            // @ts-ignore
-            this.port.postMessage({kind: "group-tabs", tabs: dragFrame.id, groupId: this.frame.groupId});
-          }
+          this.port.postMessage({kind: "move-tab", tab: dragFrame.id, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
         }else{
           // @ts-ignore
           await this.port.postMessage({kind: "open-and-update", url: dragFrame.url, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
@@ -153,6 +151,7 @@ export default defineComponent( {
   justify-content: space-between;
 
   .frame-header-left{
+    cursor: pointer;
     align-content: center;
     display: flex;
     img{
@@ -165,6 +164,10 @@ export default defineComponent( {
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 60vw;
+
+      &.current-selected{
+        color: var(--pink);
+      }
     }
   }
 

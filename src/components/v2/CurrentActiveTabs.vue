@@ -2,7 +2,7 @@
   <div class="container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
 <!--      <FrameDropArea></FrameDropArea>-->
-      <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
+      <ActiveFrameUnit :frame="frame" :minimized="true"></ActiveFrameUnit>
     </div>
 
 <!--  TABS HERE  -->

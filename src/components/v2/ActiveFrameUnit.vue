@@ -6,7 +6,7 @@
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left" v-on:click.exact="goToPage">
-          <img :src="frame.favIconUrl" width="16">
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
           <small v-if="!minimized">{{frame.domain}}</small>
           <small v-if="minimized" :class="{'current-selected': frame.isSelected}">{{frame.title}}</small>
         </div>

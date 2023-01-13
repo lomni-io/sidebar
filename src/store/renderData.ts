@@ -5,7 +5,7 @@ export interface RenderData {
     search: string[]
     tags: Tag[]
     windows: Window[]
-    frames: (GroupFrameRender|WebFrameRender)[]
+    frames: WebFrameRender[]
 }
 
 export interface Tag {
@@ -61,6 +61,13 @@ export interface GroupFrameRender {
     kind: string
 }
 
+export interface SearchPinned {
+    isDefault: boolean
+    title:  string
+    color: string
+    frames: WebFrameRender[]
+}
+
 export interface WebFrameRender {
     id: string
     windowId: number
@@ -84,7 +91,7 @@ export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGro
         search: searchInput,
         tags: createTags(enriched, searchInput),
         windows: createWindows(tabs, tabGroups, enriched),
-        frames: framesFiltered(enriched, searchInput) as (GroupFrameRender|WebFrameRender)[]
+        frames: framesFiltered(enriched, searchInput) as WebFrameRender[]
     }
 }
 

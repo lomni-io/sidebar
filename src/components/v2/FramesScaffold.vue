@@ -1,10 +1,24 @@
 <template>
-  <div class="scafold-container">
+  <div class="scafold-container" v-on:focusout="goToViewMode">
     <div class="header">
-      <div class="input" v-if="!collapsed && !editMode" @click="collapse(true)" :class="color">-</div>
-      <div class="input" v-if="collapsed && !editMode" @click="collapse(false)" :class="color">+</div>
-      <label :class="color" v-if="!editMode">{{title}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
-      <div class="collapsed" v-if="collapsed" :class="color"></div>
+
+      <div class="left-header">
+        <div class="input" v-if="!collapsed && !editMode" @click="collapse(true)" :class="color">-</div>
+        <div class="input" v-if="collapsed && !editMode" @click="collapse(false)" :class="color">+</div>
+        <label :class="color" @click="goToEditMode" v-if="!editMode">{{title.length > 0 ? finalTitle : '(no name)'}} <span v-if="collapsed"> - {{countFrames}} item(s) ({{tags}})</span></label>
+        <div class="collapsed" v-if="collapsed && !editMode" :class="color"></div>
+        <div class="edit-mode-container" v-if="editMode" ref="input">
+          <div class="input edit-mode" :class="color" @click="changeColor"></div>
+          <input v-model="title" :class="color" >
+        </div>
+      </div>
+
+      <div class="right-header">
+        <div class="right-pin" v-if="tags && tags.length > 0">
+          <span><font-awesome-icon icon="thumbtack" /> pin search</span>
+        </div>
+      </div>
+
     </div>
     <div class="content" :class="color" v-if="!collapsed">
       <slot></slot>
@@ -17,18 +31,68 @@ import {defineComponent} from "vue";
 
 export default defineComponent( {
   name: "FramesScaffold",
-  props: ['title', 'color', 'countFrames'],
+  props: ['groupId', 'countFrames', 'tags'],
   data() {
     return {
+      title: 'default search',
+      color: 'grey',
       collapsed: false,
       editMode: false,
       newTitle: null,
+    }
+  },
+  computed: {
+    finalTitle(){
+      return this.title + ' ' + this.tags
     }
   },
   methods: {
     collapse(collapsed: boolean){
       this.collapsed = collapsed
     },
+    changeColor(){
+      let newColor = this.color
+      if (this.color === 'grey'){
+        newColor = 'blue'
+      }
+      if (this.color === 'blue'){
+        newColor = 'red'
+      }
+      if (this.color === 'red'){
+        newColor = 'yellow'
+      }
+      if (this.color === 'yellow'){
+        newColor = 'green'
+      }
+      if (this.color === 'green'){
+        newColor = 'pink'
+      }
+      if (this.color === 'pink'){
+        newColor = 'purple'
+      }
+      if (this.color === 'purple'){
+        newColor = 'cyan'
+      }
+      if (this.color === 'cyan'){
+        newColor = 'orange'
+      }
+      if (this.color === 'orange'){
+        newColor = 'grey'
+      }
+      this.color = newColor
+    },
+    goToViewMode(){
+      this.editMode = false
+    },
+    goToEditMode(){
+      this.editMode = true
+
+      this.$nextTick(() => {
+        const html = this.$refs.input as HTMLInputElement
+        html.focus()
+      });
+
+    }
   }
 })
 
@@ -76,7 +140,20 @@ export default defineComponent( {
   display: flex;
   align-items: center;
   font-size: 0.7em;
+  justify-content: space-between;
 
+  .left-header{
+    display: flex;
+  }
+  .right-header{
+    display: flex;
+
+    .right-pin{
+      cursor: pointer;
+      color: var(--blue);
+      margin-right: 5px;
+    }
+  }
 }
 
 .content{

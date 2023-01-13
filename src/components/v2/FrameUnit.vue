@@ -3,7 +3,7 @@
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
-          <img :src="frame.favIconUrl" width="16">
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
           <small>{{frame.domain}}</small>
         </div>
         <div class="frame-header-right">

@@ -3,7 +3,7 @@
     <SearchBar :render-data="renderData"></SearchBar>
   </TabContainer>
   <TabContainer title="frames" :default-activation="true">
-    <FramesContainer :frames="renderData.frames"></FramesContainer>
+    <FramesContainer :render-data="renderData"></FramesContainer>
   </TabContainer>
 </template>
 

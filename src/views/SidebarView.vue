@@ -4,11 +4,12 @@
     <ul>
       <li :class="{'active': this.selected === 'tabs'}" @click="select('tabs')">Tabs</li>
       <li :class="{'active': this.selected === 'frames'}" @click="select('frames')">Frames</li>
-      <li>Sync</li>
+      <li :class="{'active': this.selected === 'sync'}" @click="select('sync')">Sync</li>
     </ul>
 
     <TabsView v-if="renderData && selected === 'tabs'" :render-data="renderData"></TabsView>
     <FramesView v-if="renderData && selected === 'frames'" :render-data="renderData"></FramesView>
+    <SyncView v-if="selected === 'sync'"></SyncView>
 
   </div>
 
@@ -23,11 +24,12 @@ import TabsView from "@/views/TabsView.vue";
 import FramesView from "@/views/FramesView.vue";
 import PluginInstallView from "@/views/PluginInstallView.vue";
 import {store} from "@/store";
+import SyncView from "@/views/SyncView.vue";
 // const renderData = require('./renderData.json')
 
 export default defineComponent( {
   name: "SidebarView",
-  components: {PluginInstallView, FramesView, TabsView},
+  components: {SyncView, PluginInstallView, FramesView, TabsView},
   data() {
     return {
       selected: 'tabs',

@@ -26,7 +26,7 @@
       </div>
       <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
       <div class="tags">
-        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag"></TagContainer>
+        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @removeTag="removeTag"></TagContainer>
       </div>
     </div>
   </div>
@@ -126,6 +126,11 @@ export default defineComponent( {
     addTag(tag: string){
       const newFrame = JSON.parse(JSON.stringify(this.frame)) as WebFrameRender
       newFrame.tags.push(tag)
+      store.dispatch('upsertFrame', newFrame)
+    },
+    removeTag(tag: string){
+      const newFrame = JSON.parse(JSON.stringify(this.frame)) as WebFrameRender
+      newFrame.tags = newFrame.tags.filter(t => !t.includes(tag))
       store.dispatch('upsertFrame', newFrame)
     }
   }

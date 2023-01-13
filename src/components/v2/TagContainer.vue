@@ -1,19 +1,21 @@
 <template>
   <ul class="tags">
 
-    <li @dragover="dragover" @dragleave="dragleave" @drop="onDrop" @dragover.prevent @dragenter.prevent>
-      <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="dragItem && dragItem.kind === 'tag'" >add here</a>
+    <li @dragover="dragover" @dragleave="dragleave" @drop="onDropAdd" @dragover.prevent @dragenter.prevent>
+      <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="isAddingDroppable" >add here</a>
     </li>
 
-<!--    <li @dragover="dragover" @dragleave="dragleave" @drop="onDrop" @dragover.prevent @dragenter.prevent>-->
-<!--      <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="dragItem && dragItem.kind === 'tag'" >remove</a>-->
-<!--    </li>-->
+    <li v-if="isRemoveDroppable" @dragover="dragover" @dragleave="dragleave" @drop="onDropRemove" @dragover.prevent @dragenter.prevent>
+      <a class="tag remove" :class="{'drag-over': isDraggingOver}">
+        <font-awesome-icon icon="trash" />
+      </a>
+    </li>
 
     <li v-for="(tag, index) in fixedTags" :key="index">
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
     </li>
     <li v-for="(tag, index) in tags" :key="index">
-      <a class="tag" @click="clickedTag(tag)" id="tag" :class="color" draggable="true">{{tag}}</a>
+      <a class="tag" @click="clickedTag(tag)" id="tag" :class="color" draggable="true" @drag="dragstart(tag)" @dragend="dragend">{{tag}}</a>
     </li>
   </ul>
 </template>
@@ -27,15 +29,40 @@ export default {
   props: ['tags', 'fixedTags', 'color'],
   data() {
     return {
-      isDraggingOver: false
+      isDraggingOver: false,
+      id: Math.floor(Math.random() * 1000000000).toFixed(0)
     }
   },
   computed: {
     dragItem(){
       return store.getters.dragItem
+    },
+    isRemoveDroppable(){
+      if (this.dragItem){
+        return this.dragItem.draggerId === this.id
+      }
+      return false
+    },
+    isAddingDroppable(){
+      if (this.dragItem && this.dragItem.kind === 'tag'){
+        return this.dragItem.draggerId !== this.id
+      }
+      return false
     }
   },
   methods: {
+    dragstart(tagName){
+      const dragItem = {
+        kind: 'tag',
+        draggerId: this.id,
+        object: tagName,
+      }
+
+      store.dispatch('setDragItem', dragItem)
+    },
+    dragend(){
+      store.dispatch('setDragItem', null)
+    },
     clickedTag(tag){
       this.$emit('clickedTag', tag)
     },
@@ -45,9 +72,14 @@ export default {
     dragleave(){
       this.isDraggingOver = false
     },
-    onDrop(){
+    onDropAdd(){
       if (this.dragItem && this.dragItem.kind === 'tag'){
         this.$emit('addTag', this.dragItem.object)
+      }
+    },
+    onDropRemove(){
+      if (this.dragItem && this.dragItem.kind === 'tag'){
+        this.$emit('removeTag', this.dragItem.object)
       }
     }
   }
@@ -85,6 +117,12 @@ export default {
 
   &.new{
     background-color: transparent;
+    border: 1px dashed var(--background_tag);
+  }
+
+  &.remove{
+    background-color: transparent;
+    color: var(--red);
     border: 1px dashed var(--background_tag);
   }
 

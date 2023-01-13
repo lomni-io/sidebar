@@ -21,7 +21,7 @@
 <!--            <FrameDropArea></FrameDropArea>-->
             <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
           </div>
-          <TagContainer :tags="tab.tags" :color="tab.color"></TagContainer>
+<!--          <TagContainer :tags="tab.tags" :color="tab.color"></TagContainer>-->
         </ScafoldBar>
       </div>
 
@@ -36,13 +36,12 @@
 import {defineComponent} from "vue";
 import ScafoldBar from "@/components/v2/TabGroupScaffold.vue";
 import NewGroupContainer from "@/components/v2/NewGroupContainer.vue";
-import TagContainer from "@/components/v2/TagContainer.vue";
 import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
   props: ['window'],
-  components: {ActiveFrameUnit, TagContainer, NewGroupContainer, ScafoldBar}
+  components: {ActiveFrameUnit, NewGroupContainer, ScafoldBar}
 })
 
 </script>

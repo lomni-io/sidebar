@@ -3,7 +3,7 @@
     <div class="header">
       <div class="input" v-if="!collapsed && !editMode" @click="collapse(true)" :class="color">-</div>
       <div class="input" v-if="collapsed && !editMode" @click="collapse(false)" :class="color">+</div>
-      <label :class="color" @click="goToEditMode" v-if="!editMode">{{title}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
+      <label :class="color" @click="goToEditMode" v-if="!editMode">{{title.length > 0 ? title : '(no name)'}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
       <div class="collapsed" v-if="collapsed && !editMode" :class="color"></div>
       <div class="edit-mode-container" v-if="editMode" ref="input">
         <div class="input edit-mode" :class="color" @click="changeColor"></div>

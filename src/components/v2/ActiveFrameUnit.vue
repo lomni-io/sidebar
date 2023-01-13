@@ -1,5 +1,8 @@
 <template>
+  <div class="drop-container" v-if="isDropArea" @dragover="dragover" @drop="onDrop" @dragover.prevent @dragenter.prevent ></div>
+
   <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+    <div class="drop-area" :class="{'drag-over': isDropArea}" v-if="isDroppable" @dragover="dragover"></div>
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
@@ -35,7 +38,7 @@ import {store} from "@/store";
 import {DragItem} from "@/store/dragItem";
 
 export default defineComponent( {
-  name: "FrameUnit",
+  name: "ActiveFrameUnit",
   components: {TagContainer},
   props: ['frame'],
   data() {
@@ -47,6 +50,12 @@ export default defineComponent( {
     dragItem(){
       return store.getters.dragItem
     },
+    isDropArea(){
+      return this.dragItem && this.dragItem.kind === 'frame' && this.dragItem.dropperId === this.frameId
+    },
+    isDroppable(){
+      return this.dragItem && this.dragItem.kind === 'frame' && this.dragItem.dropperId !== this.frameId
+    }
   },
   methods: {
     dragstart(e: any){

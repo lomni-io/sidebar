@@ -1,17 +1,30 @@
 <template>
-  <div class="new-group" v-if="dragItem && dragItem.kind === 'frame'">drop frame here to create group</div>
+  <TabGroupScaffold title="new group" v-if="dragItem && dragItem.kind === 'frame'">
+    <div class="new-group" @drop="onDrop" @dragover.prevent @dragenter.prevent>drop frame here to create group</div>
+  </TabGroupScaffold>
 </template>
 
 <script>
 import {store} from "@/store";
+import TabGroupScaffold from "@/components/v2/TabGroupScaffold";
 
 export default {
   name: "NewGroupContainer",
+  components: {TabGroupScaffold},
   computed: {
     dragItem(){
       return store.getters.dragItem
     }
   },
+  methods: {
+    async onDrop(){
+      if (this.dragItem && this.dragItem.kind === 'frame'){
+        const dragFrame = this.dragItem.object
+        // @ts-ignore
+        this.port.postMessage({kind: "group-tabs", tabs: dragFrame.id});
+      }
+    },
+  }
 }
 </script>
 

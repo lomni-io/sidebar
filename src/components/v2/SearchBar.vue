@@ -90,6 +90,7 @@ export default defineComponent( {
   background-color: var(--background_input);
   color: var(--text_color);
   font-weight: bold;
+  padding: 4px;
 
   span{
     margin-left: 5px;
@@ -114,7 +115,8 @@ input{
   border-top-right-radius: 3px;
   outline:none;
   color: var(--text_color);
-  font-size: 0.8em;
+  padding: 5px;
+  font-size: 0.9em;
   width: 98%;
 }
 

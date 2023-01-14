@@ -25,7 +25,7 @@ import {store} from "@/store";
 
 export default {
   name: "TagContainer",
-  emits: ['addTag'],
+  emits: ['addTag', 'clickedTag'],
   props: ['tags', 'fixedTags', 'color'],
   data() {
     return {

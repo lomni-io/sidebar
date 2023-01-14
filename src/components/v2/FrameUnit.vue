@@ -21,7 +21,7 @@
       </div>
       <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</h1>
       <div class="tags">
-        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags"></TagContainer>
+        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @clickedTag="clickedTag"></TagContainer>
       </div>
     </div>
   </div>
@@ -84,6 +84,9 @@ export default defineComponent( {
       frame.style.opacity = '1'
 
       store.dispatch('setDragItem', null)
+    },
+    clickedTag(tag: string){
+      store.dispatch('addSearchItem', tag)
     },
     pinTab(){
       if (this.frame.isOpened){

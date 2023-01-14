@@ -120,6 +120,7 @@ export interface WebTaggeable {
     preProcessedTags: string[]
 }
 
+// TODO add opened TABS to be listed here
 export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedSearchData[] = [], currentSearch: string[] = []): PinnedSearchRender[]{
     let framesCopy = JSON.parse(JSON.stringify(frames)) as WebFrameRender[]
     const result: PinnedSearchRender[] = []

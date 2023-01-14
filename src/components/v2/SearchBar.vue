@@ -39,8 +39,12 @@ export default defineComponent( {
       this.searchInput = ''
       store.dispatch('addSearchItem', tag)
     },
-    keydown(){
-
+    keydown(e: any){
+      if (e.code === 'Enter' && this.searchInput.length > 1) {
+        store.dispatch('addSearchItem', this.searchInput.startsWith("#") ? this.searchInput : '#' + this.searchInput)
+        this.searchInput = ''
+        e.preventDefault()
+      }
     },
     dragstart(tagName: string){
       const dragItem = {
@@ -125,7 +129,7 @@ input{
   border-top-right-radius: 3px;
   outline:none;
   color: var(--text_color);
-  padding-top: 2px;
+  padding-top: 7px;
   padding-bottom: 2px;
   font-size: 0.9em;
   width: 98%;

@@ -104,7 +104,6 @@ export default defineComponent( {
   padding: 4px;
 
   span{
-    margin-left: 5px;
     padding-left: 3px;
     padding-right: 3px;
     font-size: 0.8em;
@@ -126,7 +125,8 @@ input{
   border-top-right-radius: 3px;
   outline:none;
   color: var(--text_color);
-  padding: 5px;
+  padding-top: 2px;
+  padding-bottom: 2px;
   font-size: 0.9em;
   width: 98%;
 }

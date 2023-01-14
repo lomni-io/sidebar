@@ -3,13 +3,13 @@
     <div class="header">
 
       <div class="left-header">
-        <div class="input" v-if="!collapsed && !editMode" @click="collapse(true)" :class="color">-</div>
-        <div class="input" v-if="collapsed && !editMode" @click="collapse(false)" :class="color">+</div>
-        <label :class="color" @click="goToEditMode" v-if="!editMode">{{title.length > 0 ? finalTitle : '(no name)'}} <span v-if="collapsed"> - {{countFrames}} item(s) ({{tags}})</span></label>
-        <div class="collapsed" v-if="collapsed && !editMode" :class="color"></div>
+        <div class="input" v-if="!finalCollapsed && !editMode" @click="collapse(true)" :class="color">-</div>
+        <div class="input" v-if="finalCollapsed && !editMode" @click="collapse(false)" :class="color">+</div>
+        <label :class="color" @click="goToEditMode" v-if="!editMode">{{title.length > 0 ? finalTitle : '(no name)'}} <span v-if="finalCollapsed"> - {{countFrames}} item(s)</span></label>
+        <div class="collapsed" v-if="finalCollapsed && !editMode" :class="color"></div>
         <div class="edit-mode-container" v-if="editMode" ref="input">
           <div class="input edit-mode" :class="color" @click="changeColor"></div>
-          <input v-model="title" :class="color" >
+          <input v-model="newTitle" :class="color" >
         </div>
       </div>
 
@@ -20,7 +20,7 @@
       </div>
 
     </div>
-    <div class="content" :class="color" v-if="!collapsed">
+    <div class="content" :class="color" v-if="!finalCollapsed">
       <slot></slot>
     </div>
   </div>
@@ -31,24 +31,29 @@ import {defineComponent} from "vue";
 
 export default defineComponent( {
   name: "FramesScaffold",
-  props: ['groupId', 'countFrames', 'tags'],
+  props: ['groupId', 'countFrames', 'tags', 'title', 'collapsed'],
   data() {
     return {
-      title: 'default search',
       color: 'grey',
-      collapsed: false,
+      forceCollapse: null as boolean|null,
       editMode: false,
       newTitle: null,
     }
   },
   computed: {
+    finalCollapsed(){
+      return this.forceCollapse !== null ? this.forceCollapse : this.collapsed
+    },
     finalTitle(){
-      return this.title + ' ' + this.tags
+      if (this.tags.length > 0){
+        return this.title + ' ' + this.tags
+      }
+      return  this.title
     }
   },
   methods: {
     collapse(collapsed: boolean){
-      this.collapsed = collapsed
+      this.forceCollapse = collapsed
     },
     changeColor(){
       let newColor = this.color

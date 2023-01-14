@@ -1,6 +1,6 @@
 import {ActionContext, createStore} from 'vuex'
 import {DragItem} from "@/store/dragItem";
-import {createRenderData, enrichFrames, Tab, TabGroup, WebFrameData} from "@/store/renderData";
+import {createRenderData, enrichFrames, PinnedSearchData, Tab, TabGroup, WebFrameData} from "@/store/renderData";
 
 // import md5 from "md5";
 
@@ -9,6 +9,7 @@ import {createRenderData, enrichFrames, Tab, TabGroup, WebFrameData} from "@/sto
 export interface State {
   storage: any
   frames: WebFrameData[]
+  pinnedSearchs: PinnedSearchData[]
   tabs:   Tab[]
   tabGroups: TabGroup[]
   clipboard: string|null
@@ -28,6 +29,7 @@ export const store = createStore<State>({
         gistID: ''
       },
 
+      pinnedSearchs: [],
       // to sync data
       frames: [],
 
@@ -67,7 +69,7 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search)
+      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.pinnedSearchs)
     },
 
     // add preProcessedTags

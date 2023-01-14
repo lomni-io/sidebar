@@ -4,11 +4,14 @@
 <!--  TODO: ADD a Scafold to PIN a search..   -->
 <!--  example of Groups, but in this case will PIN a search to use later  -->
 
-    <FramesScaffold :count-frames="renderData.frames.length" :tags="renderData.search">
-      <div v-for="(frame, index) in renderData.frames" :key="index">
-        <FrameUnit :frame="frame"></FrameUnit>
-      </div>
-    </FramesScaffold>
+    <div v-for="(pinned, index) in renderData.searchPinneds" :key="index">
+      <FramesScaffold :count-frames="renderData.frames.length" :tags="pinned.tags.concat(pinned.preProcessedTags)" :title="pinned.title" :collapsed="pinned.collapsed">
+        <div v-for="(frame, idx) in pinned.frames" :key="idx">
+          <FrameUnit :frame="frame"></FrameUnit>
+        </div>
+        <TagContainer :tags="pinned.tags" :fixed-tags="pinned.preProcessedTags"></TagContainer>
+      </FramesScaffold>
+    </div>
 
   </div>
 </template>
@@ -17,10 +20,11 @@
 import {defineComponent} from "vue";
 import FrameUnit from "@/components/v2/FrameUnit.vue";
 import FramesScaffold from "@/components/v2/FramesScaffold.vue";
+import TagContainer from "@/components/v2/TagContainer.vue";
 
 export default defineComponent( {
   name: "FramesContainer",
-  components: {FramesScaffold, FrameUnit},
+  components: {TagContainer, FramesScaffold, FrameUnit},
   props: ['renderData']
 })
 

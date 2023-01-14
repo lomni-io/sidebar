@@ -6,6 +6,7 @@ export interface RenderData {
     tags: Tag[]
     windows: Window[]
     frames: WebFrameRender[]
+    searchPinneds: PinnedSearchRender[]
 }
 
 export interface Tag {
@@ -61,10 +62,20 @@ export interface GroupFrameRender {
     kind: string
 }
 
-export interface SearchPinned {
-    isDefault: boolean
+export interface PinnedSearchData {
     title:  string
     color: string
+    tags: string[]
+    preProcessedTags: string[]
+}
+
+export interface PinnedSearchRender {
+    isDefault: boolean
+    title:  string
+    collapsed: boolean
+    color: string
+    tags: string[]
+    preProcessedTags: string[]
     frames: WebFrameRender[]
 }
 
@@ -85,19 +96,81 @@ export interface WebFrameRender {
     kind: string
 }
 
-export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
+export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], pinnedSearchs: PinnedSearchData[]): RenderData{
     const enriched = enrichFrames(framesData, tabs)
+
     return {
         search: searchInput,
         tags: createTags(enriched, searchInput),
         windows: createWindows(tabs, tabGroups, enriched),
-        frames: framesFiltered(enriched, searchInput) as WebFrameRender[]
+        frames: framesFiltered(enriched, searchInput) as WebFrameRender[],
+        searchPinneds: makePinnedSearch(enriched, pinnedSearchs, searchInput)
     }
 }
 
 export interface Taggeable {
     tags: string[]
     preProcessedTags: string[]
+}
+
+
+export interface WebTaggeable {
+    url: string
+    tags: string[]
+    preProcessedTags: string[]
+}
+
+export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedSearchData[] = [], currentSearch: string[] = []): PinnedSearchRender[]{
+    let framesCopy = JSON.parse(JSON.stringify(frames)) as WebFrameRender[]
+    const result: PinnedSearchRender[] = []
+
+    // get current search
+    if (currentSearch.length > 0){
+        const framesFiltered = filterFramesBySelection(framesCopy, currentSearch) as WebFrameRender[]
+        if (framesFiltered.length > 0){
+            result.push({
+                isDefault: true,
+                tags: currentSearch.filter(t => t.startsWith('#')),
+                preProcessedTags: currentSearch.filter(t => t.startsWith('@')),
+                title:  'default',
+                color: 'grey',
+                collapsed: false,
+                frames: framesFiltered
+            })
+            framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
+        }
+    }
+
+
+    // get pinneds
+    searchs.forEach(pinned => {
+        const framesFiltered = filterFramesBySelection(framesCopy, pinned.tags) as WebFrameRender[]
+        result.push({
+            isDefault: false,
+            tags: pinned.tags.filter(t => t.startsWith('#')),
+            preProcessedTags: pinned.preProcessedTags.filter(t => t.startsWith('@')),
+            collapsed: false,
+            title:  pinned.title,
+            color: pinned.color,
+            frames: framesFiltered
+        })
+        framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
+    })
+
+    // get remain
+    if (framesCopy.length > 0){
+        result.push({
+            isDefault: true,
+            tags: [],
+            preProcessedTags: [],
+            title:  'default',
+            color: 'grey',
+            collapsed: currentSearch.length > 0 || searchs.length > 0,
+            frames: framesCopy
+        })
+    }
+
+    return result
 }
 
 export function createTags(framesData: Taggeable[], searchTags: string[] = []): Tag[]{

@@ -1,5 +1,8 @@
 
 export const extractRootDomain = (url:string) => {
+    if (url === ''){
+        return 'empty.com'
+    }
     if (url.startsWith('chrome://')) {
         return 'chrome.google'
     }

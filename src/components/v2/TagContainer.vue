@@ -105,6 +105,7 @@ export default {
   float: left;
   cursor: pointer;
   margin-right: 5px;
+  white-space: nowrap;
 }
 
 .tag {

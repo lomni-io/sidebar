@@ -106,6 +106,7 @@ export default {
 
 a{
   font-size: 0.9em;
+  white-space: nowrap;
 }
 
 

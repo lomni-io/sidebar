@@ -14,8 +14,11 @@
       </div>
 
       <div class="right-header">
+        <div class="right-open" v-if="tags && tags.length > 0">
+          <span><font-awesome-icon icon="tv" /> open</span>
+        </div>
         <div class="right-pin" v-if="tags && tags.length > 0">
-          <span><font-awesome-icon icon="thumbtack" /> pin search</span>
+          <span><font-awesome-icon icon="floppy-disk" /> save</span>
         </div>
       </div>
 
@@ -154,6 +157,11 @@ export default defineComponent( {
     display: flex;
 
     .right-pin{
+      cursor: pointer;
+      color: var(--yellow);
+      margin-right: 5px;
+    }
+    .right-open{
       cursor: pointer;
       color: var(--blue);
       margin-right: 5px;

@@ -54,7 +54,6 @@ input {
 
 .tab {
   width: 100%;
-  overflow: hidden;
   &-label {
     display: flex;
     color: var(--text_color);
@@ -95,10 +94,11 @@ input {
 
 
 .tab-content{
+  background-color: var(--background_main);
   overflow-y: auto;
   padding: 0;
   border-bottom: solid var(--background_input_border) 1px;
-  resize: vertical;
+  //resize: vertical;
   //height: calc(100vh - 3.6em - 21px);
   //max-height: 25vh;
   //min-height: 40px;

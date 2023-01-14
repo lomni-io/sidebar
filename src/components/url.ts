@@ -1,5 +1,8 @@
 
 export const extractRootDomain = (url:string) => {
+    if (url.startsWith('chrome://')) {
+        return 'chrome.google'
+    }
     let hostname = new URL(url).hostname
     hostname = hostname.replace('www.', '')
     return hostname

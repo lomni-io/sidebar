@@ -1,5 +1,5 @@
 <template>
-  <TabContainer title="search bar" :default-activation="true">
+  <TabContainer class="search" title="search bar" :default-activation="true">
     <SearchBar :render-data="renderData"></SearchBar>
   </TabContainer>
   <div v-for="(window, index) in renderData.windows" :key="index">
@@ -19,12 +19,18 @@ import CurrentTabs from "@/components/v2/CurrentActiveTabs";
 import FramesContainer from "@/components/v2/FramesContainer";
 
 export default {
-  name: "TabsView",
+  name: "ActiveAndFramesView",
   props: ['renderData'],
   components: {FramesContainer, CurrentTabs, TabContainer,SearchBar}
 }
 </script>
 
 <style scoped>
+
+.search{
+  position: sticky !important;
+  top: 0;
+  z-index: 100000;
+}
 
 </style>

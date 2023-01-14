@@ -20,7 +20,7 @@
 <script lang="ts">
 
 import {defineComponent} from "vue";
-import TabsView from "@/views/TabsView.vue";
+import TabsView from "@/views/ActiveAndFramesView.vue";
 import FramesView from "@/views/FramesView.vue";
 import PluginInstallView from "@/views/PluginInstallView.vue";
 import {store} from "@/store";

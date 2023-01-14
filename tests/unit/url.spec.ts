@@ -62,4 +62,7 @@ describe('extractRootDomain', () => {
     test('stackoverflow', () => {
         expect(extractRootDomain("https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects")).toStrictEqual("stackoverflow.com")
     })
+    test('chrome', () => {
+        expect(extractRootDomain("chrome://newtab")).toStrictEqual("chrome.google")
+    })
 })

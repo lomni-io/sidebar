@@ -14,7 +14,6 @@ import TagListContainer from "@/components/v2/TagListContainer.vue";
 import {store} from "@/store";
 import {Tag} from "@/store/renderData";
 
-// TODO STICKY only search input when scrolldown
 export default defineComponent( {
   name: "SearchBar",
   props: ['renderData'],

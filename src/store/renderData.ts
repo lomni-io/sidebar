@@ -3,6 +3,7 @@ import {FrameRender} from "@/entity/frame";
 
 export interface RenderData {
     search: string[]
+    tabs: Tab[]
     tags: Tag[]
     windows: Window[]
     frames: WebFrameRender[]
@@ -100,6 +101,7 @@ export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGro
     const enriched = enrichFrames(framesData, tabs)
 
     return {
+        tabs: tabs,
         search: searchInput,
         tags: createTags(enriched, searchInput),
         windows: createWindows(tabs, tabGroups, enriched),

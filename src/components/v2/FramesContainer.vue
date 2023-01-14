@@ -5,7 +5,7 @@
 <!--  example of Groups, but in this case will PIN a search to use later  -->
 
     <div v-for="(pinned, index) in renderData.searchPinneds" :key="index">
-      <FramesScaffold :count-frames="renderData.frames.length" :tags="pinned.tags.concat(pinned.preProcessedTags)" :title="pinned.title" :collapsed="pinned.collapsed">
+      <FramesScaffold :pinned="pinned" >
         <div v-for="(frame, idx) in pinned.frames" :key="idx">
           <FrameUnit :frame="frame"></FrameUnit>
         </div>

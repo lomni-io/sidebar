@@ -36,8 +36,9 @@ import {DragItem} from "@/store/dragItem";
 
 export default defineComponent( {
   name: "FrameUnit",
+  emits: [],
   components: {TagContainer},
-  props: ['frame'],
+  props: ['frame', 'activeTab'],
   data() {
     return {
       frameId: Math.floor(Math.random() * 1000000000).toFixed(0)
@@ -60,20 +61,6 @@ export default defineComponent( {
           object: this.frame,
         }
         store.dispatch('setDragItem', dragItem)
-      }
-    },
-    async onDrop(){
-      if (this.dragItem && this.dragItem.kind === 'frame'){
-        const dragFrame = this.dragItem.object
-
-        if (dragFrame.isOpened){
-          // @ts-ignore
-          this.port.postMessage({kind: "move-tab", tab: dragFrame.id, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
-        }else{
-          // @ts-ignore
-          await this.port.postMessage({kind: "open-and-update", url: dragFrame.url, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
-        }
-
       }
     },
     dragover(){

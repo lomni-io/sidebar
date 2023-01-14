@@ -5,7 +5,7 @@
       <div class="left-header">
         <div class="input" v-if="!finalCollapsed && !editMode" @click="collapse(true)" :class="color">-</div>
         <div class="input" v-if="finalCollapsed && !editMode" @click="collapse(false)" :class="color">+</div>
-        <label :class="color" @click="goToEditMode" v-if="!editMode">{{title.length > 0 ? finalTitle : '(no name)'}} <span v-if="finalCollapsed"> - {{countFrames}} item(s)</span></label>
+        <label :class="color" @click="goToEditMode" v-if="!editMode">{{pinned.title.length > 0 ? finalTitle : '(no name)'}} <span v-if="finalCollapsed"> - {{pinned.frames.length}} item(s)</span></label>
         <div class="collapsed" v-if="finalCollapsed && !editMode" :class="color"></div>
         <div class="edit-mode-container" v-if="editMode" ref="input">
           <div class="input edit-mode" :class="color" @click="changeColor"></div>
@@ -14,9 +14,9 @@
       </div>
 
       <div class="right-header">
-        <div class="right-open" v-if="tags && tags.length > 0">
-          <span><font-awesome-icon icon="tv" /> open</span>
-        </div>
+<!--        <div class="right-open" v-if="tags && tags.length > 0" @click="openAll">-->
+<!--          <span><font-awesome-icon icon="tv" /> open</span>-->
+<!--        </div>-->
         <div class="right-pin" v-if="tags && tags.length > 0">
           <span><font-awesome-icon icon="floppy-disk" /> save</span>
         </div>
@@ -34,7 +34,7 @@ import {defineComponent} from "vue";
 
 export default defineComponent( {
   name: "FramesScaffold",
-  props: ['groupId', 'countFrames', 'tags', 'title', 'collapsed'],
+  props: ['groupId', 'pinned'],
   data() {
     return {
       color: 'grey',
@@ -45,16 +45,22 @@ export default defineComponent( {
   },
   computed: {
     finalCollapsed(){
-      return this.forceCollapse !== null ? this.forceCollapse : this.collapsed
+      return this.forceCollapse !== null ? this.forceCollapse : this.pinned.collapsed
+    },
+    tags(){
+      return this.pinned.tags.concat(this.pinned.preProcessedTags)
     },
     finalTitle(){
       if (this.tags.length > 0){
-        return this.title + ' ' + this.tags
+        return this.pinned.title + ' ' + this.tags
       }
-      return  this.title
+      return  this.pinned.title
     }
   },
   methods: {
+    openAll(){
+
+    },
     collapse(collapsed: boolean){
       this.forceCollapse = collapsed
     },

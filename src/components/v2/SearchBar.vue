@@ -129,8 +129,8 @@ input{
   border-top-right-radius: 3px;
   outline:none;
   color: var(--text_color);
-  padding-top: 7px;
-  padding-bottom: 2px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   font-size: 0.9em;
   width: 98%;
 }

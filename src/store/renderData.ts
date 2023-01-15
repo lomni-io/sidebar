@@ -127,8 +127,12 @@ export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedSearchDa
     let framesCopy = JSON.parse(JSON.stringify(frames)) as WebFrameRender[]
     const result: PinnedSearchRender[] = []
 
+
+    // target.every(v => arr.includes(v)); USE THIS ONE
+    const hasPinnedEqSearch = searchs.some(s => s.tags.every(t => currentSearch.includes(t)))
+
     // get current search
-    if (currentSearch.length > 0){
+    if (currentSearch.length > 0 && !hasPinnedEqSearch){
         const framesFiltered = filterFramesBySelection(framesCopy, currentSearch) as WebFrameRender[]
         if (framesFiltered.length > 0){
             result.push({
@@ -157,7 +161,8 @@ export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedSearchDa
             color: pinned.color,
             frames: framesFiltered
         })
-        framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
+        // TODO: not filter here. pinned can duplicate frames to other tags
+        // framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
     })
 
     // get remain

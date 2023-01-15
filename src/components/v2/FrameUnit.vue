@@ -115,6 +115,7 @@ export default defineComponent( {
 .frame-info-container{
   padding: 5px;
   background-color: var(--background_input);
+  border: 1px solid var(--frame_border);
   border-radius: 5px;
   margin-bottom: 5px;
   position: relative;

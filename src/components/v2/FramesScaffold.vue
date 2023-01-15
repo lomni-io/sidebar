@@ -1,5 +1,5 @@
 <template>
-  <div class="scafold-container" v-on:focusout="goToViewMode">
+  <div class="scafold-container">
     <div class="header">
 
       <div class="left-header">
@@ -9,7 +9,7 @@
         <div class="collapsed" v-if="finalCollapsed && !editMode" :class="color"></div>
         <div class="edit-mode-container" v-if="editMode" ref="input">
           <div class="input edit-mode" :class="color" @click="changeColor"></div>
-          <input v-model="newTitle" :class="color" >
+          <input v-model="newTitle" :class="color">
         </div>
       </div>
 
@@ -17,8 +17,11 @@
 <!--        <div class="right-open" v-if="tags && tags.length > 0" @click="openAll">-->
 <!--          <span><font-awesome-icon icon="tv" /> open</span>-->
 <!--        </div>-->
-        <div class="right-pin" v-if="tags && tags.length > 0">
-          <span><font-awesome-icon icon="floppy-disk" /> save</span>
+        <div class="right-cancel" v-if="tags && tags.length > 0 && editMode" @click="cancel">
+          <span><font-awesome-icon icon="eye"/> cancel</span>
+        </div>
+        <div class="right-pin" v-if="tags && tags.length > 0 && editMode" @click="save">
+          <span><font-awesome-icon icon="floppy-disk"/> save</span>
         </div>
       </div>
 
@@ -31,6 +34,8 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
+import {PinnedSearchData} from "@/store/renderData";
+import {store} from "@/store";
 
 export default defineComponent( {
   name: "FramesScaffold",
@@ -40,11 +45,14 @@ export default defineComponent( {
       color: 'grey',
       forceCollapse: null as boolean|null,
       editMode: false,
-      newTitle: null,
+      newTitle: '',
     }
   },
   computed: {
     finalCollapsed(){
+      if (this.pinned.isDefault){
+        return false
+      }
       return this.forceCollapse !== null ? this.forceCollapse : this.pinned.collapsed
     },
     tags(){
@@ -58,8 +66,18 @@ export default defineComponent( {
     }
   },
   methods: {
-    openAll(){
-
+    cancel(){
+      this.editMode = false
+    },
+    save(){
+      const newPinned: PinnedSearchData = {
+        title: this.newTitle,
+        color: this.color,
+        tags: this.pinned.tags,
+        preProcessedTags: this.pinned.preProcessedTags
+      }
+      store.dispatch('upsertPinned', newPinned)
+      this.editMode = false
     },
     collapse(collapsed: boolean){
       this.forceCollapse = collapsed
@@ -94,9 +112,6 @@ export default defineComponent( {
         newColor = 'grey'
       }
       this.color = newColor
-    },
-    goToViewMode(){
-      this.editMode = false
     },
     goToEditMode(){
       this.editMode = true
@@ -162,6 +177,11 @@ export default defineComponent( {
   .right-header{
     display: flex;
 
+    .right-cancel{
+      cursor: pointer;
+      color: var(--gray_1);
+      margin-right: 5px;
+    }
     .right-pin{
       cursor: pointer;
       color: var(--yellow);

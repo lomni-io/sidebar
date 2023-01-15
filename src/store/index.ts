@@ -123,6 +123,18 @@ export const store = createStore<State>({
       state.frames = frames
       localStorage.setItem('frames', JSON.stringify(frames))
     },
+    SET_PINNED(state, pinned:PinnedSearchData){
+      const pinnedIdx = state.pinnedSearchs.findIndex((x:PinnedSearchData) => {
+        return x.title === pinned.title
+      })
+      if (~pinnedIdx){
+        // has frame
+        state.pinnedSearchs[pinnedIdx] = pinned
+      }else{
+        // new frame
+        state.pinnedSearchs.push(pinned)
+      }
+    },
     SET_FRAME(state, frame:WebFrameData) {
       frame.updatedAt = Date.now()
 
@@ -178,6 +190,9 @@ export const store = createStore<State>({
     },
     upsertFrame(context, frame: WebFrameData){
       context.commit('SET_FRAME', frame)
+    },
+    upsertPinned(context, pinned: PinnedSearchData){
+      context.commit('SET_PINNED', pinned)
     },
     setFrames(context, frames: WebFrameData){
       context.commit('SET_FRAMES', frames)

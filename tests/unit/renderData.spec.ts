@@ -995,6 +995,16 @@ describe('makePinnedSearch', () => {
                 color: 'grey',
                 frames: [
                     {
+                        url: 'https://test.ski.com/otherWindow1',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: ['#mySki'],
+                    },
+                    {
+                        url: 'https://test.ski.com/otherWindow3',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: ['#mySki'],
+                    },
+                    {
                         url: 'https://test.ski.com/otherWindow4',
                         preProcessedTags: ["@test", "@ski"],
                         tags: [],
@@ -1004,6 +1014,88 @@ describe('makePinnedSearch', () => {
         ]
 
         expect(makePinnedSearch(frames, group)).toStrictEqual(expected)
+    })
+
+    it('default and one group same as search', () => {
+        const frames = [
+            {
+                url: 'https://test.ski.com/otherWindow1',
+                preProcessedTags: ["@test", "@ski"],
+                tags: ['#mySki'],
+            },
+            {
+                url: 'https://test.ski.com/otherWindow3',
+                preProcessedTags: ["@test", "@ski"],
+                tags: ['#mySki'],
+            },
+            {
+                url: 'https://test.ski.com/otherWindow4',
+                preProcessedTags: ["@test", "@ski"],
+                tags: [],
+            },
+        ]
+
+        const group = [
+            {
+                title:  'my group',
+                color: 'red',
+                tags: ['#mySki'],
+                preProcessedTags: [],
+            }
+        ]
+
+        const search = ['#mySki']
+
+
+        const expected = [
+            {
+                isDefault: false,
+                collapsed: false,
+                title:  'my group',
+                tags: ['#mySki'],
+                preProcessedTags: [],
+                color: 'red',
+                frames: [
+                    {
+                        url: 'https://test.ski.com/otherWindow1',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: ['#mySki'],
+                    },
+                    {
+                        url: 'https://test.ski.com/otherWindow3',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: ['#mySki'],
+                    },
+                ]
+            },
+            {
+                isDefault: true,
+                collapsed: true,
+                title:  'default',
+                tags: [],
+                preProcessedTags: [],
+                color: 'grey',
+                frames: [
+                    {
+                        url: 'https://test.ski.com/otherWindow1',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: ['#mySki'],
+                    },
+                    {
+                        url: 'https://test.ski.com/otherWindow3',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: ['#mySki'],
+                    },
+                    {
+                        url: 'https://test.ski.com/otherWindow4',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: [],
+                    },
+                ]
+            }
+        ]
+
+        expect(makePinnedSearch(frames, group, search)).toStrictEqual(expected)
     })
 
     it('default and one group and preprocess tag', () => {
@@ -1076,6 +1168,11 @@ describe('makePinnedSearch', () => {
                 preProcessedTags: [],
                 color: 'grey',
                 frames: [
+                    {
+                        url: 'https://test.ski.com/otherWindow1',
+                        preProcessedTags: ["@test", "@ski"],
+                        tags: ['#mySki'],
+                    },
                     {
                         url: 'https://test.ski.com/otherWindow4',
                         preProcessedTags: ["@test", "@ski"],

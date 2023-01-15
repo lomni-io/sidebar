@@ -64,7 +64,6 @@ export interface GroupFrameRender {
 }
 
 export interface PinnedSearchData {
-    title:  string
     color: string
     tags: string[]
     preProcessedTags: string[]
@@ -72,7 +71,7 @@ export interface PinnedSearchData {
 
 export interface PinnedSearchRender {
     isDefault: boolean
-    title:  string
+    pinned: boolean
     collapsed: boolean
     color: string
     tags: string[]
@@ -136,10 +135,10 @@ export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedSearchDa
         const framesFiltered = filterFramesBySelection(framesCopy, currentSearch) as WebFrameRender[]
         if (framesFiltered.length > 0){
             result.push({
-                isDefault: true,
+                isDefault: false,
+                pinned: false,
                 tags: currentSearch.filter(t => t.startsWith('#')),
                 preProcessedTags: currentSearch.filter(t => t.startsWith('@')),
-                title:  'default',
                 color: 'grey',
                 collapsed: false,
                 frames: framesFiltered
@@ -154,24 +153,22 @@ export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedSearchDa
         const framesFiltered = filterFramesBySelection(framesCopy, pinned.tags) as WebFrameRender[]
         result.push({
             isDefault: false,
+            pinned: true,
             tags: pinned.tags.filter(t => t.startsWith('#')),
             preProcessedTags: pinned.preProcessedTags.filter(t => t.startsWith('@')),
             collapsed: false,
-            title:  pinned.title,
             color: pinned.color,
             frames: framesFiltered
         })
-        // TODO: not filter here. pinned can duplicate frames to other tags
-        // framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
     })
 
     // get remain
     if (framesCopy.length > 0){
         result.push({
             isDefault: true,
+            pinned: false,
             tags: [],
             preProcessedTags: [],
-            title:  'default',
             color: 'grey',
             collapsed: currentSearch.length > 0 || searchs.length > 0,
             frames: framesCopy

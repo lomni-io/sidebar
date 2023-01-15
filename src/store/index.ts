@@ -125,7 +125,7 @@ export const store = createStore<State>({
     },
     SET_PINNED(state, pinned:PinnedSearchData){
       const pinnedIdx = state.pinnedSearchs.findIndex((x:PinnedSearchData) => {
-        return x.title === pinned.title
+        return x.tags.every(t => pinned.tags.includes(t))
       })
       if (~pinnedIdx){
         // has frame

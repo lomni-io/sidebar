@@ -860,8 +860,8 @@ describe('makePinnedSearch', () => {
         const expected = [
             {
                 isDefault: true,
+                pinned: false,
                 collapsed: false,
-                title:  'default',
                 tags: [],
                 preProcessedTags: [],
                 color: 'grey',
@@ -902,9 +902,9 @@ describe('makePinnedSearch', () => {
 
         const expected = [
             {
-                isDefault: true,
+                isDefault: false,
+                pinned: false,
                 collapsed: false,
-                title:  'default',
                 tags: ['#mySearch'],
                 preProcessedTags: [],
                 color: 'grey',
@@ -918,10 +918,10 @@ describe('makePinnedSearch', () => {
             },
             {
                 isDefault: true,
+                pinned: false,
                 collapsed: true,
                 tags: [],
                 preProcessedTags: [],
-                title:  'default',
                 color: 'grey',
                 frames: [
                     {
@@ -957,7 +957,6 @@ describe('makePinnedSearch', () => {
 
         const group = [
             {
-                title:  'my group',
                 color: 'red',
                 tags: ['#mySki'],
                 preProcessedTags: [],
@@ -968,8 +967,8 @@ describe('makePinnedSearch', () => {
         const expected = [
             {
                 isDefault: false,
+                pinned: true,
                 collapsed: false,
-                title:  'my group',
                 tags: ['#mySki'],
                 preProcessedTags: [],
                 color: 'red',
@@ -988,8 +987,8 @@ describe('makePinnedSearch', () => {
             },
             {
                 isDefault: true,
+                pinned: false,
                 collapsed: true,
-                title:  'default',
                 tags: [],
                 preProcessedTags: [],
                 color: 'grey',
@@ -1037,7 +1036,6 @@ describe('makePinnedSearch', () => {
 
         const group = [
             {
-                title:  'my group',
                 color: 'red',
                 tags: ['#mySki'],
                 preProcessedTags: [],
@@ -1051,7 +1049,7 @@ describe('makePinnedSearch', () => {
             {
                 isDefault: false,
                 collapsed: false,
-                title:  'my group',
+                pinned: true,
                 tags: ['#mySki'],
                 preProcessedTags: [],
                 color: 'red',
@@ -1070,8 +1068,8 @@ describe('makePinnedSearch', () => {
             },
             {
                 isDefault: true,
+                pinned: false,
                 collapsed: true,
-                title:  'default',
                 tags: [],
                 preProcessedTags: [],
                 color: 'grey',
@@ -1119,7 +1117,6 @@ describe('makePinnedSearch', () => {
 
         const group = [
             {
-                title:  'my group',
                 color: 'red',
                 tags: ['#mySki'],
                 preProcessedTags: [''],
@@ -1131,9 +1128,9 @@ describe('makePinnedSearch', () => {
 
         const expected = [
             {
-                isDefault: true,
+                isDefault: false,
+                pinned: false,
                 collapsed: false,
-                title:  'default',
                 tags: [],
                 preProcessedTags: ['@newTag'],
                 color: 'grey',
@@ -1147,8 +1144,8 @@ describe('makePinnedSearch', () => {
             },
             {
                 isDefault: false,
+                pinned: true,
                 collapsed: false,
-                title:  'my group',
                 tags: ['#mySki'],
                 preProcessedTags: [],
                 color: 'red',
@@ -1162,8 +1159,8 @@ describe('makePinnedSearch', () => {
             },
             {
                 isDefault: true,
+                pinned: false,
                 collapsed: true,
-                title:  'default',
                 tags: [],
                 preProcessedTags: [],
                 color: 'grey',

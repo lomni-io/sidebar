@@ -3,25 +3,21 @@
     <div class="header">
 
       <div class="left-header">
-        <div class="input" v-if="!finalCollapsed && !editMode" @click="collapse(true)" :class="color">-</div>
-        <div class="input" v-if="finalCollapsed && !editMode" @click="collapse(false)" :class="color">+</div>
-        <label :class="color" @click="goToEditMode" v-if="!editMode">{{pinned.title.length > 0 ? finalTitle : '(no name)'}} <span v-if="finalCollapsed"> - {{pinned.frames.length}} item(s)</span></label>
-        <div class="collapsed" v-if="finalCollapsed && !editMode" :class="color"></div>
-        <div class="edit-mode-container" v-if="editMode" ref="input">
-          <div class="input edit-mode" :class="color" @click="changeColor"></div>
-          <input v-model="newTitle" :class="color">
-        </div>
+        <div class="input" v-if="!finalCollapsed" @click="collapse(true)" :class="color">-</div>
+        <div class="input" v-if="finalCollapsed" @click="collapse(false)" :class="color">+</div>
+        <label :class="color">{{pinned.isDefault ? 'default' : tags.join(',')}} <span v-if="finalCollapsed"> - {{pinned.frames.length}} item(s)</span></label>
+        <div class="collapsed" v-if="finalCollapsed" :class="color"></div>
       </div>
 
       <div class="right-header">
 <!--        <div class="right-open" v-if="tags && tags.length > 0" @click="openAll">-->
 <!--          <span><font-awesome-icon icon="tv" /> open</span>-->
 <!--        </div>-->
-        <div class="right-cancel" v-if="tags && tags.length > 0 && editMode" @click="cancel">
-          <span><font-awesome-icon icon="eye"/> cancel</span>
+        <div class="right-pin" v-if="!pinned.isDefault && !pinned.pinned" @click="save">
+          <span><font-awesome-icon icon="thumbtack"/> pin</span>
         </div>
-        <div class="right-pin" v-if="tags && tags.length > 0 && editMode" @click="save">
-          <span><font-awesome-icon icon="floppy-disk"/> save</span>
+        <div class="right-pin" v-if="!pinned.isDefault && pinned.pinned" @click="save">
+          <span><font-awesome-icon icon="thumbtack"/> unpin</span>
         </div>
       </div>
 
@@ -44,8 +40,6 @@ export default defineComponent( {
     return {
       color: 'grey',
       forceCollapse: null as boolean|null,
-      editMode: false,
-      newTitle: '',
     }
   },
   computed: {
@@ -58,26 +52,15 @@ export default defineComponent( {
     tags(){
       return this.pinned.tags.concat(this.pinned.preProcessedTags)
     },
-    finalTitle(){
-      if (this.tags.length > 0){
-        return this.pinned.title + ' ' + this.tags
-      }
-      return  this.pinned.title
-    }
   },
   methods: {
-    cancel(){
-      this.editMode = false
-    },
     save(){
       const newPinned: PinnedSearchData = {
-        title: this.newTitle,
         color: this.color,
         tags: this.pinned.tags,
         preProcessedTags: this.pinned.preProcessedTags
       }
       store.dispatch('upsertPinned', newPinned)
-      this.editMode = false
     },
     collapse(collapsed: boolean){
       this.forceCollapse = collapsed
@@ -113,15 +96,6 @@ export default defineComponent( {
       }
       this.color = newColor
     },
-    goToEditMode(){
-      this.editMode = true
-
-      this.$nextTick(() => {
-        const html = this.$refs.input as HTMLInputElement
-        html.focus()
-      });
-
-    }
   }
 })
 
@@ -184,7 +158,7 @@ export default defineComponent( {
     }
     .right-pin{
       cursor: pointer;
-      color: var(--yellow);
+      color: var(--blue);
       margin-right: 5px;
     }
     .right-open{

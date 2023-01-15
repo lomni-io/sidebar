@@ -1,5 +1,5 @@
 <template>
-  <TabContainer title="search bar" :default-activation="true">
+  <TabContainer class="sticky" title="search bar" :default-activation="true">
     <SearchBar :render-data="renderData"></SearchBar>
   </TabContainer>
   <TabContainer title="frames" :default-activation="true">
@@ -20,5 +20,11 @@ export default {
 </script>
 
 <style scoped>
+
+.sticky{
+  position: sticky !important;
+  top: 20px;
+  z-index: 100000;
+}
 
 </style>

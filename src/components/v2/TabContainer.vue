@@ -2,7 +2,7 @@
   <div id="tab" ref="tab" class="tab">
     <input type="checkbox">
     <label class="tab-label" :class="{'label-open': isActive}" @click="openTab" draggable="true">{{title}}</label>
-    <div class="tab-content" ref="content" v-show="isActive">
+    <div class="tab-content" :class="{'border': useBorder}" ref="content" v-show="isActive">
       <slot></slot>
     </div>
   </div>
@@ -11,7 +11,7 @@
 <script>
 export default {
   name: "TabContainer",
-  props: ['title', 'defaultActivation'],
+  props: ['title', 'defaultActivation', 'useBorder'],
   data() {
     return {
       isActiveButton: null,
@@ -97,11 +97,14 @@ input {
   background-color: var(--background_main);
   overflow-y: auto;
   padding: 0;
-  border-bottom: solid var(--background_input_border) 1px;
   //resize: vertical;
   //height: calc(100vh - 3.6em - 21px);
   //max-height: 25vh;
   //min-height: 40px;
+
+  &.border{
+    border-bottom: solid var(--background_input_border) 1px;
+  }
 }
 
 

@@ -1,7 +1,7 @@
 <template>
 
   <div v-if="hasPlugin">
-    <ul>
+    <ul class="sticky">
       <li :class="{'active': this.selected === 'tabs'}" @click="select('tabs')">Tabs</li>
       <li :class="{'active': this.selected === 'frames'}" @click="select('frames')">Frames</li>
       <li :class="{'active': this.selected === 'sync'}" @click="select('sync')">Sync</li>
@@ -77,7 +77,7 @@ ul{
 }
 li{
   cursor: pointer;
-  height: 21px;
+  height: 20px;
   background-color: var(--background_input);
   /*border-right: 1px solid var(--background_input_border);*/
   padding: 2px 10px 2px 10px;
@@ -88,6 +88,12 @@ li{
   &:hover {
     filter: var(--hover);
   }
+}
+
+.sticky{
+  position: sticky !important;
+  top: 0;
+  z-index: 100000;
 }
 
 </style>

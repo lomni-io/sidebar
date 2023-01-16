@@ -33,25 +33,25 @@ body{
   color: #2c3e50;
 }
 
-///* width */
-//::-webkit-scrollbar {
-//  width: 5px;
-//}
-//
-///* Track */
-//::-webkit-scrollbar-track {
-//  background: var(--bg1);
-//}
-//
-///* Handle */
-//::-webkit-scrollbar-thumb {
-//  background: var(--gray_1);
-//}
-//
-///* Handle on hover */
-//::-webkit-scrollbar-thumb:hover {
-//  background: var(--gray_1);
-//}
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--bg1);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--gray_1);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray_1);
+}
 
 </style>
 <script>

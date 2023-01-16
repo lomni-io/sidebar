@@ -5,22 +5,25 @@
     <div class="drop-area" :class="{'drag-over': isDropArea}" v-if="isDroppable" @dragover="dragover"></div>
     <div class="frame-info">
       <div class="frame-header">
-        <div class="frame-header-left" v-on:click.exact="goToPage">
+        <div class="frame-header-left">
           <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
           <small v-if="!minimized">{{frame.domain}}</small>
-          <small v-if="minimized" :class="{'current-selected': frame.isSelected}">{{frame.title}}</small>
+          <small v-if="minimized" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</small>
+          <small class="copy" @click="copyLink">
+            <font-awesome-icon icon="copy" />
+          </small>
         </div>
 
         <div class="frame-header-right">
 
-          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
-            <font-awesome-icon icon="xmark" />
-          </div>
           <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" title="unpin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
           <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" title="pin current tab">
             <font-awesome-icon icon="thumbtack" />
+          </div>
+          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
+            <font-awesome-icon icon="xmark" />
           </div>
         </div>
       </div>
@@ -40,6 +43,7 @@ import {store} from "@/store";
 import {DragItem} from "@/store/dragItem";
 import {WebFrameRender} from "@/store/renderData";
 
+// TODO: copy link buttom
 export default defineComponent( {
   name: "ActiveFrameUnit",
   components: {TagContainer},
@@ -87,6 +91,9 @@ export default defineComponent( {
         }
 
       }
+    },
+    copyLink(){
+      navigator.clipboard.writeText(this.frame.url)
     },
     dragover(){
       store.dispatch('setDropperId', this.frameId)
@@ -171,6 +178,13 @@ export default defineComponent( {
     display: flex;
     img{
       margin-right: 5px;
+    }
+    .copy{
+      margin-left: 5px;
+      opacity: 0.7;
+      &:hover{
+        filter: var(--hover);
+      }
     }
     small{
       font-size: 0.8em;

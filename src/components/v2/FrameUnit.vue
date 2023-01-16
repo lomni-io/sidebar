@@ -8,14 +8,14 @@
         </div>
         <div class="frame-header-right">
 
-          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
-            <font-awesome-icon icon="xmark" />
-          </div>
           <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" title="unpin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
           <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" title="pin current tab">
             <font-awesome-icon icon="thumbtack" />
+          </div>
+          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
+            <font-awesome-icon icon="xmark" />
           </div>
         </div>
       </div>

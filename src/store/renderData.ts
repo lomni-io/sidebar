@@ -23,6 +23,8 @@ export interface Tab{
     active: boolean,
     title: string,
     favIconUrl: string
+    // TODO: add audible here to render
+    // audible: boolean
     pinned: boolean
     windowId: number
     selected: boolean

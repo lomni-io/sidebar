@@ -222,6 +222,10 @@ export default defineComponent( {
   position: absolute;
   right: 50%;
   color: var(--text_color);
+  &:hover{
+    cursor: pointer;
+    filter: var(--hover)
+  }
 }
 
 label{

@@ -164,7 +164,7 @@ export default defineComponent( {
 }
 
 .current-selected{
-  color: var(--pink);
+  color: var(--purple);
 }
 
 .frame-header{
@@ -195,7 +195,7 @@ export default defineComponent( {
       max-width: 60vw;
 
       &.current-selected{
-        color: var(--pink);
+        color: var(--purple);
       }
     }
   }

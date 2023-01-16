@@ -122,7 +122,7 @@ export default defineComponent( {
 }
 
 .current-selected{
-  color: var(--pink);
+  color: var(--purple);
 }
 
 .frame-header{

@@ -108,7 +108,7 @@ export default {
   }
   h1{
     font-size: 1.1em;
-    color: var(--pink);
+    color: var(--purple);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;

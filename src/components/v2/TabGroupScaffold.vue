@@ -13,7 +13,7 @@
       </div>
 
       <div class="header-right">
-        <div class="color-picker" :class="color" @click="changeColor">{{color}}</div>
+        <div class="color-picker" :class="color" @click="changeColor">color</div>
       </div>
 
     </div>
@@ -225,32 +225,35 @@ export default defineComponent( {
 }
 
 label{
-  color: var(--text_color);
+  color: var(--background_dark);
+  border-radius: 5px;
   cursor: pointer;
+  padding-right: 5px;
+  padding-left: 5px;
 
   &.blue{
-    color: var(--blue);
+    background-color: var(--blue);
   }
   &.cyan{
-    color: var(--cyan);
+    background-color: var(--cyan);
   }
   &.pink{
-    color: var(--pink);
+    background-color: var(--pink);
   }
   &.purple{
-    color: var(--purple);
+    background-color: var(--purple);
   }
   &.orange{
-    color: var(--orange);
+    background-color: var(--orange);
   }
   &.yellow{
-    color: var(--yellow);
+    background-color: var(--yellow);
   }
   &.green{
-    color: var(--green);
+    background-color: var(--green);
   }
   &.red{
-    color: var(--red);
+    background-color: var(--red);
   }
 }
 

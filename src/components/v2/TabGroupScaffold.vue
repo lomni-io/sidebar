@@ -1,11 +1,15 @@
 <template>
   <div class="scafold-container">
-    <div class="header">
+    <div class="header" :class="color" draggable="true">
       <div class="header-left">
         <div class="input" v-if="!collapsed" @click="collapse(true)" :class="color">-</div>
         <div class="input" v-if="collapsed" @click="collapse(false)" :class="color">+</div>
         <input v-model="newTitle" :class="color" v-if="editTitleMode" v-on:focusout="saveNewTitle()" placeholder="(empty)" ref="input">
         <label :class="color" contenteditable="true" v-if="!editTitleMode" ref="label" v-on:focusin="editTitle()">{{title.length > 0 ? title : '(empty)'}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
+      </div>
+
+      <div class="frame-footer-drag">
+        <font-awesome-icon icon="bars" />
       </div>
 
       <div class="header-right">
@@ -90,6 +94,7 @@ export default defineComponent( {
 
 <style scoped lang="scss">
 
+
 .scafold-container{
   user-select: none;
   margin-bottom: 5px;
@@ -139,6 +144,7 @@ export default defineComponent( {
 
 .header-right{
   margin-right: 5px;
+  display: flex;
 }
 
 .color-picker{
@@ -210,6 +216,10 @@ export default defineComponent( {
   &.red{
     border-left: 1px solid var(--red);
   }
+}
+
+.frame-footer-drag{
+  color: var(--text_color);
 }
 
 label{

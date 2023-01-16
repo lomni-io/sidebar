@@ -219,6 +219,8 @@ export default defineComponent( {
 }
 
 .frame-footer-drag{
+  position: absolute;
+  right: 50%;
   color: var(--text_color);
 }
 

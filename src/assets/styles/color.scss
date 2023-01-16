@@ -3,28 +3,27 @@
 
   * {
 
-    --bg1: hsl(200, 5%, 20%);
-    --background_tab: hsl(200, 35%, 20%);
-    --background_inner_tab: hsl(170, 20%, 19%);
-    --background_main: hsl(200, 15%, 12%);
-    --background_input: hsl(200, 15%, 20%);
+    --bg1: #212124;
+    --background_dark: hsl(240, 4%, 8%);
+    --background_main: hsl(240, 4%, 14%);
+    --background_input: hsl(240, 3%, 17%);
+    --background_text_input: #2b363b;
+    --frame_border: #3b3939;
+    --background_tag: hsl(240, 5%, 25%);
+    --background_input_border: hsl(240, 5%, 30%);
 
     --text_color: hsl(200, 12%, 70%);
 
     --gray_1: hsl(200, 15%, 30%);
 
-    --yellow_60: hsl(40, 60%, 60%);
-
-    --green_40_40: hsl(70, 40%, 40%);
-    --green_60_60: hsl(90, 60%, 60%);
-
-    --pink1: hsl(280, 60%, 70%);
-
-    --red_40_40: hsl(0, 40%, 40%);
-    --red_60: hsl(0, 60%, 60%);
-
-    --blue1: hsl(210, 30%, 60%);
-    --blue_60: hsl(221, 60%, 60%);
+    --yellow: hsl(44, 97%, 69%);
+    --green: hsl(137, 40%, 65%);
+    --pink: #ff8bcb;
+    --red: #f28b82;
+    --blue: #8ab4f8;
+    --cyan: #78d9ec;
+    --purple: #c58af9;
+    --orange: hsl(27, 60%, 60%);
 
     --hover: brightness(130%);
   }
@@ -35,8 +34,6 @@
   * {
 
     --bg1: hsl(200, 5%, 90%);
-    --background_tab: hsl(200, 30%, 85%);
-    --background_inner_tab: hsl(170, 20%, 70%);
     --background_main: hsl(200, 15%, 95%);
     --background_input: hsl(200, 15%, 80%);
 
@@ -44,18 +41,14 @@
 
     --gray_1: hsl(200, 15%, 70%);
 
-    --yellow_60: hsl(40, 60%, 60%);
-
-    --green_40_40: hsl(70, 40%, 60%);
-    --green_60_60: hsl(70, 60%, 40%);
-
-    --pink1: hsl(280, 40%, 50%);
-
-    --red_40_40: hsl(0, 40%, 60%);
-    --red_60: hsl(0, 60%, 40%);
-
-    --blue1: hsl(210, 40%, 50%);
-    --blue_60: hsl(221, 60%, 40%);
+    --yellow: hsl(40, 60%, 40%);
+    --green: hsl(70, 60%, 40%);
+    --pink: hsl(280, 40%, 50%);
+    --red: hsl(0, 60%, 40%);
+    --blue: hsl(221, 60%, 40%);
+    --purple: hsl(262, 60%, 40%);
+    --orange: hsl(27, 60%, 40%);
+    --cyan: hsl(196, 60%, 40%);
 
     --hover: brightness(90%);
   }

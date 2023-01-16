@@ -19,6 +19,18 @@
 
     </div>
 
+<!--   TODO: do detail here -->
+    <div class="detail-container" v-if="mergedData">
+      <div class="detail-container-removed">
+
+        <div class="item" v-for="(data, index) in mergedData.itemsRemoved" :key="index">
+          <img :src="data.favIconUrl" width="16"/>
+          <small class="remove">{{data.title}}</small>
+        </div>
+
+      </div>
+    </div>
+
     <div class="bottom-button-container">
       <button class="yellow" @click="fetchData">fetch data</button>
       <button class="blue" @click="pushData" :disabled="!(mergedData && mergedData.hasChanges)">push</button>
@@ -120,15 +132,15 @@ export default {
   justify-content: center;
 
   .add{
-    color: var(--green_60_60);
+    color: var(--green);
   }
 
   .remove{
-    color: var(--red_60);
+    color: var(--red);
   }
 
   .change{
-    color: var(--blue_60);
+    color: var(--blue);
   }
 
   .overview-item{
@@ -137,8 +149,27 @@ export default {
 }
 
 .error{
-  color: var(--red_60);
+  color: var(--red);
   text-align: center;
+}
+
+.item{
+  align-content: center;
+  display: flex;
+  img{
+    margin-right: 5px;
+  }
+  small{
+    font-size: 0.8em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60vw;
+
+    &.remove{
+      color: var(--red);
+    }
+  }
 }
 
 </style>

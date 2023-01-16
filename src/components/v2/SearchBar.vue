@@ -1,80 +1,74 @@
 <template>
-  <div class="header">
+  <div class="search-container">
     <div class="tag-input-container">
-      <div class="tag-input-left">
-        <p class="tag-input" v-for="(tag, index) in allSelectedTags" :key="index"><span v-on:click="removeTag(tag)">{{tag}}</span></p>
-        <input v-model="searchInput" v-on:keydown="keydown" ref="input"/>
-      </div>
+      <p class="tag-input" v-for="(tag, index) in renderData.search" :key="index"><span v-on:click="removeTag(tag)" :draggable="tag.includes('#')" @drag="dragstart(tag)" @dragend="dragend">{{tag}}</span></p>
+      <input v-model="searchInput" v-on:keydown="keydown" ref="input"/>
     </div>
-    <TagListContainer :initial-show="5" @addTag="addTag" :tags="this.setTags" class="tag-list-container"></TagListContainer>
+    <TagListContainer :tags="showTags" class="tag-list-container" @addTag="addTag"></TagListContainer>
   </div>
 </template>
 
-<script>
-import TagListContainer from "@/components/TagListContainer";
-import {setVisibleTags} from "@/components/search-tab/filters";
-export default {
-  name: "TagEditorContainer",
-  emits: ['addTag', 'removeTag'],
+<script lang="ts">
+import {defineComponent} from "vue";
+import TagListContainer from "@/components/v2/TagListContainer.vue";
+import {store} from "@/store";
+import {Tag} from "@/store/renderData";
+
+export default defineComponent( {
+  name: "SearchBar",
+  props: ['renderData'],
   components: {TagListContainer},
-  props: ['currentTags', 'frames'],
   data() {
     return {
       searchInput: '',
-      selectedTags: [],
-      removedTags: []
     }
   },
-  watch: {
-    selectedTags: {
-      handler() {
-        this.searchInput = ''
-      },
-      deep: true
-    },
-  },
   computed: {
-    allSelectedTags(){
-      const toDeleteSet = new Set(this.removedTags);
-      if (this.currentTags){
-        return this.currentTags.filter(x => !toDeleteSet.has(x)).concat(this.selectedTags)
+    showTags(){
+      if (this.searchInput.length > 0){
+        return this.renderData.tags.filter((tag: Tag) => tag.name.toLowerCase().includes(this.searchInput.toLowerCase()))
       }
-      return this.selectedTags
-    },
-    setTags() {
-      return setVisibleTags(this.frames, this.selectedTags, this.searchInput)
-    },
+      return this.renderData.tags
+    }
   },
   methods:{
-    addHashTag(input){
-      if (input.startsWith("#")){
-        return input
-      }
-      return "#"+input
+    removeTag(tag: string){
+      store.dispatch('removeSearchItem', tag)
     },
-    addTag(tag){
-      this.$emit('addTag', tag.name)
+    addTag(tag: string){
       this.searchInput = ''
+      store.dispatch('addSearchItem', tag)
     },
-    keydown(e){
+    keydown(e: any){
       if (e.code === 'Enter' && this.searchInput.length > 1) {
-        this.$emit('addTag', this.addHashTag(this.searchInput))
+        store.dispatch('addSearchItem', this.searchInput.startsWith("#") ? this.searchInput : '#' + this.searchInput)
         this.searchInput = ''
         e.preventDefault()
       }
     },
-    removeTag(tag){
-      this.$emit('removeTag', tag)
+    dragstart(tagName: string){
+      const dragItem = {
+        kind: 'tag',
+        object: tagName,
+      }
+
+      store.dispatch('setDragItem', dragItem)
+    },
+    dragend(){
+      store.dispatch('setDragItem', null)
     },
   }
-}
+})
 </script>
 
 <style scoped lang="scss">
 
-.header{
+
+.search-container{
   background-color: var(--background_main);
+  padding: 5px;
 }
+
 
 .tag-input-container{
   display: flex;
@@ -111,19 +105,19 @@ export default {
   background-color: var(--background_input);
   color: var(--text_color);
   font-weight: bold;
+  padding: 4px;
 
   span{
-    margin-left: 5px;
     padding-left: 3px;
     padding-right: 3px;
-    font-size: 0.9em;
+    font-size: 0.8em;
     background-color: var(--gray_1);
     border-radius: 5px;
     cursor: pointer;
     white-space: nowrap;
   }
   span:hover{
-    background-color: var(--red_40_40);
+    filter: var(--hover);
   }
 }
 
@@ -135,6 +129,8 @@ input{
   border-top-right-radius: 3px;
   outline:none;
   color: var(--text_color);
+  padding-top: 4px;
+  padding-bottom: 4px;
   font-size: 0.9em;
   width: 98%;
 }

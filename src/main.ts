@@ -12,13 +12,14 @@ import {
     faCirclePlus,
     faEdit,
     faEye,
-    faFloppyDisk, faPlus, faSquarePlus,
+    faFloppyDisk, faPlus, faSquarePlus, faThumbtack,
     faTrash,
-    faTv
+    faTv,
+    faPlusSquare, faXmark, faCopy
 } from '@fortawesome/free-solid-svg-icons'
 import {store} from "@/store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare, faSquarePlus)
+library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare, faSquarePlus, faThumbtack, faPlusSquare, faXmark, faCopy)
 
 const emitter = mitt();
 
@@ -37,11 +38,11 @@ app.config.globalProperties.emitter = emitter;
 
 app.config.globalProperties.github = new GithubAuth();
 
-setInterval(() => {
-    navigator.clipboard.readText().then(clipboard => {
-        store.dispatch('setClipboard', clipboard)
-    }).catch(() => {})
-}, 500)
+// setInterval(() => {
+//     navigator.clipboard.readText().then(clipboard => {
+//         store.dispatch('setClipboard', clipboard)
+//     }).catch(() => {})
+// }, 500)
 
 
 app.use(store).component("font-awesome-icon", FontAwesomeIcon).mount('#app')

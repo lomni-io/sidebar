@@ -19,7 +19,7 @@
         </div>
       </div>
       <h1 class="frame-title" v-on:click="goToPage()">{{newFrame.title}}</h1>
-      <textarea v-model="newFrame.comment" placeholder="add comments here"></textarea>
+<!--      <textarea v-model="newFrame.comment" placeholder="add comments here"></textarea>-->
       <div class="tags">
         <TagEditorContainer @addTag="addTag" @removeTag="removeTag" :current-tags="newFrame.tags" :frames="frames"></TagEditorContainer>
       </div>
@@ -121,7 +121,7 @@ export default {
     .frame-header-view{
       width: 12px;
       height: 12px;
-      color: var(--blue_60);
+      color: var(--blue);
       border-radius: 10px;
       font-size: 0.8em;
       &:hover{
@@ -133,7 +133,7 @@ export default {
     .frame-header-apply{
       width: 12px;
       height: 12px;
-      color: var(--yellow_60);
+      color: var(--yellow);
       border-radius: 10px;
       font-size: 0.8em;
       &:hover{
@@ -145,7 +145,7 @@ export default {
     .frame-header-remove{
       width: 12px;
       height: 12px;
-      color: var(--red_60);
+      color: var(--red);
       border-radius: 10px;
       font-size: 0.8em;
       &:hover{

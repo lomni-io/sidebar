@@ -23,6 +23,10 @@ export class ChromePort {
                 console.log('all-tabs-response:: ', msg.data)
                 store.dispatch('setAllTabs', msg.data)
             }
+            if (msg.kind === 'all-tab-groups-response') {
+                console.log('all-tab-groups-response:: ', msg.data)
+                store.dispatch('setAllTabGroups', msg.data)
+            }
         })
         this.port.onDisconnect.addListener(() => {
             setTimeout(() => {
@@ -33,7 +37,7 @@ export class ChromePort {
 
     }
 
-    postMessage(msg: any){
+    async postMessage(msg: any){
         this.port.postMessage(msg);
     }
 }

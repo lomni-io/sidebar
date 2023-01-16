@@ -51,7 +51,7 @@ export default {
   .frame-header-edit{
     width: 12px;
     height: 12px;
-    color: var(--yellow_60);
+    color: var(--yellow);
     border-radius: 10px;
     font-size: 0.8em;
     &:hover{

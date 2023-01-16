@@ -8,10 +8,15 @@
         </div>
         <div class="frame-header-right">
 
+          <div class="frame-header-pinned pinned" v-if="isOpened && isPinned" @click="unpinTab" title="unpin current tab">
+            <font-awesome-icon icon="thumbtack" />
+          </div>
+          <div class="frame-header-pinned" v-if="isOpened && !isPinned"  @click="pinTab" title="pin current tab">
+            <font-awesome-icon icon="thumbtack" />
+          </div>
           <div class="frame-header-status" :class="{'active': isOpened}" title="current status">
             <font-awesome-icon icon="tv" />
           </div>
-
           <div class="frame-header-edit" @click="toEditMode()" v-if="!isNewFrame" title="edit frame">
                 <font-awesome-icon icon="edit" />
           </div>
@@ -32,9 +37,9 @@
 <script lang="ts">
 import {store} from "@/store";
 import {defineComponent} from "vue";
-import {Tab} from "@/store/entity";
 import TagViewContainer from "@/components/search-tab/TagViewContainer.vue";
 import {WebFrameData} from "@/entity/frame";
+import {Tab} from "@/store/renderData";
 
 export default defineComponent( {
   name: "FrameViewContainer",
@@ -48,6 +53,10 @@ export default defineComponent( {
     isOpened(){
       const tabs = store.getters.allTabs
       return tabs.some((tab: Tab) => tab.url === this.frame.url) as Tab
+    },
+    isPinned(){
+      const tabs = store.getters.allTabs
+      return tabs.some((tab: Tab) => tab.url === this.frame.url && tab.pinned) as Tab
     },
     tab():Tab{
       const tabs = store.getters.allTabs
@@ -70,6 +79,14 @@ export default defineComponent( {
         // @ts-ignore
         this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url});
       }
+    },
+    pinTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "pin-tab", tab: this.tab.id});
+    },
+    unpinTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "unpin-tab", tab: this.tab.id});
     },
     clickedTag(tag: string){
       this.$emit('selectTag', tag)
@@ -107,7 +124,7 @@ export default defineComponent( {
 }
 
 .current-selected{
-  color: var(--pink1);
+  color: var(--purple);
 }
 
 .frame-header{
@@ -137,12 +154,26 @@ export default defineComponent( {
       margin-right: 5px;
     }
 
+    font-size: 0.8em;
+    border-radius: 10px;
+
     .frame-header-status{
       color: var(--gray_1);
-      border-radius: 10px;
-      font-size: 0.8em;
+
       &.active{
-        color: var(--blue_60);
+        color: var(--blue);
+      }
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-pinned{
+      color: var(--gray_1);
+
+      &.pinned{
+        color: var(--blue);
       }
       &:hover{
         cursor: pointer;
@@ -153,9 +184,7 @@ export default defineComponent( {
     .frame-header-edit{
       width: 12px;
       height: 12px;
-      color: var(--yellow_60);
-      border-radius: 10px;
-      font-size: 0.8em;
+      color: var(--yellow);
       &:hover{
         cursor: pointer;
         filter: var(--hover);
@@ -165,9 +194,7 @@ export default defineComponent( {
     .frame-header-add{
       width: 12px;
       height: 12px;
-      color:  var(--green_60_60);
-      border-radius: 10px;
-      font-size: 0.8em;
+      color:  var(--green);
       &:hover{
         cursor: pointer;
         filter: var(--hover);

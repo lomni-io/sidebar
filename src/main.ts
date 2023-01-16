@@ -15,11 +15,11 @@ import {
     faFloppyDisk, faPlus, faSquarePlus, faThumbtack,
     faTrash,
     faTv,
-    faPlusSquare, faXmark, faCopy
+    faPlusSquare, faXmark, faCopy, faBars, faLayerGroup, faObjectGroup, faObjectUngroup
 } from '@fortawesome/free-solid-svg-icons'
 import {store} from "@/store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare, faSquarePlus, faThumbtack, faPlusSquare, faXmark, faCopy)
+library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare, faSquarePlus, faThumbtack, faPlusSquare, faXmark, faCopy, faBars, faObjectGroup, faObjectUngroup)
 
 const emitter = mitt();
 

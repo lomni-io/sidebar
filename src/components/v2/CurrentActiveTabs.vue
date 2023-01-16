@@ -26,22 +26,18 @@
       </div>
 
     </div>
-
-    <NewGroupContainer></NewGroupContainer>
-
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
 import ScafoldBar from "@/components/v2/TabGroupScaffold.vue";
-import NewGroupContainer from "@/components/v2/NewGroupContainer.vue";
 import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
   props: ['window'],
-  components: {ActiveFrameUnit, NewGroupContainer, ScafoldBar}
+  components: {ActiveFrameUnit, ScafoldBar}
 })
 
 </script>

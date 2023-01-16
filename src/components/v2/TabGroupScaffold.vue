@@ -1,13 +1,15 @@
 <template>
-  <div class="scafold-container" v-on:focusout="goToViewMode">
+  <div class="scafold-container">
     <div class="header">
-      <div class="input" v-if="!collapsed && !editMode" @click="collapse(true)" :class="color">-</div>
-      <div class="input" v-if="collapsed && !editMode" @click="collapse(false)" :class="color">+</div>
-      <label :class="color" @click="goToEditMode" v-if="!editMode">{{title.length > 0 ? title : '(no name)'}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
-      <div class="collapsed" v-if="collapsed && !editMode" :class="color"></div>
-      <div class="edit-mode-container" v-if="editMode" ref="input">
-        <div class="input edit-mode" :class="color" @click="changeColor"></div>
-        <input v-model="newTitle" :class="color" >
+      <div class="header-left">
+        <div class="input" v-if="!collapsed" @click="collapse(true)" :class="color">-</div>
+        <div class="input" v-if="collapsed" @click="collapse(false)" :class="color">+</div>
+        <input v-model="newTitle" :class="color" v-if="editTitleMode" v-on:focusout="saveNewTitle()" placeholder="(empty)" ref="input">
+        <label :class="color" contenteditable="true" v-if="!editTitleMode" ref="label" v-on:focusin="editTitle()">{{title.length > 0 ? title : '(empty)'}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
+      </div>
+
+      <div class="header-right">
+        <div class="color-picker" :class="color" @click="changeColor">{{color}}</div>
       </div>
 
     </div>
@@ -25,14 +27,21 @@ export default defineComponent( {
   props: ['title', 'color', 'collapsed', 'groupId', 'countFrames'],
   data() {
     return {
-      editMode: false,
-      newTitle: null,
+      newTitle: this.title,
+      editTitleMode: false
     }
   },
   methods: {
     collapse(collapsed: boolean){
       // @ts-ignore
       this.port.postMessage({kind: "collapse-tab-groups", group: this.groupId, collapse: collapsed});
+    },
+    editTitle(){
+      this.editTitleMode = true
+      this.$nextTick(() => {
+        const html = this.$refs.input as HTMLInputElement
+        html.focus()
+      });
     },
     changeColor(){
       let newColor = this.color
@@ -67,23 +76,13 @@ export default defineComponent( {
       // @ts-ignore
       this.port.postMessage({kind: "color-tab-groups", group: this.groupId, color: newColor});
     },
-    goToViewMode(){
+    saveNewTitle(){
       if (this.newTitle){
         // @ts-ignore
         this.port.postMessage({kind: "title-tab-groups", group: this.groupId, title: this.newTitle});
       }
-      this.editMode = false
+      this.editTitleMode = false
     },
-    goToEditMode(){
-      this.editMode = true
-      this.newTitle = this.title
-
-      this.$nextTick(() => {
-        const html = this.$refs.input as HTMLInputElement
-        html.focus()
-      });
-
-    }
   }
 })
 
@@ -128,10 +127,57 @@ export default defineComponent( {
 
 .header{
   flex-wrap: wrap;
+  justify-content: space-between;
   display: flex;
   align-items: center;
   font-size: 0.7em;
+}
 
+.header-left{
+  display: flex;
+}
+
+.header-right{
+  margin-right: 5px;
+}
+
+.color-picker{
+  cursor: pointer;
+  border-radius: 1em;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: var(--background_dark);
+  &:hover{
+    filter: var(--hover);
+  }
+
+  &.grey{
+    background-color: var(--white);
+  }
+  &.blue{
+    background-color: var(--blue);
+  }
+  &.cyan{
+    background-color: var(--cyan);
+  }
+  &.pink{
+    background-color: var(--pink);
+  }
+  &.purple{
+    background-color: var(--purple);
+  }
+  &.orange{
+    background-color: var(--orange);
+  }
+  &.yellow{
+    background-color: var(--yellow);
+  }
+  &.green{
+    background-color: var(--green);
+  }
+  &.red{
+    background-color: var(--red);
+  }
 }
 
 .content{
@@ -193,39 +239,6 @@ label{
   }
   &.red{
     color: var(--red);
-  }
-}
-
-.color-picker{
-  cursor: pointer;
-  width: 25px;
-  height: 6px;
-  border-radius: 4px;
-  margin-left: 20px;
-
-  &.blue{
-    background-color: var(--blue);
-  }
-  &.cyan{
-    background-color: var(--cyan);
-  }
-  &.pink{
-    background-color: var(--pink);
-  }
-  &.purple{
-    background-color: var(--purple);
-  }
-  &.orange{
-    background-color: var(--orange);
-  }
-  &.yellow{
-    background-color: var(--yellow);
-  }
-  &.green{
-    background-color: var(--green);
-  }
-  &.red{
-    background-color: var(--red);
   }
 }
 

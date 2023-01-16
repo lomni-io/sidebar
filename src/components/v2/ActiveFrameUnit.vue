@@ -2,6 +2,11 @@
   <div class="drop-container" v-if="isDropArea" @dragover="dragover" @drop="onDrop" @dragover.prevent @dragenter.prevent ></div>
 
   <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+
+    <small class="frame-footer-drag">
+      <font-awesome-icon icon="bars" />
+    </small>
+
     <div class="drop-area" :class="{'drag-over': isDropArea}" v-if="isDroppable" @dragover="dragover"></div>
     <div class="frame-info">
       <div class="frame-header">
@@ -16,6 +21,12 @@
 
         <div class="frame-header-right">
 
+          <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" title="add tab to group">
+            <font-awesome-icon icon="object-group" />
+          </div>
+          <div class="frame-header-group" v-if="this.frame.groupId > -1" @click="removeGroupTab" title="add tab to group">
+            <font-awesome-icon icon="object-ungroup" />
+          </div>
           <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" title="unpin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
@@ -28,8 +39,10 @@
         </div>
       </div>
       <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
-      <div class="tags">
-        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+      <div class="frame-footer">
+        <div class="tags">
+          <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+        </div>
       </div>
     </div>
   </div>
@@ -106,6 +119,14 @@ export default defineComponent( {
     },
     clickedTag(tag: string){
       store.dispatch('addSearchItem', tag)
+    },
+    newGroupTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "group-tabs", tabs: this.frame.id});
+    },
+    removeGroupTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "ungroup-tabs", tabs: this.frame.id});
     },
     pinTab(){
       if (this.frame.isOpened){
@@ -221,6 +242,15 @@ export default defineComponent( {
       }
     }
 
+    .frame-header-group {
+      color: var(--text_color);
+      opacity: 0.8;
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
     .frame-header-pinned{
       color: var(--gray_1);
 
@@ -299,6 +329,27 @@ h1:hover{
   position: absolute;
   height: 100%;
   width: 100%;
+}
+
+
+.frame-footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.frame-footer-drag{
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  right: 5px;
+  &:hover{
+    filter: var(--hover);
+  }
+}
+
+.drag-container{
+
 }
 
 .drop-container{

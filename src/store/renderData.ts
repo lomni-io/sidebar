@@ -24,7 +24,7 @@ export interface Tab{
     title: string,
     favIconUrl: string
     // TODO: add audible here to render
-    // audible: boolean
+    audible: boolean
     pinned: boolean
     windowId: number
     selected: boolean
@@ -91,6 +91,7 @@ export interface WebFrameRender {
     title: string
     tags: string[]
     domain: string
+    audible: boolean
     preProcessedTags: string[]
     isPinned: boolean
     isOpened: boolean
@@ -301,6 +302,7 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebF
                 windowId: tab ? tab.windowId : -1,
                 favIconUrl: webFrame.favIconUrl,
                 title: webFrame.title,
+                audible: tab ? tab.audible : false,
                 preProcessedTags: processedTags,
                 tags: frame.tags,
                 domain: extractRootDomain(webFrame.url),
@@ -344,6 +346,7 @@ export function mountWebFrame(tab:Tab, webFrames: (GroupFrameRender|WebFrameRend
         favIconUrl: tab.favIconUrl,
         title: tab.title,
         tags: [],
+        audible: tab ? tab.audible : false,
         domain: extractRootDomain(tab.url),
         preProcessedTags: getDomainsFromUrl(tab.url).map((x:string) => '@'+ x),
         isPinned: tab.pinned,

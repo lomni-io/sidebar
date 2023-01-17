@@ -24,7 +24,11 @@
           </div>
         </div>
       </div>
-      <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</h1>
+
+      <div class="title-container">
+        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</h1>
+      </div>
+
       <div class="tags">
         <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @clickedTag="clickedTag"></TagContainer>
       </div>
@@ -265,6 +269,11 @@ h1:hover{
   &:hover{
     filter: var(--hover);
   }
+}
+
+.title-container{
+  display: flex;
+  align-items: center;
 }
 
 .tags{

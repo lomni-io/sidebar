@@ -20,7 +20,9 @@
         </div>
 
         <div class="frame-header-right">
-
+          <div class="frame-volume" title="meeting" v-if="frame.audible">
+            <font-awesome-icon icon="volume-up" />
+          </div>
           <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" title="add tab to group">
             <font-awesome-icon icon="object-group" />
           </div>
@@ -38,7 +40,10 @@
           </div>
         </div>
       </div>
-      <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
+
+      <div class="title-container">
+        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
+      </div>
       <div class="frame-footer">
         <div class="tags">
           <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
@@ -350,6 +355,20 @@ h1:hover{
 
 .drag-container{
 
+}
+
+.title-container{
+  display: flex;
+  align-items: center;
+}
+
+.frame-volume{
+  margin-right: 5px;
+  color: var(--blue);
+  &:hover{
+    filter: var(--hover);
+    cursor: pointer;
+  }
 }
 
 .drop-container{

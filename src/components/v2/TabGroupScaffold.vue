@@ -8,12 +8,11 @@
         <label :class="color" v-if="!editTitleMode" ref="label" @click="editTitle()">{{title.length > 0 ? title : '(empty)'}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
       </div>
 
-      <div class="frame-footer-drag">
-        <font-awesome-icon icon="bars" />
-      </div>
-
       <div class="header-right">
         <div class="color-picker" :class="color" @click="changeColor">color</div>
+        <div class="frame-footer-drag">
+          <font-awesome-icon icon="bars" />
+        </div>
       </div>
 
     </div>
@@ -152,6 +151,7 @@ export default defineComponent( {
   border-radius: 1em;
   padding-left: 5px;
   padding-right: 5px;
+  margin-right: 10px;
   color: var(--background_dark);
   &:hover{
     filter: var(--hover);
@@ -219,8 +219,6 @@ export default defineComponent( {
 }
 
 .frame-footer-drag{
-  position: absolute;
-  right: 50%;
   color: var(--text_color);
   &:hover{
     cursor: pointer;

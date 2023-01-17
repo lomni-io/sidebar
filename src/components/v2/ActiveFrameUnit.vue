@@ -355,6 +355,12 @@ h1:hover{
 .drop-container{
   width: 100%;
   height: 80px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  0% {height: 0;}
+  100% {height: 80px;}
 }
 
 .tags{

@@ -5,7 +5,7 @@
         <div class="input" v-if="!collapsed" @click="collapse(true)" :class="color">-</div>
         <div class="input" v-if="collapsed" @click="collapse(false)" :class="color">+</div>
         <input v-model="newTitle" :class="color" v-if="editTitleMode" v-on:focusout="saveNewTitle()" placeholder="(empty)" ref="input">
-        <label :class="color" contenteditable="true" v-if="!editTitleMode" ref="label" v-on:focusin="editTitle()">{{title.length > 0 ? title : '(empty)'}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
+        <label :class="color" v-if="!editTitleMode" ref="label" @click="editTitle()">{{title.length > 0 ? title : '(empty)'}} <span v-if="collapsed"> - {{countFrames}} item(s)</span></label>
       </div>
 
       <div class="frame-footer-drag">
@@ -235,6 +235,9 @@ label{
   padding-right: 5px;
   padding-left: 5px;
 
+  &.grey{
+    background-color: var(--white);
+  }
   &.blue{
     background-color: var(--blue);
   }
@@ -275,6 +278,10 @@ label{
   margin-right: 5px;
 
 
+  &.grey{
+    color: var(--white);
+    border: 1px solid var(--white);
+  }
   &.blue{
     color: var(--blue);
     border: 1px solid var(--blue);

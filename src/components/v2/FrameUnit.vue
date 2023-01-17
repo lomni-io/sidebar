@@ -1,5 +1,10 @@
 <template>
   <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+
+    <small class="frame-footer-drag">
+      <font-awesome-icon icon="bars" />
+    </small>
+
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
@@ -250,6 +255,20 @@ h1:hover{
 .drop-container{
   width: 100%;
   height: 80px;
+}
+
+.frame-footer-drag{
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  right: 5px;
+  &:hover{
+    filter: var(--hover);
+  }
+}
+
+.tags{
+  width: calc(100% - 10px);
 }
 
 </style>

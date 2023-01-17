@@ -3,7 +3,7 @@
 
   <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
-    <small class="frame-footer-drag">
+    <small class="frame-footer-drag" v-if="!minimized">
       <font-awesome-icon icon="bars" />
     </small>
 
@@ -355,6 +355,10 @@ h1:hover{
 .drop-container{
   width: 100%;
   height: 80px;
+}
+
+.tags{
+  width: calc(100% - 10px);
 }
 
 </style>

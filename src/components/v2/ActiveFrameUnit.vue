@@ -1,5 +1,5 @@
 <template>
-  <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+  <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
     <small class="frame-footer-drag" v-if="!minimized">
       <font-awesome-icon icon="bars" />
@@ -160,6 +160,9 @@ export default defineComponent( {
   border-radius: 5px;
   margin-bottom: 5px;
   position: relative;
+  &.open{
+    background-color: var(--background_frame_selected);
+  }
 }
 
 .current-selected{

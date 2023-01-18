@@ -1,13 +1,10 @@
 <template>
-  <div class="drop-container" v-if="isDropArea" @dragover="dragover" @drop="onDrop" @dragover.prevent @dragenter.prevent ></div>
-
   <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
     <small class="frame-footer-drag" v-if="!minimized">
       <font-awesome-icon icon="bars" />
     </small>
 
-    <div class="drop-area" :class="{'drag-over': isDropArea}" v-if="isDroppable" @dragover="dragover"></div>
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
@@ -68,19 +65,12 @@ export default defineComponent( {
   props: ['frame', 'minimized'],
   data() {
     return {
-      frameId: Math.floor(Math.random() * 1000000000).toFixed(0)
     }
   },
   computed: {
     dragItem(){
       return store.getters.dragItem
     },
-    isDropArea(){
-      return this.dragItem && this.dragItem.kind === 'frame' && this.dragItem.dropperId === this.frameId
-    },
-    isDroppable(){
-      return this.dragItem && this.dragItem.kind === 'frame' && this.dragItem.dropperId !== this.frameId
-    }
   },
   methods: {
     dragstart(e: any){
@@ -89,32 +79,15 @@ export default defineComponent( {
         frame.style.opacity = '0.4'
 
         const dragItem: DragItem = {
-          draggerId: this.frameId,
+          draggerId: this.frame.id,
           kind: 'frame',
           object: this.frame,
         }
         store.dispatch('setDragItem', dragItem)
       }
     },
-    async onDrop(){
-      if (this.dragItem && this.dragItem.kind === 'frame'){
-        const dragFrame = this.dragItem.object
-
-        if (dragFrame.isOpened){
-          // @ts-ignore
-          this.port.postMessage({kind: "move-tab", tab: dragFrame.id, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
-        }else{
-          // @ts-ignore
-          this.port.postMessage({kind: "open-and-update", url: dragFrame.url, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
-        }
-
-      }
-    },
     copyLink(){
       navigator.clipboard.writeText(this.frame.url)
-    },
-    dragover(){
-      store.dispatch('setDropperId', this.frameId)
     },
     dragend(){
       let frame = this.$refs.frame as HTMLDivElement
@@ -371,16 +344,6 @@ h1:hover{
   }
 }
 
-.drop-container{
-  width: 100%;
-  height: 80px;
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  0% {height: 0;}
-  100% {height: 80px;}
-}
 
 .tags{
   width: calc(100% - 10px);

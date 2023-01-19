@@ -1,11 +1,11 @@
 <template>
   <ul class="tags">
     <li v-for="(item, index) in items" :key="index">
-      <a href="#" class="tag" :style="getCount(item.count)" v-on:click="selectTag($event, item)">{{item.name}}</a>
+      <a class="tag" :style="getCount(item.count)" v-on:click="selectTag($event, item)">{{item.name}}</a>
     </li>
 
     <li v-if="displayShow > 0">
-      <a href="#" class="tag-add" @click="showMore">+{{displayShow}}</a>
+      <a class="tag-add" @click="showMore">+{{displayShow}}</a>
     </li>
   </ul>
 </template>
@@ -121,6 +121,7 @@ export default {
 
 a{
   font-size: 0.9em;
+  cursor: pointer;
 }
 
 

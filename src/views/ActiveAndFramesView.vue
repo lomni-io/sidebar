@@ -1,13 +1,16 @@
 <template>
-<!--  <TabContainer :use-border="true" class="search sticky" title="search bar" :default-activation="true">-->
-<!--    <SearchBar :render-data="renderData"></SearchBar>-->
-<!--  </TabContainer>-->
-  <div v-for="(window, index) in renderData.windows" :key="index">
-<!--  TODO: replace tabs for other BAR like parent  -->
-    <TabContainer :title="'current tab: ' + window.name" :default-activation="true">
-      <CurrentActiveTabs :window="window"></CurrentActiveTabs>
-    </TabContainer>
+  <div v-if="renderData.windows && renderData.windows.length === 1">
+    <CurrentActiveTabs :window="renderData.windows[0]" :tags="renderData.tags" :search="renderData.search"></CurrentActiveTabs>
   </div>
+  <div v-if="renderData.windows && renderData.windows.length > 1">
+    <div v-for="(window, index) in renderData.windows" :key="index">
+      <!--  TODO: replace tabs for other BAR like parent  -->
+      <TabContainer :title="'current tab: ' + window.name" :default-activation="true">
+        <CurrentActiveTabs :window="window" :tags="renderData.tags" :search="renderData.search"></CurrentActiveTabs>
+      </TabContainer>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -23,10 +26,5 @@ export default {
 
 <style scoped>
 
-.sticky{
-  position: sticky !important;
-  top: 20px;
-  z-index: 100000;
-}
 
 </style>

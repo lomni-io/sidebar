@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="active-frame-container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
       <ActiveFrameUnit :frame="frame" :minimized="true"></ActiveFrameUnit>
     </div>
@@ -25,6 +25,7 @@
       </div>
 
     </div>
+    <LineToolBar :tags="tags" :search="search"></LineToolBar>
   </div>
 </template>
 
@@ -34,11 +35,12 @@ import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit.vue";
 import FrameDropArea from "@/components/v2/FrameDropArea.vue";
 import {GroupFrameRender, WebFrameRender} from "@/store/renderData";
 import TabGroupScaffold from "@/components/v2/TabGroupScaffold.vue";
+import LineToolBar from "@/components/v2/LineToolBar.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
-  props: ['window'],
-  components: {TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
+  props: ['window', 'tags', 'frames', 'search'],
+  components: {LineToolBar, TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
   methods: {
     getTopFrameFromGroup(frameIdx: number, tabIdx: number){
       if (frameIdx > 0){
@@ -62,8 +64,9 @@ export default defineComponent( {
 
 <style scoped>
 
-.container{
+.active-frame-container{
   padding: 5px;
+  margin-bottom: 50px;
 }
 
 </style>

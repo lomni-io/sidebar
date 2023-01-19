@@ -10,7 +10,6 @@
         <font-awesome-icon icon="star" />
         Bookmarks
       </li>
-      <li :class="{'active': this.selected === 'frames'}" @click="select('frames')">Frames</li>
       <li :class="{'active': this.selected === 'sync'}" @click="select('sync')">
         <font-awesome-icon icon="rotate" />
         Sync

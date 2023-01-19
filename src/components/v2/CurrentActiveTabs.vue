@@ -15,14 +15,13 @@
 
 <!--   GROUP TABS HERE   -->
       <div v-if="tab.kind === 'group'">
-        <ScafoldBar :title="tab.title" :color="tab.color" :collapsed="tab.collapsed" :group-id="tab.id" :count-frames="tab.frames.length">
+        <TabGroupScaffold :title="tab.title" :color="tab.color" :collapsed="tab.collapsed" :group="tab" :count-frames="tab.frames.length">
           <div v-for="(frame, frameIdx) in tab.frames" :key="frameIdx">
 
             <FrameDropArea :frame-bottom="frame" :frame-top="getTopFrameFromGroup(frameIdx, tabIdx)"></FrameDropArea>
             <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
           </div>
-<!--          <TagContainer :tags="tab.tags" :color="tab.color"></TagContainer>-->
-        </ScafoldBar>
+        </TabGroupScaffold>
       </div>
 
     </div>
@@ -31,15 +30,15 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import ScafoldBar from "@/components/v2/TabGroupScaffold.vue";
 import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit.vue";
 import FrameDropArea from "@/components/v2/FrameDropArea.vue";
 import {GroupFrameRender, WebFrameRender} from "@/store/renderData";
+import TabGroupScaffold from "@/components/v2/TabGroupScaffold.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
   props: ['window'],
-  components: {FrameDropArea, ActiveFrameUnit, ScafoldBar},
+  components: {TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
   methods: {
     getTopFrameFromGroup(frameIdx: number, tabIdx: number){
       if (frameIdx > 0){

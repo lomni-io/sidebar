@@ -10,6 +10,15 @@ export interface RenderData {
     searchPinneds: PinnedSearchRender[]
 }
 
+export interface GroupData {
+    updatedAt: number
+    currentId: number
+    title:  string
+    color: string
+    tags: string[]
+    frames: (WebFrameData|TraceWebFrameData)[]
+}
+
 export interface Tag {
     name:  string
     count: number
@@ -45,7 +54,7 @@ export interface Window {
     tabs: (GroupFrameRender|WebFrameRender)[]
 }
 
-export interface TrailWebFrameData {
+export interface TraceWebFrameData {
     title: string
     urls: []
 }
@@ -63,7 +72,8 @@ export interface GroupFrameRender {
     title:  string
     color: string
     collapsed: boolean
-    frames: WebFrameRender[]
+    isSaved: boolean
+    frames: (WebFrameRender|TraceWebFrameData)[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
@@ -103,14 +113,14 @@ export interface WebFrameRender {
     kind: string
 }
 
-export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], pinnedSearchs: PinnedSearchData[]): RenderData{
+export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], pinnedSearchs: PinnedSearchData[], savedGroups: GroupData[]): RenderData{
     const enriched = enrichFrames(framesData, tabs)
 
     return {
         tabs: tabs,
         search: searchInput,
         tags: createTags(enriched, searchInput),
-        windows: createWindows(tabs, tabGroups, enriched),
+        windows: createWindows(tabs, tabGroups, enriched, savedGroups),
         frames: framesFiltered(enriched, searchInput) as WebFrameRender[],
         searchPinneds: makePinnedSearch(enriched, pinnedSearchs, searchInput)
     }
@@ -232,7 +242,7 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered: (GroupFrameRender|WebFrameRender)[]): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered: (GroupFrameRender|WebFrameRender)[], groupsData: GroupData[] = []): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -260,9 +270,11 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered
             if (groupRender){
                 groupRender.frames.push(mountWebFrame(tab, framesRendered))
             }else{
+                // mount group here
                 window.tabs.push({
                     id: tab.groupId,
                     title:  tabGroup.title,
+                    isSaved: groupsData.some(x => x.currentId === tabGroup.id),
                     color: tabGroup.color,
                     collapsed: tabGroup.collapsed,
                     frames: [mountWebFrame(tab, framesRendered)],
@@ -275,6 +287,14 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered
     })
 
     return windows
+}
+
+export function makeSavedStatus(groupsData: GroupData[], tabGroup: TabGroup): string{
+    const groupData = groupsData.find(x => x.title === tabGroup.title)
+    if (groupsData){
+        // has group check if is equal
+    }
+    return 'NOT_SAVED'
 }
 
 export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebFrameRender[]{
@@ -396,4 +416,15 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
         const tagLength = x.tags.length > y.tags.length
         return tagLength ? 1 : -1
     })
+}
+
+export function groupToSave(group: GroupFrameRender): GroupData{
+    return {
+        updatedAt: Date.now(),
+        currentId: group.id,
+        title:  group.title,
+        color: group.color,
+        tags: group.tags,
+        frames: []
+    }
 }

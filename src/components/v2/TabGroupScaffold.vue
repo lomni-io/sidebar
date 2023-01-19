@@ -1,6 +1,7 @@
 <template>
   <div class="scafold-container">
     <div class="header" :class="color" draggable="true">
+<!--    TODO why is not saved?  -->
       <div class="header-left">
         <div class="input" v-if="!collapsed" @click="collapse(true)" :class="color">-</div>
         <div class="input" v-if="collapsed" @click="collapse(false)" :class="color">+</div>
@@ -19,15 +20,24 @@
     <div class="content" :class="color" v-if="!collapsed">
       <slot></slot>
     </div>
+    <div class="footer">
+      <TagContainer :tags="group.tags" :color="group.color"></TagContainer>
+    </div>
+
+
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
+import {groupToSave} from "@/store/renderData";
+import {store} from "@/store";
+import TagContainer from "@/components/v2/TagContainer.vue";
 
 export default defineComponent( {
   name: "TabGroupScaffold",
-  props: ['title', 'color', 'collapsed', 'groupId', 'countFrames'],
+  components: {TagContainer},
+  props: ['title', 'color', 'collapsed', 'countFrames', 'group'],
   data() {
     return {
       newTitle: this.title,
@@ -37,7 +47,7 @@ export default defineComponent( {
   methods: {
     collapse(collapsed: boolean){
       // @ts-ignore
-      this.port.postMessage({kind: "collapse-tab-groups", group: this.groupId, collapse: collapsed});
+      this.port.postMessage({kind: "collapse-tab-groups", group: this.group.id, collapse: collapsed});
     },
     editTitle(){
       this.editTitleMode = true
@@ -45,6 +55,12 @@ export default defineComponent( {
         const html = this.$refs.input as HTMLInputElement
         html.focus()
       });
+    },
+    removeGroup(){
+      store.dispatch('removeGroup', this.group.id)
+    },
+    saveGroup(){
+      store.dispatch('saveGroup', groupToSave(this.group))
     },
     changeColor(){
       let newColor = this.color
@@ -77,12 +93,12 @@ export default defineComponent( {
       }
 
       // @ts-ignore
-      this.port.postMessage({kind: "color-tab-groups", group: this.groupId, color: newColor});
+      this.port.postMessage({kind: "color-tab-groups", group: this.group.id, color: newColor});
     },
     saveNewTitle(){
       if (this.newTitle){
         // @ts-ignore
-        this.port.postMessage({kind: "title-tab-groups", group: this.groupId, title: this.newTitle});
+        this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: this.newTitle});
       }
       this.editTitleMode = false
     },
@@ -382,6 +398,10 @@ input{
 }
 
 .edit-mode-container{
+  display: flex;
+}
+
+.footer{
   display: flex;
 }
 

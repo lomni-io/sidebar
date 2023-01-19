@@ -1,27 +1,23 @@
 <template>
-  <TabContainer :use-border="true" class="search sticky" title="search bar" :default-activation="true">
-    <SearchBar :render-data="renderData"></SearchBar>
-  </TabContainer>
+<!--  <TabContainer :use-border="true" class="search sticky" title="search bar" :default-activation="true">-->
+<!--    <SearchBar :render-data="renderData"></SearchBar>-->
+<!--  </TabContainer>-->
   <div v-for="(window, index) in renderData.windows" :key="index">
-    <TabContainer :use-border="true" :title="'current tab: ' + window.name" :default-activation="true">
-      <CurrentTabs :window="window"></CurrentTabs>
+<!--  TODO: replace tabs for other BAR like parent  -->
+    <TabContainer :title="'current tab: ' + window.name" :default-activation="true">
+      <CurrentActiveTabs :window="window"></CurrentActiveTabs>
     </TabContainer>
   </div>
-  <TabContainer title="frames" :default-activation="true">
-    <FramesContainer :render-data="renderData"></FramesContainer>
-  </TabContainer>
 </template>
 
 <script>
 import TabContainer from "@/components/v2/TabContainer";
-import SearchBar from "@/components/v2/SearchBar";
-import CurrentTabs from "@/components/v2/CurrentActiveTabs";
-import FramesContainer from "@/components/v2/FramesContainer";
+import CurrentActiveTabs from "@/components/v2/CurrentActiveTabs";
 
 export default {
   name: "ActiveAndFramesView",
   props: ['renderData'],
-  components: {FramesContainer, CurrentTabs, TabContainer,SearchBar}
+  components: {CurrentActiveTabs, TabContainer}
 }
 </script>
 

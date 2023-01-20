@@ -1,7 +1,7 @@
 <template>
   <ul class="tags">
     <li v-for="(item, index) in items" :key="index">
-      <a class="tag" :style="getCount(item.count)" v-on:click="selectTag($event, item)">{{item.name}}</a>
+      <a href="#" class="tag" :style="getCount(item.count)" v-on:click="selectTag($event, item)">{{item.name}}</a>
     </li>
 
     <li v-if="displayShow > 0">

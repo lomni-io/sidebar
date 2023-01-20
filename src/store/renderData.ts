@@ -16,7 +16,7 @@ export interface GroupData {
     title:  string
     color: string
     tags: string[]
-    frames: (WebFrameData|TraceWebFrameData)[]
+    frames: (WebFrameData|TraceGroupFrameData)[]
 }
 
 export interface Tag {
@@ -54,14 +54,25 @@ export interface Window {
     tabs: (GroupFrameRender|WebFrameRender)[]
 }
 
-export interface TraceWebFrameData {
-    title: string
-    urls: []
+export interface TraceGroupFrameData {
+    id: string
+    tags: string[]
+    frames: TraceWebFrameData[]
 }
+
+export interface TraceWebFrameData {
+    url:   string
+    title: string
+    favIconUrl: string
+}
+
+
+
 
 export interface WebFrameData{
     url:   string
     title: string
+    comment?: string
     favIconUrl: string
     tags: string[]
     updatedAt: number
@@ -72,8 +83,7 @@ export interface GroupFrameRender {
     title:  string
     color: string
     collapsed: boolean
-    isSaved: boolean
-    frames: (WebFrameRender|TraceWebFrameData)[]
+    frames: (WebFrameRender|TraceGroupFrameData)[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
@@ -121,7 +131,7 @@ export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGro
         search: searchInput,
         tags: createTags(enriched, searchInput),
         windows: createWindows(tabs, tabGroups, enriched, savedGroups),
-        frames: framesFiltered(enriched, searchInput) as WebFrameRender[],
+        frames: enriched as WebFrameRender[],
         searchPinneds: makePinnedSearch(enriched, pinnedSearchs, searchInput)
     }
 }
@@ -274,7 +284,6 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered
                 window.tabs.push({
                     id: tab.groupId,
                     title:  tabGroup.title,
-                    isSaved: groupsData.some(x => x.currentId === tabGroup.id),
                     color: tabGroup.color,
                     collapsed: tabGroup.collapsed,
                     frames: [mountWebFrame(tab, framesRendered)],

@@ -1,30 +1,48 @@
 <template>
-  <div class="toolbar-pre"></div>
-  <div class="toolbar">
+  <div class="toolbar-pre" v-if="!isActive" @click="isActive = true"></div>
+  <div class="toolbar" v-if="isActive">
+
     <div class="tag-input-container">
       <p class="tag-input" v-for="(tag, index) in search" :key="index"><span v-on:click="removeTag(tag)" >{{tag}}</span></p>
-      <input v-model="input" :placeholder="placeholder" v-on:keydown="keydown" ref="input"/>
+      <input v-model="input" :placeholder="placeholder" v-on:focusout="focusOut" v-on:keydown="keydown" ref="input"/>
     </div>
-    <TagListContainer v-if="isFrameSearch" :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
+
+<!--   IS FRAME SEARCH -->
+    <div class="addframe-container" v-if="isFrameSearch">
+      <TagListContainer :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
+      <div class="frames-container" v-for="(frame, index) in framesFiltered.slice(0, 5)" :key="index">
+        <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/TagListContainer.vue";
-import {store} from "@/store";
-import {Tag} from "@/store/renderData";
+import {createTags, framesFiltered, Tag} from "@/store/renderData";
+import ToolbarFrameUnit from "@/components/v2/ToolbarFrameUnit.vue";
+import {FrameRender} from "@/entity/frame";
 
 export default defineComponent( {
   name: "LineToolBar",
-  components: {TagListContainer},
-  props: ['tags', 'search'],
+  components: {ToolbarFrameUnit, TagListContainer},
+  props: ['frames', 'frame'],
   data() {
     return {
+      search: [] as string[],
+      isActive: false,
       input: ''
     }
   },
   computed: {
+    framesFiltered(){
+      return framesFiltered(this.frames, this.search)
+    },
+    tags(): Tag[]{
+      return createTags(this.frames, this.search)
+    },
     placeholder(){
       if (this.search.length === 0){
         return "Start #,@ to select frame, or type '/' for command"
@@ -36,12 +54,27 @@ export default defineComponent( {
     }
   },
   methods: {
+    focusOut(){
+      if (!this.isFrameSearch){
+        this.isActive = false
+      }
+    },
     removeTag(tag: string){
-      store.dispatch('removeSearchItem', tag)
+      const idx = this.search.findIndex(x => x === tag)
+      if (~idx){
+        this.search.splice(idx, 1)
+      }
+    },
+    addFrame(newFrame: FrameRender){
+      // @ts-ignore
+      this.port.postMessage({kind: "open-and-update", url: newFrame.url, windowId: this.frame.windowId, index: this.frame.index+1, groupId: this.frame.groupId});
+      this.isActive = false
     },
     addTag(tag: Tag){
       this.input = ''
-      store.dispatch('addSearchItem', tag.name)
+      if (!this.search.some(x => x === tag.name)){
+        this.search.push(tag.name)
+      }
 
       const html = this.$refs.input as HTMLInputElement
       this.$nextTick(() => {
@@ -49,8 +82,23 @@ export default defineComponent( {
       });
     },
     keydown(e: any){
+      if (e.code === 'Escape'){
+        this.isActive = false
+        this.search = []
+        e.preventDefault()
+      }
+      if (e.code === 'Backspace' && this.input.length === 0 && this.search.length === 0){
+        this.isActive = false
+      }
+      if (e.code === 'Backspace' && this.input.length === 0){
+        this.search.pop()
+        e.preventDefault()
+      }
       if (e.code === 'Enter' && this.input.length > 1 && this.input.startsWith('#')) {
-        store.dispatch('addSearchItem', this.input)
+        if (!this.search.some(x => x === this.input)){
+          this.search.push(this.input)
+        }
+
         this.input = ''
         e.preventDefault()
         const html = this.$refs.input as HTMLInputElement
@@ -111,13 +159,21 @@ input {
 }
 
 .toolbar-pre{
-  background-color: var(--background_main);
-  width: 100%;
-  height: 7px;
+  height: 5px;
+  margin-top: -5px;
+  z-index: 100000;
   &:hover{
+    opacity: 0.1;
+    border-radius: 5px;
+    background-color: var(--text_color);
     filter: var(--hover);
     cursor: pointer;
   }
 }
+
+.frames-container{
+  opacity: 0.7;
+}
+
 
 </style>

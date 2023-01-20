@@ -11,6 +11,7 @@
       <div v-if="tab.kind === 'web'">
         <FrameDropArea :frame-bottom="tab" :frame-top="tabIdx > 0 ? window.tabs[tabIdx-1] : -1"></FrameDropArea>
         <ActiveFrameUnit :frame="tab"></ActiveFrameUnit>
+        <LineToolBar :frames="frames" :frame="tab"></LineToolBar>
       </div>
 
 <!--   GROUP TABS HERE   -->
@@ -20,12 +21,13 @@
 
             <FrameDropArea :frame-bottom="frame" :frame-top="getTopFrameFromGroup(frameIdx, tabIdx)"></FrameDropArea>
             <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
+            <LineToolBar :frames="frames" :frame="frame"></LineToolBar>
           </div>
         </TabGroupScaffold>
       </div>
 
     </div>
-    <LineToolBar :tags="tags" :search="search"></LineToolBar>
+
   </div>
 </template>
 

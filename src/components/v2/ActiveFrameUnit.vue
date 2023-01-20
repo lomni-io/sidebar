@@ -1,5 +1,4 @@
 <template>
-  <a ref="tabIdx" tabindex="1">
   <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
     <small class="frame-footer-drag" v-if="!minimized">
@@ -52,7 +51,6 @@
       </div>
     </div>
   </div>
-  </a>
 </template>
 
 <script lang="ts">
@@ -173,10 +171,6 @@ export default defineComponent( {
 </script>
 
 <style scoped lang="scss">
-
-a{
-  text-decoration: none;
-}
 
 .frame{
 }

@@ -41,7 +41,11 @@ export default defineComponent( {
       return framesFiltered(this.frames, this.search)
     },
     tags(): Tag[]{
-      return createTags(this.frames, this.search)
+      const tags = createTags(this.frames, this.search)
+      if (this.input.length > 0){
+        return tags.filter(t => t.name.includes(this.input))
+      }
+      return tags
     },
     placeholder(){
       if (this.search.length === 0){

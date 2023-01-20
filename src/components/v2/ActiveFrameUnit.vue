@@ -1,4 +1,5 @@
 <template>
+  <a ref="tabIdx" tabindex="1">
   <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
     <small class="frame-footer-drag" v-if="!minimized">
@@ -51,6 +52,7 @@
       </div>
     </div>
   </div>
+  </a>
 </template>
 
 <script lang="ts">
@@ -74,6 +76,22 @@ export default defineComponent( {
     dragItem(){
       return store.getters.dragItem
     },
+  },
+  watch: {
+    frame: {
+      handler(frame) {
+        if (frame.isSelected){
+          this.$nextTick(() => {
+            const el = this.$refs.tabIdx as HTMLElement
+            el.focus()
+          });
+        }
+      },
+      deep: true
+    },
+  },
+  mounted() {
+
   },
   methods: {
     dragstart(e: any){
@@ -156,6 +174,9 @@ export default defineComponent( {
 
 <style scoped lang="scss">
 
+a{
+  text-decoration: none;
+}
 
 .frame{
 }

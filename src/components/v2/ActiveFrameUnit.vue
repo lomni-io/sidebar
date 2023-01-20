@@ -76,17 +76,7 @@ export default defineComponent( {
     },
   },
   watch: {
-    frame: {
-      handler(frame) {
-        if (frame.isSelected){
-          this.$nextTick(() => {
-            const el = this.$refs.tabIdx as HTMLElement
-            el.focus()
-          });
-        }
-      },
-      deep: true
-    },
+
   },
   mounted() {
 

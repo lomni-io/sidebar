@@ -36,6 +36,16 @@ export default defineComponent( {
       input: ''
     }
   },
+  watch: {
+    isActive(val){
+      if (val){
+        this.$nextTick(() => {
+          const html = this.$refs.input as HTMLInputElement
+          html.focus()
+        });
+      }
+    }
+  },
   computed: {
     framesFiltered(){
       return framesFiltered(this.frames, this.search)

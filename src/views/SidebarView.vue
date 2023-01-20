@@ -2,9 +2,18 @@
 
   <div v-if="hasPlugin">
     <ul class="sticky">
-      <li :class="{'active': this.selected === 'tabs'}" @click="select('tabs')">Tabs</li>
-      <li :class="{'active': this.selected === 'frames'}" @click="select('frames')">Frames</li>
-      <li :class="{'active': this.selected === 'sync'}" @click="select('sync')">Sync</li>
+      <li :class="{'active': this.selected === 'tabs'}" @click="select('tabs')">
+        <font-awesome-icon icon="tv" />
+        Bars
+      </li>
+      <li :class="{'active': this.selected === 'frames'}" @click="select('frames')">
+        <font-awesome-icon icon="star" />
+        Bookmarks
+      </li>
+      <li :class="{'active': this.selected === 'sync'}" @click="select('sync')">
+        <font-awesome-icon icon="rotate" />
+        Sync
+      </li>
     </ul>
 
     <TabsView v-if="renderData && selected === 'tabs'" :render-data="renderData"></TabsView>

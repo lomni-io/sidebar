@@ -1,8 +1,10 @@
 <template>
-  <div class="drop-container" v-if="isDropArea" @dragover="dragover" @drop="onDrop" @dragover.prevent @dragenter.prevent ></div>
+  <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
-  <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
-    <div class="drop-area" :class="{'drag-over': isDropArea}" v-if="isDroppable" @dragover="dragover"></div>
+    <small class="frame-footer-drag" v-if="!minimized">
+      <font-awesome-icon icon="bars" />
+    </small>
+
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
@@ -15,7 +17,18 @@
         </div>
 
         <div class="frame-header-right">
-
+          <div class="frame-volume" title="meeting" v-if="frame.audible">
+            <font-awesome-icon icon="volume-up" />
+          </div>
+          <div class="frame-header-clone" @click="clone" title="clone frame">
+            <font-awesome-icon icon="clone" />
+          </div>
+          <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" title="add tab to group">
+            <font-awesome-icon icon="object-group" />
+          </div>
+          <div class="frame-header-group" v-if="this.frame.groupId > -1" @click="removeGroupTab" title="add tab to group">
+            <font-awesome-icon icon="object-ungroup" />
+          </div>
           <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" title="unpin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
@@ -27,9 +40,14 @@
           </div>
         </div>
       </div>
-      <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
-      <div class="tags">
-        <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+
+      <div class="title-container">
+        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
+      </div>
+      <div class="frame-footer">
+        <div class="tags">
+          <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+        </div>
       </div>
     </div>
   </div>
@@ -50,19 +68,18 @@ export default defineComponent( {
   props: ['frame', 'minimized'],
   data() {
     return {
-      frameId: Math.floor(Math.random() * 1000000000).toFixed(0)
     }
   },
   computed: {
     dragItem(){
       return store.getters.dragItem
     },
-    isDropArea(){
-      return this.dragItem && this.dragItem.kind === 'frame' && this.dragItem.dropperId === this.frameId
-    },
-    isDroppable(){
-      return this.dragItem && this.dragItem.kind === 'frame' && this.dragItem.dropperId !== this.frameId
-    }
+  },
+  watch: {
+
+  },
+  mounted() {
+
   },
   methods: {
     dragstart(e: any){
@@ -71,32 +88,15 @@ export default defineComponent( {
         frame.style.opacity = '0.4'
 
         const dragItem: DragItem = {
-          draggerId: this.frameId,
+          draggerId: this.frame.id,
           kind: 'frame',
           object: this.frame,
         }
         store.dispatch('setDragItem', dragItem)
       }
     },
-    async onDrop(){
-      if (this.dragItem && this.dragItem.kind === 'frame'){
-        const dragFrame = this.dragItem.object
-
-        if (dragFrame.isOpened){
-          // @ts-ignore
-          this.port.postMessage({kind: "move-tab", tab: dragFrame.id, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
-        }else{
-          // @ts-ignore
-          this.port.postMessage({kind: "open-and-update", url: dragFrame.url, windowId: this.frame.windowId, index: this.frame.index, groupId: this.frame.groupId});
-        }
-
-      }
-    },
     copyLink(){
       navigator.clipboard.writeText(this.frame.url)
-    },
-    dragover(){
-      store.dispatch('setDropperId', this.frameId)
     },
     dragend(){
       let frame = this.$refs.frame as HTMLDivElement
@@ -107,6 +107,14 @@ export default defineComponent( {
     clickedTag(tag: string){
       store.dispatch('addSearchItem', tag)
     },
+    newGroupTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "group-tabs", tabs: this.frame.id});
+    },
+    removeGroupTab(){
+      // @ts-ignore
+      this.port.postMessage({kind: "ungroup-tabs", tabs: this.frame.id});
+    },
     pinTab(){
       if (this.frame.isOpened){
         // @ts-ignore
@@ -115,6 +123,10 @@ export default defineComponent( {
         // @ts-ignore
         this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url, pinned: true});
       }
+    },
+    clone(){
+      // @ts-ignore
+      this.port.postMessage({kind: "open-and-update", url: this.frame.url, windowId: this.frame.windowId, index: this.frame.index+1, groupId: this.frame.groupId});
     },
     unpinTab(){
       // @ts-ignore
@@ -150,7 +162,6 @@ export default defineComponent( {
 
 <style scoped lang="scss">
 
-
 .frame{
 }
 
@@ -161,6 +172,9 @@ export default defineComponent( {
   border-radius: 5px;
   margin-bottom: 5px;
   position: relative;
+  &.open{
+    background-color: var(--background_frame_selected);
+  }
 }
 
 .current-selected{
@@ -215,6 +229,24 @@ export default defineComponent( {
       &.active{
         color: var(--blue);
       }
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-group {
+      color: var(--text_color);
+      opacity: 0.8;
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-clone {
+      color: var(--text_color);
+      opacity: 0.8;
       &:hover{
         cursor: pointer;
         filter: var(--hover);
@@ -301,9 +333,44 @@ h1:hover{
   width: 100%;
 }
 
-.drop-container{
-  width: 100%;
-  height: 80px;
+
+.frame-footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.frame-footer-drag{
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  right: 5px;
+  &:hover{
+    filter: var(--hover);
+  }
+}
+
+.drag-container{
+
+}
+
+.title-container{
+  display: flex;
+  align-items: center;
+}
+
+.frame-volume{
+  margin-right: 5px;
+  color: var(--blue);
+  &:hover{
+    filter: var(--hover);
+    cursor: pointer;
+  }
+}
+
+
+.tags{
+  width: calc(100% - 10px);
 }
 
 </style>

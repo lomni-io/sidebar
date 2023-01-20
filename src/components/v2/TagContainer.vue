@@ -1,9 +1,9 @@
 <template>
   <ul class="tags">
 
-    <li @dragover="dragover" @dragleave="dragleave" @drop="onDropAdd" @dragover.prevent @dragenter.prevent>
+    <div @dragover="dragover" @dragleave="dragleave" @drop="onDropAdd" @dragover.prevent @dragenter.prevent>
       <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="isAddingDroppable" >add here</a>
-    </li>
+    </div>
 
     <li v-if="isRemoveDroppable" @dragover="dragover" @dragleave="dragleave" @drop="onDropRemove" @dragover.prevent @dragenter.prevent>
       <a class="tag remove" :class="{'drag-over': isDraggingOver}">

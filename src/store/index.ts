@@ -1,6 +1,14 @@
 import {ActionContext, createStore} from 'vuex'
 import {DragItem} from "@/store/dragItem";
-import {createRenderData, enrichFrames, PinnedSearchData, Tab, TabGroup, WebFrameData} from "@/store/renderData";
+import {
+  createRenderData,
+  enrichFrames, GroupData,
+  GroupFrameRender,
+  PinnedSearchData,
+  Tab,
+  TabGroup,
+  WebFrameData
+} from "@/store/renderData";
 
 // import md5 from "md5";
 
@@ -8,13 +16,16 @@ import {createRenderData, enrichFrames, PinnedSearchData, Tab, TabGroup, WebFram
 // define your typings for the store state
 export interface State {
   storage: any
+  // TODO: change to this:
+  // frames: (WebFrameData|GroupData)[]
   frames: WebFrameData[]
   pinnedSearchs: PinnedSearchData[]
   tabs:   Tab[]
   tabGroups: TabGroup[]
   clipboard: string|null
   dragItem: DragItem|null,
-  search: string[]
+  search: string[],
+  savedGroups: GroupData[]
 }
 
 export const store = createStore<State>({
@@ -43,6 +54,9 @@ export const store = createStore<State>({
         currentSelectedFrameIdx: -1,
       },
 
+      // TODO: remove this, going to frames
+      savedGroups: [],
+
       tabs: [],
       tabGroups: [],
       search: []
@@ -69,7 +83,7 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.pinnedSearchs)
+      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.pinnedSearchs, state.savedGroups)
     },
 
     // add preProcessedTags
@@ -115,6 +129,7 @@ export const store = createStore<State>({
     SET_DATA(state, payload) {
       state.frames = payload.frames
       state.storage = payload.storage
+      state.savedGroups = payload.groupsData
     },
     SET_CLIPBOARD(state, clipboard) {
       state.clipboard = clipboard
@@ -157,6 +172,25 @@ export const store = createStore<State>({
     SET_ALL_TAB_GROUPS(state, data){
       state.tabGroups = data
     },
+    REMOVE_SAVED_GROUP(state, id: number){
+      const groupIdx = state.savedGroups.findIndex(x => x.currentId === id)
+      if (~groupIdx) {
+        // has frame
+        state.savedGroups.splice(groupIdx, 1)
+      }
+      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
+    },
+    SAVE_GROUP(state, group: GroupData){
+      const groupIdx = state.savedGroups.findIndex((x:GroupData) => x.title === group.title)
+      if (~groupIdx){
+        // has frame
+        state.savedGroups[groupIdx] = group
+      }else{
+        // new frame
+        state.savedGroups.push(group)
+      }
+      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
+    },
     SET_NOTE(state, note) {
       note.updatedAt = Date.now()
 
@@ -198,6 +232,13 @@ export const store = createStore<State>({
       context.commit('SET_FRAMES', frames)
     },
 
+    saveGroup(context, group: GroupData){
+      context.commit('SAVE_GROUP', group)
+    },
+    removeGroup(context, id: number){
+      context.commit('REMOVE_SAVED_GROUP', id)
+    },
+
     // process of loading and save
 
     loadState(context){
@@ -213,7 +254,13 @@ export const store = createStore<State>({
         storage = JSON.parse(storageRaw)
       }
 
-      context.commit('SET_DATA', {frames: frames, storage: storage})
+      let groupsData = []
+      const groupsDataRaw = localStorage.getItem('savedGroups')
+      if (groupsDataRaw){
+        groupsData = JSON.parse(groupsDataRaw)
+      }
+
+      context.commit('SET_DATA', {frames: frames, storage: storage, groupsData:groupsData})
     },
     setStorage(context, storage){
       context.commit('SET_STORAGE', storage)

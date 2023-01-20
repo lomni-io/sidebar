@@ -1,5 +1,10 @@
 <template>
   <div class="frame-info-container" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+
+    <small class="frame-footer-drag">
+      <font-awesome-icon icon="bars" />
+    </small>
+
     <div class="frame-info">
       <div class="frame-header">
         <div class="frame-header-left">
@@ -19,7 +24,11 @@
           </div>
         </div>
       </div>
-      <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</h1>
+
+      <div class="title-container">
+        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</h1>
+      </div>
+
       <div class="tags">
         <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @clickedTag="clickedTag"></TagContainer>
       </div>
@@ -250,6 +259,25 @@ h1:hover{
 .drop-container{
   width: 100%;
   height: 80px;
+}
+
+.frame-footer-drag{
+  cursor: pointer;
+  position: absolute;
+  bottom: 0;
+  right: 5px;
+  &:hover{
+    filter: var(--hover);
+  }
+}
+
+.title-container{
+  display: flex;
+  align-items: center;
+}
+
+.tags{
+  width: calc(100% - 10px);
 }
 
 </style>

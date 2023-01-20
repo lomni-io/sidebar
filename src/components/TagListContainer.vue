@@ -5,7 +5,7 @@
     </li>
 
     <li v-if="displayShow > 0">
-      <a href="#" class="tag-add" @click="showMore">+{{displayShow}}</a>
+      <a class="tag-add" @click="showMore">+{{displayShow}}</a>
     </li>
   </ul>
 </template>
@@ -121,6 +121,7 @@ export default {
 
 a{
   font-size: 0.9em;
+  cursor: pointer;
 }
 
 

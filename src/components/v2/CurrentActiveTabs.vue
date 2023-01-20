@@ -1,55 +1,74 @@
 <template>
-  <div class="container">
+  <div class="active-frame-container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
-<!--      <FrameDropArea></FrameDropArea>-->
       <ActiveFrameUnit :frame="frame" :minimized="true"></ActiveFrameUnit>
     </div>
 
 <!--  TABS HERE  -->
-    <div v-for="(tab, index) in window.tabs" :key="index">
+    <div v-for="(tab, tabIdx) in window.tabs" :key="tabIdx">
 
 <!--   NORMAL TABS HERE   -->
       <div v-if="tab.kind === 'web'">
-<!--        <FrameDropArea></FrameDropArea>-->
+        <FrameDropArea :frame-bottom="tab" :frame-top="tabIdx > 0 ? window.tabs[tabIdx-1] : -1"></FrameDropArea>
         <ActiveFrameUnit :frame="tab"></ActiveFrameUnit>
+        <LineToolBar :frames="frames" :frame="tab"></LineToolBar>
       </div>
 
 <!--   GROUP TABS HERE   -->
       <div v-if="tab.kind === 'group'">
-        <ScafoldBar :title="tab.title" :color="tab.color" :collapsed="tab.collapsed" :group-id="tab.id" :count-frames="tab.frames.length">
-          <div v-for="(frame, index) in tab.frames" :key="index">
-<!--            <FrameDropArea></FrameDropArea>-->
+        <TabGroupScaffold :title="tab.title" :color="tab.color" :collapsed="tab.collapsed" :group="tab" :count-frames="tab.frames.length">
+          <div v-for="(frame, frameIdx) in tab.frames" :key="frameIdx">
+
+            <FrameDropArea :frame-bottom="frame" :frame-top="getTopFrameFromGroup(frameIdx, tabIdx)"></FrameDropArea>
             <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
+            <LineToolBar :frames="frames" :frame="frame"></LineToolBar>
           </div>
-<!--          <TagContainer :tags="tab.tags" :color="tab.color"></TagContainer>-->
-        </ScafoldBar>
+        </TabGroupScaffold>
       </div>
 
     </div>
-
-    <NewGroupContainer></NewGroupContainer>
 
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import ScafoldBar from "@/components/v2/TabGroupScaffold.vue";
-import NewGroupContainer from "@/components/v2/NewGroupContainer.vue";
 import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit.vue";
+import FrameDropArea from "@/components/v2/FrameDropArea.vue";
+import {GroupFrameRender, WebFrameRender} from "@/store/renderData";
+import TabGroupScaffold from "@/components/v2/TabGroupScaffold.vue";
+import LineToolBar from "@/components/v2/LineToolBar.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
-  props: ['window'],
-  components: {ActiveFrameUnit, NewGroupContainer, ScafoldBar}
+  props: ['window', 'tags', 'frames', 'search'],
+  components: {LineToolBar, TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
+  methods: {
+    getTopFrameFromGroup(frameIdx: number, tabIdx: number){
+      if (frameIdx > 0){
+        return this.window.tabs[tabIdx].frames[frameIdx-1]
+      }
+      if (tabIdx > 0){
+        const previewsTab = this.window.tabs[tabIdx-1]
+        if (previewsTab.kind === 'group'){
+          const group = previewsTab as GroupFrameRender
+          return group.frames[group.frames.length-1]
+        }
+        if (previewsTab.kind === 'web'){
+          return previewsTab as WebFrameRender
+        }
+      }
+    }
+  }
 })
 
 </script>
 
 <style scoped>
 
-.container{
+.active-frame-container{
   padding: 5px;
+  margin-bottom: 50px;
 }
 
 </style>

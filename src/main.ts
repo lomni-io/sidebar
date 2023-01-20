@@ -27,11 +27,11 @@ import {
     faObjectUngroup,
     faRecordVinyl,
     faVideo,
-    faMicrophone, faVolumeUp, faStar, faRotate
+    faMicrophone, faVolumeUp, faStar, faRotate, faClone
 } from '@fortawesome/free-solid-svg-icons'
 import {store} from "@/store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare, faSquarePlus, faThumbtack, faPlusSquare, faXmark, faCopy, faBars, faObjectGroup, faObjectUngroup, faVideo, faMicrophone, faVolumeUp, faStar, faRotate)
+library.add(faEye, faEdit, faFloppyDisk, faTrash, faTv, faArrowUpRightFromSquare, faSquarePlus, faThumbtack, faPlusSquare, faXmark, faCopy, faBars, faObjectGroup, faObjectUngroup, faVideo, faMicrophone, faVolumeUp, faStar, faRotate, faClone)
 
 const emitter = mitt();
 

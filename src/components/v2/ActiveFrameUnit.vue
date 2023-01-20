@@ -20,6 +20,9 @@
           <div class="frame-volume" title="meeting" v-if="frame.audible">
             <font-awesome-icon icon="volume-up" />
           </div>
+          <div class="frame-header-clone" @click="clone" title="clone frame">
+            <font-awesome-icon icon="clone" />
+          </div>
           <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" title="add tab to group">
             <font-awesome-icon icon="object-group" />
           </div>
@@ -114,6 +117,10 @@ export default defineComponent( {
         // @ts-ignore
         this.port.postMessage({kind: "open-request-new-tab", url: this.frame.url, pinned: true});
       }
+    },
+    clone(){
+      // @ts-ignore
+      this.port.postMessage({kind: "open-and-update", url: this.frame.url, windowId: this.frame.windowId, index: this.frame.index+1, groupId: this.frame.groupId});
     },
     unpinTab(){
       // @ts-ignore
@@ -224,6 +231,15 @@ export default defineComponent( {
     }
 
     .frame-header-group {
+      color: var(--text_color);
+      opacity: 0.8;
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-clone {
       color: var(--text_color);
       opacity: 0.8;
       &:hover{

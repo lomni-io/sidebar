@@ -11,6 +11,9 @@
       </a>
     </li>
 
+    <li v-for="(tag, index) in sugestedTags" :key="index">
+      <a class="tag sugested" @click="clickedTag(tag)">{{tag}}</a>
+    </li>
     <li v-for="(tag, index) in fixedTags" :key="index">
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
     </li>
@@ -26,7 +29,7 @@ import {store} from "@/store";
 export default {
   name: "TagContainer",
   emits: ['addTag', 'clickedTag'],
-  props: ['tags', 'fixedTags', 'color'],
+  props: ['tags', 'fixedTags', 'color', 'sugestedTags'],
   data() {
     return {
       isDraggingOver: false,
@@ -127,6 +130,27 @@ export default {
     border: 1px dashed var(--background_tag);
   }
 
+  &.blue{
+    color: var(--blue);
+  }
+  &.cyan{
+    color: var(--cyan);
+  }
+  &.pink{
+    color: var(--pink);
+  }
+  &.purple{
+    color: var(--purple);
+  }
+  &.orange{
+    color: var(--orange);
+  }
+  &.yellow{
+    color: var(--yellow);
+  }
+  &.green{
+    color: var(--green);
+  }
   &.red{
     color: var(--red);
   }
@@ -134,6 +158,12 @@ export default {
 
 .fixed{
   filter: var(--hover);
+  font-weight: bold;
+}
+
+.sugested{
+  background-color: var(--green);
+  color: var(--background_input);
   font-weight: bold;
 }
 

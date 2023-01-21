@@ -1,7 +1,7 @@
 import {
     createTags, createWindows,
     enrichFrames, filterFramesBySelection, framesFiltered, framesSort, generateTagCardinality,
-    GroupFrameRender, makePinnedSearch,
+    GroupFrameRender,
     WebFrameData,
     WebFrameRender
 } from "@/store/renderData";
@@ -467,7 +467,7 @@ describe('createWindows', () => {
                         index: 1,
                         windowId: 1,
                         domain: "test2.ski.com",
-                        favIconUrl: 'a',
+                        favIconUrl: 'url favicon new',
                         isOpened: false,
                         isPinned: false,
                         isSelected: false,
@@ -532,7 +532,7 @@ describe('createWindows', () => {
                 ],
             }
         ]
-        expect(createWindows(activeTabs, tabGroups, framesRender)).toStrictEqual(expected)
+        expect(createWindows(activeTabs, tabGroups, framesRender, [])).toStrictEqual(expected)
     })
 
     test('frame with tags inside a group', () => {
@@ -576,6 +576,21 @@ describe('createWindows', () => {
             },
         ]
 
+        const groupsData = [
+            {
+                title: 'other title',
+                color: 'blue',
+                tags: [],
+                preProcessedTags: []
+            },
+            {
+                title: 'my group',
+                color: 'yellow',
+                tags: ['#myTag'],
+                preProcessedTags: []
+            }
+        ]
+
         const framesRender = [
             {
                 url: 'https://test2.ski.com',
@@ -587,7 +602,7 @@ describe('createWindows', () => {
             },
             {
                 url: 'https://test.ski.com/notOpenedButHasTo',
-                tags: ['#otherTag', '#myTag'],
+                tags: ['#myTag'],
             },
         ]
 
@@ -602,9 +617,9 @@ describe('createWindows', () => {
                         kind: "group",
                         title: 'my group',
                         collapsed: false,
-                        color: 'red',
+                        color: 'yellow',
                         preProcessedTags: ["@group"],
-                        tags: ['#otherTag', '#myTag'],
+                        tags: ['#myTag'],
                         frames: [
                             {
                                 title: 'abv',
@@ -621,6 +636,7 @@ describe('createWindows', () => {
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
+                                sugestedTags: ['#myTag'],
                                 preProcessedTags: ["@test", "@ski"],
                                 tags: ['#otherTag'],
                             },
@@ -639,6 +655,7 @@ describe('createWindows', () => {
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
+                                sugestedTags: [],
                                 preProcessedTags: ["@test2", "@ski"],
                                 tags: ['#myTag'],
                             },
@@ -647,7 +664,7 @@ describe('createWindows', () => {
                 ],
             }
         ]
-        expect(createWindows(activeTabs, tabGroups, framesRender)).toStrictEqual(expected)
+        expect(createWindows(activeTabs, tabGroups, framesRender, groupsData)).toStrictEqual(expected)
     })
 })
 
@@ -968,434 +985,5 @@ describe('framesSort', () => {
         ]
 
         expect(framesSort(frames)).toStrictEqual(expected)
-    })
-})
-
-
-describe('makePinnedSearch', () => {
-    it('only default', () => {
-        const frames = [
-            {
-                url: 'https://test.ski.com/otherWindow',
-                preProcessedTags: ["@test", "@ski"],
-                tags: [],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow',
-                preProcessedTags: ["@test", "@ski"],
-                tags: [],
-            },
-        ]
-
-
-        const expected = [
-            {
-                isDefault: true,
-                pinned: false,
-                collapsed: false,
-                tags: [],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: [],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: [],
-                    },
-                ]
-            }
-        ]
-
-        expect(makePinnedSearch(frames)).toStrictEqual(expected)
-    })
-
-    it('only default with a current search', () => {
-        const frames = [
-            {
-                url: 'https://test.ski.com/otherWindow1',
-                preProcessedTags: ["@test", "@ski"],
-                tags: [],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow3',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#mySearch'],
-            },
-        ]
-
-        const currSearch = ['#mySearch']
-
-
-        const expected = [
-            {
-                isDefault: false,
-                pinned: false,
-                collapsed: false,
-                tags: ['#mySearch'],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow3',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySearch'],
-                    },
-                ]
-            },
-            {
-                isDefault: true,
-                pinned: false,
-                collapsed: true,
-                tags: [],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: [],
-                    },
-                ]
-            },
-        ]
-
-        expect(makePinnedSearch(frames, [], currSearch)).toStrictEqual(expected)
-    })
-
-    it('default and one group', () => {
-        const frames = [
-            {
-                url: 'https://test.ski.com/otherWindow1',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#mySki'],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow3',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#mySki'],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow4',
-                preProcessedTags: ["@test", "@ski"],
-                tags: [],
-            },
-        ]
-
-        const group = [
-            {
-                color: 'red',
-                tags: ['#mySki'],
-                preProcessedTags: [],
-            }
-        ]
-
-
-        const expected = [
-            {
-                isDefault: false,
-                pinned: true,
-                collapsed: false,
-                tags: ['#mySki'],
-                preProcessedTags: [],
-                color: 'red',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow3',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                ]
-            },
-            {
-                isDefault: true,
-                pinned: false,
-                collapsed: true,
-                tags: [],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow3',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow4',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: [],
-                    },
-                ]
-            }
-        ]
-
-        expect(makePinnedSearch(frames, group)).toStrictEqual(expected)
-    })
-
-    it('default and one group same as search', () => {
-        const frames = [
-            {
-                url: 'https://test.ski.com/otherWindow1',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#mySki'],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow3',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#mySki'],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow4',
-                preProcessedTags: ["@test", "@ski"],
-                tags: [],
-            },
-        ]
-
-        const group = [
-            {
-                color: 'red',
-                tags: ['#mySki'],
-                preProcessedTags: [],
-            }
-        ]
-
-        const search = ['#mySki']
-
-
-        const expected = [
-            {
-                isDefault: false,
-                collapsed: false,
-                pinned: true,
-                tags: ['#mySki'],
-                preProcessedTags: [],
-                color: 'red',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow3',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                ]
-            },
-            {
-                isDefault: true,
-                pinned: false,
-                collapsed: true,
-                tags: [],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow3',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow4',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: [],
-                    },
-                ]
-            }
-        ]
-
-        expect(makePinnedSearch(frames, group, search)).toStrictEqual(expected)
-    })
-
-    it('default and one group different as search', () => {
-        const frames = [
-            {
-                url: 'https://test.ski.com/otherWindow1',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#mySki'],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow5',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#otherSearch'],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow4',
-                preProcessedTags: ["@test", "@ski"],
-                tags: [],
-            },
-        ]
-
-        const group = [
-            {
-                color: 'red',
-                tags: ['#mySki'],
-                preProcessedTags: [],
-            }
-        ]
-
-        const search = ['#otherSearch']
-
-
-        const expected = [
-            {
-                isDefault: false,
-                pinned: false,
-                collapsed: false,
-                tags: ['#otherSearch'],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow5',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#otherSearch'],
-                    },
-                ]
-            },
-            {
-                isDefault: false,
-                collapsed: false,
-                pinned: true,
-                tags: ['#mySki'],
-                preProcessedTags: [],
-                color: 'red',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                ]
-            },
-            {
-                isDefault: true,
-                pinned: false,
-                collapsed: true,
-                tags: [],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow4',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: [],
-                    },
-                ]
-            }
-        ]
-
-        expect(makePinnedSearch(frames, group, search)).toStrictEqual(expected)
-    })
-
-    it('default and one group and preprocess tag', () => {
-        const frames = [
-            {
-                url: 'https://test.ski.com/otherWindow1',
-                preProcessedTags: ["@test", "@ski"],
-                tags: ['#mySki'],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow3',
-                preProcessedTags: ["@test", "@ski", '@newTag'],
-                tags: [],
-            },
-            {
-                url: 'https://test.ski.com/otherWindow4',
-                preProcessedTags: ["@test", "@ski"],
-                tags: [],
-            },
-        ]
-
-        const group = [
-            {
-                color: 'red',
-                tags: ['#mySki'],
-                preProcessedTags: [''],
-            }
-        ]
-
-        const search = ['@newTag']
-
-
-        const expected = [
-            {
-                isDefault: false,
-                pinned: false,
-                collapsed: false,
-                tags: [],
-                preProcessedTags: ['@newTag'],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow3',
-                        preProcessedTags: ["@test", "@ski", '@newTag'],
-                        tags: [],
-                    },
-                ]
-            },
-            {
-                isDefault: false,
-                pinned: true,
-                collapsed: false,
-                tags: ['#mySki'],
-                preProcessedTags: [],
-                color: 'red',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                ]
-            },
-            {
-                isDefault: true,
-                pinned: false,
-                collapsed: true,
-                tags: [],
-                preProcessedTags: [],
-                color: 'grey',
-                frames: [
-                    {
-                        url: 'https://test.ski.com/otherWindow1',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: ['#mySki'],
-                    },
-                    {
-                        url: 'https://test.ski.com/otherWindow4',
-                        preProcessedTags: ["@test", "@ski"],
-                        tags: [],
-                    },
-                ]
-            }
-        ]
-
-        expect(makePinnedSearch(frames, group, search)).toStrictEqual(expected)
     })
 })

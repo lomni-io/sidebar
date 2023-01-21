@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {groupToSave} from "@/store/renderData";
+import {GroupData} from "@/store/renderData";
 import {store} from "@/store";
 import TagContainer from "@/components/v2/TagContainer.vue";
 
@@ -46,11 +46,16 @@ export default defineComponent( {
   },
   methods: {
     addTag(tag: string){
-      console.log(tag)
-      // TODO will add tag to all frames inside,
-      // will persist this group
-      // will show that has + frames to ADD after SYNC
-      // sync could be a cloud
+      const newTags = [...this.group.tags]
+      newTags.push(tag)
+
+      const groupData: GroupData = {
+        title: this.title,
+        color: this.color,
+        tags: newTags,
+        preProcessedTags: this.group.preProcessedTags
+      }
+      store.dispatch('upsertSavedGroups', groupData)
     },
     collapse(collapsed: boolean){
       // @ts-ignore
@@ -64,10 +69,7 @@ export default defineComponent( {
       });
     },
     removeGroup(){
-      store.dispatch('removeGroup', this.group.id)
-    },
-    saveGroup(){
-      store.dispatch('saveGroup', groupToSave(this.group))
+      store.dispatch('removeGroup', this.group.title)
     },
     changeColor(){
       let newColor = this.color

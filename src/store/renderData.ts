@@ -7,16 +7,6 @@ export interface RenderData {
     tags: Tag[]
     windows: Window[]
     frames: WebFrameRender[]
-    searchPinneds: PinnedSearchRender[]
-}
-
-export interface GroupData {
-    updatedAt: number
-    currentId: number
-    title:  string
-    color: string
-    tags: string[]
-    frames: (WebFrameData|TraceGroupFrameData)[]
 }
 
 export interface Tag {
@@ -89,21 +79,13 @@ export interface GroupFrameRender {
     kind: string
 }
 
-export interface PinnedSearchData {
+export interface GroupData {
+    title: string
     color: string
     tags: string[]
     preProcessedTags: string[]
 }
 
-export interface PinnedSearchRender {
-    isDefault: boolean
-    pinned: boolean
-    collapsed: boolean
-    color: string
-    tags: string[]
-    preProcessedTags: string[]
-    frames: WebFrameRender[]
-}
 
 export interface WebFrameRender {
     id: string
@@ -117,6 +99,7 @@ export interface WebFrameRender {
     domain: string
     audible: boolean
     preProcessedTags: string[]
+    sugestedTags?: string[]
     isPinned: boolean
     isOpened: boolean
     isSelected: boolean
@@ -124,16 +107,15 @@ export interface WebFrameRender {
     kind: string
 }
 
-export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], pinnedSearchs: PinnedSearchData[]): RenderData{
+export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], groupData: GroupData[]): RenderData{
     const enriched = enrichFrames(framesData, tabs)
 
     return {
         tabs: tabs,
         search: searchInput,
         tags: createTags(enriched, searchInput),
-        windows: createWindows(tabs, tabGroups, framesData),
+        windows: createWindows(tabs, tabGroups, framesData, groupData),
         frames: enriched as WebFrameRender[],
-        searchPinneds: makePinnedSearch(enriched, pinnedSearchs, searchInput)
     }
 }
 
@@ -149,61 +131,61 @@ export interface WebTaggeable {
 }
 
 // TODO add opened TABS to be listed here
-export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedSearchData[] = [], currentSearch: string[] = []): PinnedSearchRender[]{
-    let framesCopy = JSON.parse(JSON.stringify(frames)) as WebFrameRender[]
-    const result: PinnedSearchRender[] = []
-
-
-    // target.every(v => arr.includes(v)); USE THIS ONE
-    const hasPinnedEqSearch = searchs.some(s => s.tags.every(t => currentSearch.includes(t)))
-
-    // get current search
-    if (currentSearch.length > 0 && !hasPinnedEqSearch){
-        const framesFiltered = filterFramesBySelection(framesCopy, currentSearch) as WebFrameRender[]
-        if (framesFiltered.length > 0){
-            result.push({
-                isDefault: false,
-                pinned: false,
-                tags: currentSearch.filter(t => t.startsWith('#')),
-                preProcessedTags: currentSearch.filter(t => t.startsWith('@')),
-                color: 'grey',
-                collapsed: false,
-                frames: framesFiltered
-            })
-            framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
-        }
-    }
-
-
-    // get pinneds
-    searchs.forEach(pinned => {
-        const framesFiltered = filterFramesBySelection(framesCopy, pinned.tags) as WebFrameRender[]
-        result.push({
-            isDefault: false,
-            pinned: true,
-            tags: pinned.tags.filter(t => t.startsWith('#')),
-            preProcessedTags: pinned.preProcessedTags.filter(t => t.startsWith('@')),
-            collapsed: false,
-            color: pinned.color,
-            frames: framesFiltered
-        })
-    })
-
-    // get remain
-    if (framesCopy.length > 0){
-        result.push({
-            isDefault: true,
-            pinned: false,
-            tags: [],
-            preProcessedTags: [],
-            color: 'grey',
-            collapsed: currentSearch.length > 0 || searchs.length > 0,
-            frames: framesCopy
-        })
-    }
-
-    return result
-}
+// export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedGroupData[] = [], currentSearch: string[] = []): PinnedSearchRender[]{
+//     let framesCopy = JSON.parse(JSON.stringify(frames)) as WebFrameRender[]
+//     const result: PinnedSearchRender[] = []
+//
+//
+//     // target.every(v => arr.includes(v)); USE THIS ONE
+//     const hasPinnedEqSearch = searchs.some(s => s.tags.every(t => currentSearch.includes(t)))
+//
+//     // get current search
+//     if (currentSearch.length > 0 && !hasPinnedEqSearch){
+//         const framesFiltered = filterFramesBySelection(framesCopy, currentSearch) as WebFrameRender[]
+//         if (framesFiltered.length > 0){
+//             result.push({
+//                 isDefault: false,
+//                 pinned: false,
+//                 tags: currentSearch.filter(t => t.startsWith('#')),
+//                 preProcessedTags: currentSearch.filter(t => t.startsWith('@')),
+//                 color: 'grey',
+//                 collapsed: false,
+//                 frames: framesFiltered
+//             })
+//             framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
+//         }
+//     }
+//
+//
+//     // get pinneds
+//     searchs.forEach(pinned => {
+//         const framesFiltered = filterFramesBySelection(framesCopy, pinned.tags) as WebFrameRender[]
+//         result.push({
+//             isDefault: false,
+//             pinned: true,
+//             tags: pinned.tags.filter(t => t.startsWith('#')),
+//             preProcessedTags: pinned.preProcessedTags.filter(t => t.startsWith('@')),
+//             collapsed: false,
+//             color: pinned.color,
+//             frames: framesFiltered
+//         })
+//     })
+//
+//     // get remain
+//     if (framesCopy.length > 0){
+//         result.push({
+//             isDefault: true,
+//             pinned: false,
+//             tags: [],
+//             preProcessedTags: [],
+//             color: 'grey',
+//             collapsed: currentSearch.length > 0 || searchs.length > 0,
+//             frames: framesCopy
+//         })
+//     }
+//
+//     return result
+// }
 
 export function createTags(framesData: Taggeable[], searchTags: string[] = []): Tag[]{
     let finalList: Tag[] = []
@@ -252,7 +234,7 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTaggeable[]): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTaggeable[], groupsData: GroupData[]): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -279,16 +261,27 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
             const groupRender = window.tabs.find(wTab => (<GroupFrameRender>wTab).id === tab.groupId) as GroupFrameRender
             const webFrame = mountWebFrame(tab, webData)
             if (groupRender){
+                webFrame.sugestedTags = groupRender.tags.filter((groupTag: string) => {
+                    return !webFrame.tags.includes(groupTag)
+                })
                 groupRender.frames.push(webFrame)
             }else{
+                const groupData = groupsData.find(x => x.title === tabGroup.title)
+                let tags: string[] = []
+                let color = tabGroup.color
+                if (groupData){
+                    tags = [...groupData.tags]
+                    color = groupData.color
+                    webFrame.sugestedTags = [...tags]
+                }
                 // mount group here
                 window.tabs.push({
                     id: tab.groupId,
                     title:  tabGroup.title,
-                    color: tabGroup.color,
+                    color: color,
                     collapsed: tabGroup.collapsed,
                     frames: [webFrame],
-                    tags: [],
+                    tags: tags,
                     preProcessedTags: ['@group'],
                     kind: 'group',
                 })
@@ -429,15 +422,4 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
         const tagLength = x.tags.length > y.tags.length
         return tagLength ? 1 : -1
     })
-}
-
-export function groupToSave(group: GroupFrameRender): GroupData{
-    return {
-        updatedAt: Date.now(),
-        currentId: group.id,
-        title:  group.title,
-        color: group.color,
-        tags: group.tags,
-        frames: []
-    }
 }

@@ -3,8 +3,6 @@ import {DragItem} from "@/store/dragItem";
 import {
   createRenderData,
   enrichFrames, GroupData,
-  GroupFrameRender,
-  PinnedSearchData,
   Tab,
   TabGroup,
   WebFrameData
@@ -19,7 +17,6 @@ export interface State {
   // TODO: change to this:
   // frames: (WebFrameData|GroupData)[]
   frames: WebFrameData[]
-  pinnedSearchs: PinnedSearchData[]
   tabs:   Tab[]
   tabGroups: TabGroup[]
   clipboard: string|null
@@ -40,7 +37,7 @@ export const store = createStore<State>({
         gistID: ''
       },
 
-      pinnedSearchs: [],
+      savedGroups: [],
       // to sync data
       frames: [],
 
@@ -53,9 +50,6 @@ export const store = createStore<State>({
       frameContainer: {
         currentSelectedFrameIdx: -1,
       },
-
-      // TODO: remove this, going to frames
-      savedGroups: [],
 
       tabs: [],
       tabGroups: [],
@@ -83,7 +77,7 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.pinnedSearchs)
+      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.savedGroups)
     },
 
     // add preProcessedTags
@@ -138,16 +132,14 @@ export const store = createStore<State>({
       state.frames = frames
       localStorage.setItem('frames', JSON.stringify(frames))
     },
-    SET_PINNED(state, pinned:PinnedSearchData){
-      const pinnedIdx = state.pinnedSearchs.findIndex((x:PinnedSearchData) => {
-        return x.tags.every(t => pinned.tags.includes(t))
-      })
-      if (~pinnedIdx){
+    SET_GROUP_DATA(state, groupData:GroupData){
+      const idx = state.savedGroups.findIndex((x:GroupData) => x.title === groupData.title)
+      if (~idx){
         // has frame
-        state.pinnedSearchs[pinnedIdx] = pinned
+        state.savedGroups[idx] = groupData
       }else{
         // new frame
-        state.pinnedSearchs.push(pinned)
+        state.savedGroups.push(groupData)
       }
     },
     SET_FRAME(state, frame:WebFrameData) {
@@ -172,8 +164,8 @@ export const store = createStore<State>({
     SET_ALL_TAB_GROUPS(state, data){
       state.tabGroups = data
     },
-    REMOVE_SAVED_GROUP(state, id: number){
-      const groupIdx = state.savedGroups.findIndex(x => x.currentId === id)
+    REMOVE_SAVED_GROUP(state, title: string){
+      const groupIdx = state.savedGroups.findIndex(x => x.title === title)
       if (~groupIdx) {
         // has frame
         state.savedGroups.splice(groupIdx, 1)
@@ -225,8 +217,8 @@ export const store = createStore<State>({
     upsertFrame(context, frame: WebFrameData){
       context.commit('SET_FRAME', frame)
     },
-    upsertPinned(context, pinned: PinnedSearchData){
-      context.commit('SET_PINNED', pinned)
+    upsertSavedGroups(context, groupData: GroupData){
+      context.commit('SET_GROUP_DATA', groupData)
     },
     setFrames(context, frames: WebFrameData){
       context.commit('SET_FRAMES', frames)
@@ -235,8 +227,8 @@ export const store = createStore<State>({
     saveGroup(context, group: GroupData){
       context.commit('SAVE_GROUP', group)
     },
-    removeGroup(context, id: number){
-      context.commit('REMOVE_SAVED_GROUP', id)
+    removeGroup(context, title: string){
+      context.commit('REMOVE_SAVED_GROUP', title)
     },
 
     // process of loading and save

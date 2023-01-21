@@ -30,8 +30,6 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {PinnedSearchData} from "@/store/renderData";
-import {store} from "@/store";
 
 export default defineComponent( {
   name: "FramesScaffold",
@@ -54,14 +52,6 @@ export default defineComponent( {
     },
   },
   methods: {
-    save(){
-      const newPinned: PinnedSearchData = {
-        color: this.color,
-        tags: this.pinned.tags,
-        preProcessedTags: this.pinned.preProcessedTags
-      }
-      store.dispatch('upsertPinned', newPinned)
-    },
     collapse(collapsed: boolean){
       this.forceCollapse = collapsed
     },

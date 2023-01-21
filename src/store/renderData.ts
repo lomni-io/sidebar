@@ -84,7 +84,6 @@ export interface GroupData {
     title: string
     color: string
     tags: string[]
-    preProcessedTags: string[]
 }
 
 
@@ -131,62 +130,6 @@ export interface WebTaggeable {
     tags: string[]
 }
 
-// TODO add opened TABS to be listed here
-// export function makePinnedSearch(frames: WebTaggeable[], searchs: PinnedGroupData[] = [], currentSearch: string[] = []): PinnedSearchRender[]{
-//     let framesCopy = JSON.parse(JSON.stringify(frames)) as WebFrameRender[]
-//     const result: PinnedSearchRender[] = []
-//
-//
-//     // target.every(v => arr.includes(v)); USE THIS ONE
-//     const hasPinnedEqSearch = searchs.some(s => s.tags.every(t => currentSearch.includes(t)))
-//
-//     // get current search
-//     if (currentSearch.length > 0 && !hasPinnedEqSearch){
-//         const framesFiltered = filterFramesBySelection(framesCopy, currentSearch) as WebFrameRender[]
-//         if (framesFiltered.length > 0){
-//             result.push({
-//                 isDefault: false,
-//                 pinned: false,
-//                 tags: currentSearch.filter(t => t.startsWith('#')),
-//                 preProcessedTags: currentSearch.filter(t => t.startsWith('@')),
-//                 color: 'grey',
-//                 collapsed: false,
-//                 frames: framesFiltered
-//             })
-//             framesCopy = framesCopy.filter(f => !framesFiltered.some(ff => ff.url == f.url))
-//         }
-//     }
-//
-//
-//     // get pinneds
-//     searchs.forEach(pinned => {
-//         const framesFiltered = filterFramesBySelection(framesCopy, pinned.tags) as WebFrameRender[]
-//         result.push({
-//             isDefault: false,
-//             pinned: true,
-//             tags: pinned.tags.filter(t => t.startsWith('#')),
-//             preProcessedTags: pinned.preProcessedTags.filter(t => t.startsWith('@')),
-//             collapsed: false,
-//             color: pinned.color,
-//             frames: framesFiltered
-//         })
-//     })
-//
-//     // get remain
-//     if (framesCopy.length > 0){
-//         result.push({
-//             isDefault: true,
-//             pinned: false,
-//             tags: [],
-//             preProcessedTags: [],
-//             color: 'grey',
-//             collapsed: currentSearch.length > 0 || searchs.length > 0,
-//             frames: framesCopy
-//         })
-//     }
-//
-//     return result
-// }
 
 export function createTags(framesData: Taggeable[], searchTags: string[] = []): Tag[]{
     let finalList: Tag[] = []
@@ -269,11 +212,9 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
             }else{
                 const groupData = groupsData.find(x => x.title === tabGroup.title)
                 let groupTags: string[] = []
-                let color = tabGroup.color
                 let suggestedFrames: WebTaggeable[] = []
                 if (groupData){
                     groupTags = [...groupData.tags]
-                    color = groupData.color
                     webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t))
                     suggestedFrames = getSuggestedFrames(webData, tabs, tabGroups, groupData)
                 }
@@ -281,7 +222,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                 window.tabs.push({
                     id: tab.groupId,
                     title:  tabGroup.title,
-                    color: color,
+                    color: tabGroup.color,
                     collapsed: tabGroup.collapsed,
                     suggestedFrames: suggestedFrames,
                     frames: [webFrame],
@@ -461,4 +402,21 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
         const tagLength = x.tags.length > y.tags.length
         return tagLength ? 1 : -1
     })
+}
+
+export function updateSavedGroups(oldGTabs: TabGroup[], newGTabs: TabGroup[], savedGroups: GroupData[]): GroupData[]{
+    const newSavedGroups = [...savedGroups]
+    // check if has changedName
+    oldGTabs.forEach(oldTabGroup => {
+        const newTabGroup = newGTabs.find(x => x.id === oldTabGroup.id)
+        if (newTabGroup && newTabGroup.title !== oldTabGroup.title){
+            const idx = savedGroups.findIndex(x => x.title === oldTabGroup.title)
+            if (~idx){
+                savedGroups[idx].title = newTabGroup.title
+                savedGroups[idx].color = newTabGroup.color
+            }
+        }
+    })
+
+    return newSavedGroups
 }

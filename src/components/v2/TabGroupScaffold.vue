@@ -54,7 +54,6 @@ export default defineComponent( {
         title: this.title,
         color: this.color,
         tags: newTags,
-        preProcessedTags: this.group.preProcessedTags
       }
       store.dispatch('upsertSavedGroups', groupData)
     },
@@ -65,7 +64,6 @@ export default defineComponent( {
         title: this.title,
         color: this.color,
         tags: newTags,
-        preProcessedTags: this.group.preProcessedTags
       }
       store.dispatch('upsertSavedGroups', groupData)
     },

@@ -8,7 +8,7 @@ import {
     generateTagCardinality,
     getSuggestedFrames,
     GroupFrameRender,
-    SimpleWeFrame,
+    SimpleWeFrame, updateSavedGroups,
     WebFrameData,
     WebFrameRender,
     WebTaggeable
@@ -1095,5 +1095,50 @@ describe('framesSort', () => {
         ]
 
         expect(framesSort(frames)).toStrictEqual(expected)
+    })
+})
+
+
+describe('updateSavedGroups', () => {
+    it('test_1', () => {
+        const oldGTabs = [
+            {
+                id: 1,
+                windowId: 1,
+                title: 'title 1',
+                collapsed: false,
+                color: 'red'
+            }
+        ]
+
+        const newGTabs = [
+            {
+                id: 1,
+                windowId: 1,
+                title: 'title 2',
+                collapsed: false,
+                color: 'blue'
+            }
+        ]
+
+        const savedGroups = [
+            {
+                title: 'title 1',
+                color: 'red',
+                tags: ['#tag1']
+            }
+        ]
+
+
+
+        const expected = [
+            {
+                title: 'title 2',
+                color: 'blue',
+                tags: ['#tag1']
+            }
+        ]
+
+        expect(updateSavedGroups(oldGTabs, newGTabs, savedGroups)).toStrictEqual(expected)
     })
 })

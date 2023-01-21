@@ -4,7 +4,7 @@ import {
   createRenderData,
   enrichFrames, GroupData,
   Tab,
-  TabGroup,
+  TabGroup, updateSavedGroups,
   WebFrameData
 } from "@/store/renderData";
 
@@ -37,7 +37,7 @@ export const store = createStore<State>({
         gistID: ''
       },
 
-      savedGroups: [],
+      savedGroups: [] as GroupData[],
       // to sync data
       frames: [],
 
@@ -52,7 +52,7 @@ export const store = createStore<State>({
       },
 
       tabs: [],
-      tabGroups: [],
+      tabGroups: [] as TabGroup[],
       search: []
 
     }
@@ -161,8 +161,9 @@ export const store = createStore<State>({
     SET_ALL_TABS(state, data) {
       state.tabs = data
     },
-    SET_ALL_TAB_GROUPS(state, data){
-      state.tabGroups = data
+    SET_ALL_TAB_GROUPS(state, newTabGroups: TabGroup[]){
+      state.savedGroups = updateSavedGroups(state.tabGroups, newTabGroups, state.savedGroups)
+      state.tabGroups = newTabGroups
     },
     REMOVE_SAVED_GROUP(state, title: string){
       const groupIdx = state.savedGroups.findIndex(x => x.title === title)

@@ -416,7 +416,7 @@ export function updateSavedGroups(oldGTabs: TabGroup[], newGTabs: TabGroup[], sa
                 title: newTabGroup.title,
                 color: newTabGroup.color,
                 tags: savedGroups[idx].tags,
-                updatedAt: Date.now(),
+                updatedAt: savedGroups[idx].updatedAt+1,
             }
         }
     })

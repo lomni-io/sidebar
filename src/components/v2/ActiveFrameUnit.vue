@@ -47,7 +47,7 @@
       </div>
       <div class="frame-footer">
         <div class="tags">
-          <TagContainer :sugested-tags="frame.sugestedTags" :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+          <TagContainer :sugested-tags="frame.sugestedTags" :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @clickedSugestion="addTag" @removeTag="removeTag"></TagContainer>
         </div>
       </div>
     </div>
@@ -62,7 +62,6 @@ import {store} from "@/store";
 import {DragItem} from "@/store/dragItem";
 import {WebFrameRender} from "@/store/renderData";
 
-// TODO: copy link buttom
 export default defineComponent( {
   name: "ActiveFrameUnit",
   components: {TagContainer},

@@ -19,11 +19,11 @@
       <div v-if="tab.kind === 'group'">
         <TabGroupScaffold :title="tab.title" :color="tab.color" :collapsed="tab.collapsed" :group="tab" :count-frames="tab.frames.length">
           <div v-for="(frame, frameIdx) in tab.frames" :key="frameIdx">
-
             <FrameDropArea :frame-bottom="frame" :frame-top="getTopFrameFromGroup(frameIdx, tabIdx)"></FrameDropArea>
             <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
-            <LineToolBar :frames="frames" :frame="frame"></LineToolBar>
           </div>
+          <SuggestionFrames :frames="tab.sugestedFrames" :group="tab"></SuggestionFrames>
+
         </TabGroupScaffold>
       </div>
 
@@ -39,11 +39,12 @@ import FrameDropArea from "@/components/v2/FrameDropArea.vue";
 import {GroupFrameRender, WebFrameRender} from "@/store/renderData";
 import TabGroupScaffold from "@/components/v2/TabGroupScaffold.vue";
 import LineToolBar from "@/components/v2/LineToolBar.vue";
+import SuggestionFrames from "@/components/v2/SuggestionFrames.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
   props: ['window', 'tags', 'frames', 'search'],
-  components: {LineToolBar, TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
+  components: {SuggestionFrames, LineToolBar, TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
   methods: {
     getTopFrameFromGroup(frameIdx: number, tabIdx: number){
       if (frameIdx > 0){

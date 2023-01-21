@@ -12,7 +12,7 @@
     </li>
 
     <li v-for="(tag, index) in sugestedTags" :key="index">
-      <a class="tag sugested" @click="clickedTag(tag)">{{tag}}</a>
+      <a class="tag sugested" @click="$emit('clickedSugestion', tag)">{{tag}}</a>
     </li>
     <li v-for="(tag, index) in fixedTags" :key="index">
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
@@ -28,7 +28,7 @@ import {store} from "@/store";
 
 export default {
   name: "TagContainer",
-  emits: ['addTag', 'clickedTag'],
+  emits: ['addTag', 'clickedTag', 'removeTag', 'clickedSugestion'],
   props: ['tags', 'fixedTags', 'color', 'sugestedTags'],
   data() {
     return {
@@ -162,6 +162,7 @@ export default {
 }
 
 .sugested{
+  opacity: 0.6;
   background-color: var(--green);
   color: var(--background_input);
   font-weight: bold;

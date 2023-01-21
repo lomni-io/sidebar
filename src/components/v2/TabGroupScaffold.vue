@@ -20,8 +20,9 @@
     <div class="content" :class="color" v-if="!collapsed">
       <slot></slot>
     </div>
+
     <div class="footer">
-      <TagContainer :tags="group.tags" :color="group.color" @addTag="addTag"></TagContainer>
+      <TagContainer :tags="group.tags" :color="group.color" @addTag="addTag" @removeTag="removeTag"></TagContainer>
     </div>
 
 
@@ -48,6 +49,17 @@ export default defineComponent( {
     addTag(tag: string){
       const newTags = [...this.group.tags]
       newTags.push(tag)
+
+      const groupData: GroupData = {
+        title: this.title,
+        color: this.color,
+        tags: newTags,
+        preProcessedTags: this.group.preProcessedTags
+      }
+      store.dispatch('upsertSavedGroups', groupData)
+    },
+    removeTag(tag: string){
+      const newTags = [...this.group.tags].filter(x => x !== tag)
 
       const groupData: GroupData = {
         title: this.title,

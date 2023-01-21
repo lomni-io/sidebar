@@ -1,9 +1,9 @@
 import {
     createTags, createWindows,
-    enrichFrames, filterFramesBySelection, framesFiltered, framesSort, generateTagCardinality,
-    GroupFrameRender,
+    enrichFrames, filterFramesBySelection, framesFiltered, framesSort, generateTagCardinality, getSugestedFrames,
+    GroupFrameRender, SimpleWeFrame,
     WebFrameData,
-    WebFrameRender
+    WebFrameRender, WebTaggeable
 } from "@/store/renderData";
 import {FrameRender} from "@/entity/frame";
 
@@ -350,7 +350,7 @@ describe('createWindows', () => {
                 url: 'https://test2.ski.com',
                 active: false,
                 audible: false,
-                favIconUrl: 'url favicon new',
+                favIconUrl: 'favicon testing here',
                 pinned: false,
                 windowId: 12,
                 groupId: -1,
@@ -467,7 +467,7 @@ describe('createWindows', () => {
                         index: 1,
                         windowId: 1,
                         domain: "test2.ski.com",
-                        favIconUrl: 'url favicon new',
+                        favIconUrl: 'favicon testing here',
                         isOpened: false,
                         isPinned: false,
                         isSelected: false,
@@ -558,7 +558,7 @@ describe('createWindows', () => {
                 url: 'https://test2.ski.com',
                 active: false,
                 audible: false,
-                favIconUrl: 'url favicon new',
+                favIconUrl: 'url favicon new again',
                 pinned: false,
                 windowId: 12,
                 groupId: 1,
@@ -650,7 +650,7 @@ describe('createWindows', () => {
                                 index: 2,
                                 windowId: 12,
                                 domain: "test2.ski.com",
-                                favIconUrl: 'url favicon new',
+                                favIconUrl: 'url favicon new again',
                                 isOpened: true,
                                 isPinned: false,
                                 isSelected: false,
@@ -659,12 +659,82 @@ describe('createWindows', () => {
                                 preProcessedTags: ["@test2", "@ski"],
                                 tags: ['#myTag'],
                             },
+                        ],
+                        sugestedFrames: [
+                            {tags: ['#myTag'], url: "https://test.ski.com/notOpenedButHasTo"}
                         ]
                     },
                 ],
             }
         ]
         expect(createWindows(activeTabs, tabGroups, framesRender, groupsData)).toStrictEqual(expected)
+    })
+})
+
+describe('getSugestedFrames', () => {
+    test('test 1', () => {
+        const frames = [
+            {url: 'url1', title: 'hello',  favIconUrl: 'fav1', tags: ['#tag1']},
+            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
+        ]
+
+        const openTab = [
+            {
+                url: 'url1',
+                groupId: 1,
+            }
+        ]
+
+        const openGroups = [
+            {
+                id: 1,
+                title: 'my title'
+            }
+        ]
+
+
+        const savedGroupData = {
+            tags: ['#tag1'],
+            title:  'my title',
+        }
+
+        const expected = [
+            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
+        ]
+        expect(getSugestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
+    })
+
+    test('test 2', () => {
+        const frames = [
+            {url: 'url1', title: 'hello',  favIconUrl: 'fav1', tags: ['#tag1']},
+            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']},
+            {url: 'url3', title: 'hello closed2',  favIconUrl: 'fav3', tags: ['#tag2']}
+        ]
+
+        const openTab = [
+            {
+                url: 'url1',
+                groupId: 1,
+            }
+        ]
+
+        const openGroups = [
+            {
+                id: 1,
+                title: 'my title'
+            }
+        ]
+
+
+        const savedGroupData = {
+            tags: ['#tag1'],
+            title:  'my title',
+        }
+
+        const expected = [
+            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
+        ]
+        expect(getSugestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
     })
 })
 

@@ -74,6 +74,7 @@ export interface GroupFrameRender {
     color: string
     collapsed: boolean
     frames: WebFrameRender[]
+    sugestedFrames: WebTaggeable[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
@@ -269,10 +270,12 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                 const groupData = groupsData.find(x => x.title === tabGroup.title)
                 let tags: string[] = []
                 let color = tabGroup.color
+                let sugestedFrames: WebTaggeable[] = []
                 if (groupData){
                     tags = [...groupData.tags]
                     color = groupData.color
                     webFrame.sugestedTags = [...tags]
+                    sugestedFrames = getSugestedFrames(webData, tabs, tabGroups, groupData)
                 }
                 // mount group here
                 window.tabs.push({
@@ -280,6 +283,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                     title:  tabGroup.title,
                     color: color,
                     collapsed: tabGroup.collapsed,
+                    sugestedFrames: sugestedFrames,
                     frames: [webFrame],
                     tags: tags,
                     preProcessedTags: ['@group'],
@@ -288,16 +292,51 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
             }
         }
     })
-
     return windows
 }
 
-export function makeSavedStatus(groupsData: GroupData[], tabGroup: TabGroup): string{
-    const groupData = groupsData.find(x => x.title === tabGroup.title)
-    if (groupsData){
-        // has group check if is equal
+export interface OpenTab {
+    url: string
+    groupId: number
+}
+
+
+export interface SimpleWeFrame {
+    url:   string
+    title: string
+    favIconUrl: string
+}
+
+export interface GroupDataTaggeable {
+    title: string
+    tags: string[]
+}
+
+export interface TabGroupSimple{
+    id: number
+    title: string
+}
+
+export function getSugestedFrames(framesData: WebTaggeable[], tabs: OpenTab[], openGroups :TabGroupSimple[], groupData: GroupDataTaggeable): WebTaggeable[]{
+    if (groupData.tags.length === 0){
+        return []
     }
-    return 'NOT_SAVED'
+    const openGroup = openGroups.find(g => g.title === groupData.title)
+    if (!openGroup){
+        return []
+    }
+
+    // find all frames that has the tags of group
+    let framesFiltered = framesData.filter(frameData => {
+        return groupData.tags.every(t => frameData.tags.includes(t))
+    })
+
+    const urlsInGroup: string[] = tabs.filter(tab => tab.groupId === openGroup.id).map(x => x.url)
+
+    // remove all that is oppened in current group
+    framesFiltered = framesFiltered.filter(frameData => !urlsInGroup.includes(frameData.url))
+
+    return framesFiltered
 }
 
 export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebFrameRender[]{

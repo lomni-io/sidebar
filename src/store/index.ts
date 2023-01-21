@@ -141,6 +141,7 @@ export const store = createStore<State>({
         // new frame
         state.savedGroups.push(groupData)
       }
+      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
     },
     SET_FRAME(state, frame:WebFrameData) {
       frame.updatedAt = Date.now()
@@ -163,6 +164,8 @@ export const store = createStore<State>({
     },
     SET_ALL_TAB_GROUPS(state, newTabGroups: TabGroup[]){
       state.savedGroups = updateSavedGroups(state.tabGroups, newTabGroups, state.savedGroups)
+      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
+
       state.tabGroups = newTabGroups
     },
     REMOVE_SAVED_GROUP(state, title: string){

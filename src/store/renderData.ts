@@ -409,11 +409,12 @@ export function updateSavedGroups(oldGTabs: TabGroup[], newGTabs: TabGroup[], sa
     // check if has changedName
     oldGTabs.forEach(oldTabGroup => {
         const newTabGroup = newGTabs.find(x => x.id === oldTabGroup.id)
-        if (newTabGroup && newTabGroup.title !== oldTabGroup.title){
-            const idx = savedGroups.findIndex(x => x.title === oldTabGroup.title)
-            if (~idx){
-                savedGroups[idx].title = newTabGroup.title
-                savedGroups[idx].color = newTabGroup.color
+        const idx = savedGroups.findIndex(x => x.title === oldTabGroup.title)
+        if (newTabGroup && ~idx){
+            newSavedGroups[idx] = {
+                title: newTabGroup.title,
+                color: newTabGroup.color,
+                tags: savedGroups[idx].tags
             }
         }
     })

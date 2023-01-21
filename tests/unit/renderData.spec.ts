@@ -1108,6 +1108,13 @@ describe('updateSavedGroups', () => {
                 title: 'title 1',
                 collapsed: false,
                 color: 'red'
+            },
+            {
+                id: 3,
+                windowId: 2,
+                title: 'other group',
+                collapsed: false,
+                color: 'yellow'
             }
         ]
 
@@ -1118,6 +1125,13 @@ describe('updateSavedGroups', () => {
                 title: 'title 2',
                 collapsed: false,
                 color: 'blue'
+            },
+            {
+                id: 3,
+                windowId: 2,
+                title: 'other group',
+                collapsed: false,
+                color: 'green'
             }
         ]
 
@@ -1126,6 +1140,11 @@ describe('updateSavedGroups', () => {
                 title: 'title 1',
                 color: 'red',
                 tags: ['#tag1']
+            },
+            {
+                title: 'other group',
+                color: 'yellow',
+                tags: ['#tag2']
             }
         ]
 
@@ -1136,6 +1155,11 @@ describe('updateSavedGroups', () => {
                 title: 'title 2',
                 color: 'blue',
                 tags: ['#tag1']
+            },
+            {
+                title: 'other group',
+                color: 'green',
+                tags: ['#tag2']
             }
         ]
 

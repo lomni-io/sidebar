@@ -414,6 +414,7 @@ describe('createWindows', () => {
                 audible: false,
                 windowId: 1,
                 groupId: 5,
+                active: false,
                 title: 'a',
                 url: 'https://test2.ski.com',
                 favIconUrl: 'a',

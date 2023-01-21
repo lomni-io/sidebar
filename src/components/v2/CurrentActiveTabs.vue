@@ -2,6 +2,7 @@
   <div class="active-frame-container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
       <ActiveFrameUnit :frame="frame" :minimized="true"></ActiveFrameUnit>
+      <LineToolBar :frames="frames" :frame="frame"></LineToolBar>
     </div>
 
 <!--  TABS HERE  -->

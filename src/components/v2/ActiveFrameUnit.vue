@@ -1,4 +1,5 @@
 <template>
+  <a ref="framePlc"></a>
   <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
     <small class="frame-footer-drag" v-if="!minimized">
@@ -76,7 +77,17 @@ export default defineComponent( {
     },
   },
   watch: {
-
+    frame: {
+      handler(currFrame) {
+        if (currFrame.active){
+          this.$nextTick(() => {
+            const frame = this.$refs.frame as HTMLInputElement
+            frame.scrollIntoView({behavior: 'smooth',   block: 'center', inline: 'center'});
+          });
+        }
+      },
+      deep: true
+    },
   },
   mounted() {
 

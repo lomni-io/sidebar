@@ -120,6 +120,7 @@ export interface WebFrameRender {
     isPinned: boolean
     isOpened: boolean
     isSelected: boolean
+    active: boolean
     kind: string
 }
 
@@ -342,6 +343,7 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebF
                 url: webFrame.url,
                 isPinned: tab ? tab.pinned : false,
                 isSelected: tab ? tab.selected : false,
+                active: tab ? tab.active : false,
                 isOpened: !!tab,
                 kind: 'web',
             })
@@ -383,6 +385,7 @@ export function mountWebFrame(tab:Tab, webFrames: (GroupFrameRender|WebFrameRend
         domain: extractRootDomain(tab.url),
         preProcessedTags: getDomainsFromUrl(tab.url).map((x:string) => '@'+ x),
         isPinned: tab.pinned,
+        active: tab.active,
         isOpened: true,
         isSelected: tab.selected,
         kind: 'web'

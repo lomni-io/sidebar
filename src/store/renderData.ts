@@ -83,7 +83,7 @@ export interface GroupFrameRender {
     title:  string
     color: string
     collapsed: boolean
-    frames: (WebFrameRender|TraceGroupFrameData)[]
+    frames: WebFrameRender[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
@@ -124,14 +124,14 @@ export interface WebFrameRender {
     kind: string
 }
 
-export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], pinnedSearchs: PinnedSearchData[], savedGroups: GroupData[]): RenderData{
+export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], pinnedSearchs: PinnedSearchData[]): RenderData{
     const enriched = enrichFrames(framesData, tabs)
 
     return {
         tabs: tabs,
         search: searchInput,
         tags: createTags(enriched, searchInput),
-        windows: createWindows(tabs, tabGroups, enriched, savedGroups),
+        windows: createWindows(tabs, tabGroups, framesData),
         frames: enriched as WebFrameRender[],
         searchPinneds: makePinnedSearch(enriched, pinnedSearchs, searchInput)
     }
@@ -146,7 +146,6 @@ export interface Taggeable {
 export interface WebTaggeable {
     url: string
     tags: string[]
-    preProcessedTags: string[]
 }
 
 // TODO add opened TABS to be listed here
@@ -253,7 +252,7 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered: (GroupFrameRender|WebFrameRender)[], groupsData: GroupData[] = []): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTaggeable[]): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -268,18 +267,19 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered
         }
 
         if (tab.pinned){
-            window.pinneds.push(mountWebFrame(tab, framesRendered))
+            window.pinneds.push(mountWebFrame(tab, webData))
             return
         }
         if (tab.groupId === -1){
-            window.tabs.push(mountWebFrame(tab, framesRendered))
+            window.tabs.push(mountWebFrame(tab, webData))
         }
 
         const tabGroup = tabGroups.find(tabGroup => tabGroup.id === tab.groupId)
         if (tabGroup){
             const groupRender = window.tabs.find(wTab => (<GroupFrameRender>wTab).id === tab.groupId) as GroupFrameRender
+            const webFrame = mountWebFrame(tab, webData)
             if (groupRender){
-                groupRender.frames.push(mountWebFrame(tab, framesRendered))
+                groupRender.frames.push(webFrame)
             }else{
                 // mount group here
                 window.tabs.push({
@@ -287,7 +287,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], framesRendered
                     title:  tabGroup.title,
                     color: tabGroup.color,
                     collapsed: tabGroup.collapsed,
-                    frames: [mountWebFrame(tab, framesRendered)],
+                    frames: [webFrame],
                     tags: [],
                     preProcessedTags: ['@group'],
                     kind: 'group',
@@ -367,10 +367,11 @@ export function mountWebFrames(urls:string[], webFrames: WebFrameRender[]): WebF
     return finalWebFrames
 }
 
-export function mountWebFrame(tab:Tab, webFrames: (GroupFrameRender|WebFrameRender)[]): WebFrameRender{
-    const webFrame = webFrames.find(frame => (<WebFrameRender>frame).url === tab.url)
+export function mountWebFrame(tab:Tab, webData: WebTaggeable[]): WebFrameRender{
+    const webFrame = webData.find(frame => frame.url === tab.url)
+    let tags: string[] = []
     if (webFrame){
-        return (<WebFrameRender>webFrame)
+        tags = webFrame.tags
     }
     return {
         id: tab.id,
@@ -380,7 +381,7 @@ export function mountWebFrame(tab:Tab, webFrames: (GroupFrameRender|WebFrameRend
         url: tab.url,
         favIconUrl: tab.favIconUrl,
         title: tab.title,
-        tags: [],
+        tags: tags,
         audible: tab ? tab.audible : false,
         domain: extractRootDomain(tab.url),
         preProcessedTags: getDomainsFromUrl(tab.url).map((x:string) => '@'+ x),

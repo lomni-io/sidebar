@@ -83,7 +83,7 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.pinnedSearchs, state.savedGroups)
+      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.pinnedSearchs)
     },
 
     // add preProcessedTags

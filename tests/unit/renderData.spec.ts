@@ -409,22 +409,8 @@ describe('createWindows', () => {
 
         const framesRender = [
             {
-                id: '1',
-                index: 1,
-                audible: false,
-                windowId: 1,
-                groupId: 5,
-                active: false,
-                title: 'a',
                 url: 'https://test2.ski.com',
-                favIconUrl: 'a',
-                kind: 'web',
-                domain: 'test2.ski.com',
-                preProcessedTags: ['@ski', '@test2'],
-                isPinned: false,
-                isOpened: false,
-                isSelected: false,
-                tags: [],
+                tags: ['#myTag'],
             },
         ]
 
@@ -441,6 +427,7 @@ describe('createWindows', () => {
                         windowId: 12,
                         url: 'https://test.ski.com/pinned',
                         audible: false,
+                        active: false,
                         domain: "test.ski.com",
                         favIconUrl: 'url favicon',
                         isOpened: true,
@@ -456,6 +443,7 @@ describe('createWindows', () => {
                         title: 'abv',
                         url: 'https://test.ski.com/abc',
                         domain: "test.ski.com",
+                        active: false,
                         audible: true,
                         id: "1",
                         groupId: -1,
@@ -472,6 +460,7 @@ describe('createWindows', () => {
                     {
                         title: 'a',
                         url: 'https://test2.ski.com',
+                        active: false,
                         audible: false,
                         id: "1",
                         groupId: 5,
@@ -484,7 +473,7 @@ describe('createWindows', () => {
                         isSelected: false,
                         kind: "web",
                         preProcessedTags: ["@ski","@test2"],
-                        tags: [],
+                        tags: ['#myTag'],
                     },
                 ],
             },
@@ -503,6 +492,7 @@ describe('createWindows', () => {
                         domain: "test.ski.com",
                         favIconUrl: 'url favicon',
                         isOpened: true,
+                        active: false,
                         audible: false,
                         isPinned: false,
                         isSelected: false,
@@ -529,12 +519,128 @@ describe('createWindows', () => {
                                 domain: "test.ski.com",
                                 favIconUrl: 'url favicon',
                                 isOpened: true,
+                                active: false,
                                 audible: false,
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
                                 preProcessedTags: ["@test", "@ski"],
                                 tags: [],
+                            },
+                        ]
+                    },
+                ],
+            }
+        ]
+        expect(createWindows(activeTabs, tabGroups, framesRender)).toStrictEqual(expected)
+    })
+
+    test('frame with tags inside a group', () => {
+
+        const activeTabs = [
+            {
+                id: '1',
+                index: 1,
+                title: 'abv',
+                url: 'https://test.ski.com/abc',
+                active: false,
+                audible: true,
+                favIconUrl: 'url favicon',
+                pinned: false,
+                windowId: 12,
+                groupId: 1,
+                selected: false
+            },
+            {
+                id: '2',
+                index: 2,
+                title: 'newHere',
+                url: 'https://test2.ski.com',
+                active: false,
+                audible: false,
+                favIconUrl: 'url favicon new',
+                pinned: false,
+                windowId: 12,
+                groupId: 1,
+                selected: false
+            },
+        ]
+
+        const tabGroups = [
+            {
+                id: 1,
+                title: 'my group',
+                collapsed: false,
+                color: 'red',
+                windowId: 12,
+            },
+        ]
+
+        const framesRender = [
+            {
+                url: 'https://test2.ski.com',
+                tags: ['#myTag'],
+            },
+            {
+                url: 'https://test.ski.com/abc',//
+                tags: ['#otherTag'],
+            },
+            {
+                url: 'https://test.ski.com/notOpenedButHasTo',
+                tags: ['#otherTag', '#myTag'],
+            },
+        ]
+
+        const expected = [
+            {
+                name:  'main',
+                pinneds: [],
+                id: 12,
+                tabs: [
+                    {
+                        id: 1,
+                        kind: "group",
+                        title: 'my group',
+                        collapsed: false,
+                        color: 'red',
+                        preProcessedTags: ["@group"],
+                        tags: ['#otherTag', '#myTag'],
+                        frames: [
+                            {
+                                title: 'abv',
+                                url: 'https://test.ski.com/abc',
+                                domain: "test.ski.com",
+                                active: false,
+                                audible: true,
+                                id: "1",
+                                groupId: 1,
+                                index: 1,
+                                windowId: 12,
+                                favIconUrl: 'url favicon',
+                                isOpened: true,
+                                isPinned: false,
+                                isSelected: false,
+                                kind: "web",
+                                preProcessedTags: ["@test", "@ski"],
+                                tags: ['#otherTag'],
+                            },
+                            {
+                                title: 'newHere',
+                                url: 'https://test2.ski.com',
+                                active: false,
+                                audible: false,
+                                id: "2",
+                                groupId: 1,
+                                index: 2,
+                                windowId: 12,
+                                domain: "test2.ski.com",
+                                favIconUrl: 'url favicon new',
+                                isOpened: true,
+                                isPinned: false,
+                                isSelected: false,
+                                kind: "web",
+                                preProcessedTags: ["@test2", "@ski"],
+                                tags: ['#myTag'],
                             },
                         ]
                     },

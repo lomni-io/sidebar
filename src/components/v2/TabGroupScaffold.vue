@@ -21,7 +21,7 @@
       <slot></slot>
     </div>
     <div class="footer">
-      <TagContainer :tags="group.tags" :color="group.color"></TagContainer>
+      <TagContainer :tags="group.tags" :color="group.color" @addTag="addTag"></TagContainer>
     </div>
 
 
@@ -45,6 +45,13 @@ export default defineComponent( {
     }
   },
   methods: {
+    addTag(tag: string){
+      console.log(tag)
+      // TODO will add tag to all frames inside,
+      // will persist this group
+      // will show that has + frames to ADD after SYNC
+      // sync could be a cloud
+    },
     collapse(collapsed: boolean){
       // @ts-ignore
       this.port.postMessage({kind: "collapse-tab-groups", group: this.group.id, collapse: collapsed});

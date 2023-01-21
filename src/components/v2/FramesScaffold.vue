@@ -153,7 +153,7 @@ export default defineComponent( {
 
     .right-cancel{
       cursor: pointer;
-      color: var(--gray_1);
+      color: var(--scroll);
       margin-right: 5px;
     }
     .right-pin{
@@ -314,7 +314,7 @@ label{
 
 .edit-mode{
   &.grey{
-    background-color: var(--gray_1);
+    background-color: var(--scroll);
   }
   &.blue{
     background-color: var(--blue);

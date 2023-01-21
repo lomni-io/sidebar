@@ -84,7 +84,7 @@ export default {
   --count: '20';
 
   &::after {
-    background-color: var(--bg1);
+    background-color: var(--background_input);
     content: var(--count);
     font-weight: bold;
     font-size: 8px;

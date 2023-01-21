@@ -235,7 +235,7 @@ export default defineComponent( {
     border-radius: 10px;
 
     .frame-header-status{
-      color: var(--gray_1);
+      color: var(--scroll);
 
       &.active{
         color: var(--blue);
@@ -265,7 +265,7 @@ export default defineComponent( {
     }
 
     .frame-header-pinned{
-      color: var(--gray_1);
+      color: var(--scroll);
 
       &.pinned{
         color: var(--blue);

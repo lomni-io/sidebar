@@ -45,12 +45,12 @@ body{
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--gray_1);
+  background: var(--scroll);
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gray_1);
+  background: var(--scroll);
 }
 
 </style>

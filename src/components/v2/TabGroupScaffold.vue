@@ -175,7 +175,7 @@ export default defineComponent( {
   padding-left: 5px;
   padding-right: 5px;
   margin-right: 10px;
-  color: var(--background_dark);
+  color: var(--background_main);
   &:hover{
     filter: var(--hover);
   }
@@ -250,7 +250,7 @@ export default defineComponent( {
 }
 
 label{
-  color: var(--background_dark);
+  color: var(--background_input);
   border-radius: 5px;
   cursor: pointer;
   padding-right: 5px;
@@ -339,7 +339,7 @@ label{
 
 .edit-mode{
   &.grey{
-    background-color: var(--gray_1);
+    background-color: var(--scroll);
   }
   &.blue{
     background-color: var(--blue);

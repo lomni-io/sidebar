@@ -47,7 +47,7 @@
       </div>
       <div class="frame-footer">
         <div class="tags">
-          <TagContainer :sugested-tags="frame.sugestedTags" :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @clickedSugestion="addTag" @removeTag="removeTag"></TagContainer>
+          <TagContainer :suggested-tags="frame.suggestedTags" :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @clickedSugestion="addTag" @removeTag="removeTag"></TagContainer>
         </div>
       </div>
     </div>

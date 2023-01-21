@@ -1,20 +1,20 @@
 <template>
 
-  <div v-if="!isOpen && hasSugestions" class="sugestion-show-container">
-    <span class="sugestion-show" @click="isOpen = true">
-      Show <b>+{{frames.length}}</b> tabs sugestions
+  <div v-if="!isOpen && hasSuggestions" class="suggestion-show-container">
+    <span class="suggestion-show" @click="isOpen = true">
+      Show <b>+{{frames.length}}</b> tabs suggestions
     </span>
   </div>
 
-  <div v-if="isOpen && hasSugestions" class="sugestion-show-container">
-    <span class="sugestion-show" @click="isOpen = false">
-      hide sugestions
+  <div v-if="isOpen && hasSuggestions" class="suggestion-show-container">
+    <span class="suggestion-show" @click="isOpen = false">
+      hide suggestions
     </span>
   </div>
 
-  <div v-if="isOpen && hasSugestions" class="sugestions-container">
+  <div v-if="isOpen && hasSuggestions" class="suggestions-container">
     <div v-for="frame in frames" :key="frame.id">
-      <MinimalFrameUnit :frame="frame" @selected="selectedSugestion"></MinimalFrameUnit>
+      <MinimalFrameUnit :frame="frame" @selected="selectedSuggestion"></MinimalFrameUnit>
     </div>
   </div>
 
@@ -35,13 +35,13 @@ export default defineComponent( {
     }
   },
   methods: {
-    selectedSugestion(frame: WebFrameRender){
+    selectedSuggestion(frame: WebFrameRender){
       // @ts-ignore
       this.port.postMessage({kind: "open-and-update", url: frame.url, windowId: this.group.windowId, groupId: this.group.id});
     }
   },
   computed:{
-    hasSugestions() {
+    hasSuggestions() {
       return this.frames.length > 0
     }
   }
@@ -51,11 +51,11 @@ export default defineComponent( {
 
 <style scoped lang="scss">
 
-.sugestion-show-container{
+.suggestion-show-container{
   display: flex;
   margin-bottom: 3px;
   flex-direction: row-reverse;
-  .sugestion-show{
+  .suggestion-show{
     text-align: center;
     flex: auto;
     font-size: 0.7em;
@@ -69,7 +69,7 @@ export default defineComponent( {
   }
 }
 
-.sugestions-container{
+.suggestions-container{
 }
 
 </style>

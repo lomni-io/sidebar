@@ -74,7 +74,7 @@ export interface GroupFrameRender {
     color: string
     collapsed: boolean
     frames: WebFrameRender[]
-    sugestedFrames: WebTaggeable[]
+    suggestedFrames: WebTaggeable[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
@@ -100,7 +100,7 @@ export interface WebFrameRender {
     domain: string
     audible: boolean
     preProcessedTags: string[]
-    sugestedTags?: string[]
+    suggestedTags?: string[]
     isPinned: boolean
     isOpened: boolean
     isSelected: boolean
@@ -262,7 +262,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
             const groupRender = window.tabs.find(wTab => (<GroupFrameRender>wTab).id === tab.groupId) as GroupFrameRender
             const webFrame = mountWebFrame(tab, webData)
             if (groupRender){
-                webFrame.sugestedTags = groupRender.tags.filter((groupTag: string) => {
+                webFrame.suggestedTags = groupRender.tags.filter((groupTag: string) => {
                     return !webFrame.tags.includes(groupTag)
                 })
                 groupRender.frames.push(webFrame)
@@ -270,12 +270,12 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                 const groupData = groupsData.find(x => x.title === tabGroup.title)
                 let tags: string[] = []
                 let color = tabGroup.color
-                let sugestedFrames: WebTaggeable[] = []
+                let suggestedFrames: WebTaggeable[] = []
                 if (groupData){
                     tags = [...groupData.tags]
                     color = groupData.color
-                    webFrame.sugestedTags = [...tags]
-                    sugestedFrames = getSugestedFrames(webData, tabs, tabGroups, groupData)
+                    webFrame.suggestedTags = [...tags]
+                    suggestedFrames = getSuggestedFrames(webData, tabs, tabGroups, groupData)
                 }
                 // mount group here
                 window.tabs.push({
@@ -283,7 +283,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                     title:  tabGroup.title,
                     color: color,
                     collapsed: tabGroup.collapsed,
-                    sugestedFrames: sugestedFrames,
+                    suggestedFrames: suggestedFrames,
                     frames: [webFrame],
                     tags: tags,
                     preProcessedTags: ['@group'],
@@ -317,7 +317,7 @@ export interface TabGroupSimple{
     title: string
 }
 
-export function getSugestedFrames(framesData: WebTaggeable[], tabs: OpenTab[], openGroups :TabGroupSimple[], groupData: GroupDataTaggeable): WebTaggeable[]{
+export function getSuggestedFrames(framesData: WebTaggeable[], tabs: OpenTab[], openGroups :TabGroupSimple[], groupData: GroupDataTaggeable): WebTaggeable[]{
     if (groupData.tags.length === 0){
         return []
     }

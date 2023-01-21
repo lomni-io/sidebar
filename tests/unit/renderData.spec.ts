@@ -1,9 +1,17 @@
 import {
-    createTags, createWindows,
-    enrichFrames, filterFramesBySelection, framesFiltered, framesSort, generateTagCardinality, getSugestedFrames,
-    GroupFrameRender, SimpleWeFrame,
+    createTags,
+    createWindows,
+    enrichFrames,
+    filterFramesBySelection,
+    framesFiltered,
+    framesSort,
+    generateTagCardinality,
+    getSuggestedFrames,
+    GroupFrameRender,
+    SimpleWeFrame,
     WebFrameData,
-    WebFrameRender, WebTaggeable
+    WebFrameRender,
+    WebTaggeable
 } from "@/store/renderData";
 import {FrameRender} from "@/entity/frame";
 
@@ -636,7 +644,7 @@ describe('createWindows', () => {
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
-                                sugestedTags: ['#myTag'],
+                                suggestedTags: ['#myTag'],
                                 preProcessedTags: ["@test", "@ski"],
                                 tags: ['#otherTag'],
                             },
@@ -655,12 +663,12 @@ describe('createWindows', () => {
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
-                                sugestedTags: [],
+                                suggestedTags: [],
                                 preProcessedTags: ["@test2", "@ski"],
                                 tags: ['#myTag'],
                             },
                         ],
-                        sugestedFrames: [
+                        suggestedFrames: [
                             {tags: ['#myTag'], url: "https://test.ski.com/notOpenedButHasTo"}
                         ]
                     },
@@ -671,7 +679,7 @@ describe('createWindows', () => {
     })
 })
 
-describe('getSugestedFrames', () => {
+describe('getSuggestedFrames', () => {
     test('test 1', () => {
         const frames = [
             {url: 'url1', title: 'hello',  favIconUrl: 'fav1', tags: ['#tag1']},
@@ -701,7 +709,7 @@ describe('getSugestedFrames', () => {
         const expected = [
             {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
         ]
-        expect(getSugestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
+        expect(getSuggestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
     })
 
     test('test 2', () => {
@@ -734,7 +742,7 @@ describe('getSugestedFrames', () => {
         const expected = [
             {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
         ]
-        expect(getSugestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
+        expect(getSuggestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
     })
 })
 

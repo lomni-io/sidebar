@@ -11,8 +11,8 @@
       </a>
     </li>
 
-    <li v-for="(tag, index) in sugestedTags" :key="index">
-      <a class="tag sugested" @click="$emit('clickedSugestion', tag)">{{tag}}</a>
+    <li v-for="(tag, index) in suggestedTags" :key="index">
+      <a class="tag suggested" @click="$emit('clickedSuggestion', tag)">{{tag}}</a>
     </li>
     <li v-for="(tag, index) in fixedTags" :key="index">
       <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
@@ -28,8 +28,8 @@ import {store} from "@/store";
 
 export default {
   name: "TagContainer",
-  emits: ['addTag', 'clickedTag', 'removeTag', 'clickedSugestion'],
-  props: ['tags', 'fixedTags', 'color', 'sugestedTags'],
+  emits: ['addTag', 'clickedTag', 'removeTag', 'clickedSuggestion'],
+  props: ['tags', 'fixedTags', 'color', 'suggestedTags'],
   data() {
     return {
       isDraggingOver: false,
@@ -161,7 +161,7 @@ export default {
   font-weight: bold;
 }
 
-.sugested{
+.suggested{
   opacity: 0.6;
   background-color: var(--green);
   color: var(--background_input);

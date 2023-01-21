@@ -22,7 +22,7 @@
             <FrameDropArea :frame-bottom="frame" :frame-top="getTopFrameFromGroup(frameIdx, tabIdx)"></FrameDropArea>
             <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
           </div>
-          <SuggestionFrames :frames="tab.sugestedFrames" :group="tab"></SuggestionFrames>
+          <SuggestionFrames :frames="tab.suggestedFrames" :group="tab"></SuggestionFrames>
 
         </TabGroupScaffold>
       </div>

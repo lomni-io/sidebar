@@ -268,13 +268,13 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                 groupRender.frames.push(webFrame)
             }else{
                 const groupData = groupsData.find(x => x.title === tabGroup.title)
-                let tags: string[] = []
+                let groupTags: string[] = []
                 let color = tabGroup.color
                 let suggestedFrames: WebTaggeable[] = []
                 if (groupData){
-                    tags = [...groupData.tags]
+                    groupTags = [...groupData.tags]
                     color = groupData.color
-                    webFrame.suggestedTags = [...tags]
+                    webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t))
                     suggestedFrames = getSuggestedFrames(webData, tabs, tabGroups, groupData)
                 }
                 // mount group here
@@ -285,7 +285,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                     collapsed: tabGroup.collapsed,
                     suggestedFrames: suggestedFrames,
                     frames: [webFrame],
-                    tags: tags,
+                    tags: groupTags,
                     preProcessedTags: ['@group'],
                     kind: 'group',
                 })

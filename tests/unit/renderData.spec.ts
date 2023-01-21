@@ -547,6 +547,19 @@ describe('createWindows', () => {
 
         const activeTabs = [
             {
+                id: '2',
+                index: 2,
+                title: 'newHere',
+                url: 'https://test2.ski.com',
+                active: false,
+                audible: false,
+                favIconUrl: 'url favicon new again',
+                pinned: false,
+                windowId: 12,
+                groupId: 1,
+                selected: false
+            },
+            {
                 id: '1',
                 index: 1,
                 title: 'abv',
@@ -629,6 +642,25 @@ describe('createWindows', () => {
                         preProcessedTags: ["@group"],
                         tags: ['#myTag'],
                         frames: [
+                            {
+                                title: 'newHere',
+                                url: 'https://test2.ski.com',
+                                active: false,
+                                audible: false,
+                                id: "2",
+                                groupId: 1,
+                                index: 2,
+                                windowId: 12,
+                                domain: "test2.ski.com",
+                                favIconUrl: 'url favicon new again',
+                                isOpened: true,
+                                isPinned: false,
+                                isSelected: false,
+                                kind: "web",
+                                suggestedTags: [],
+                                preProcessedTags: ["@test2", "@ski"],
+                                tags: ['#myTag'],
+                            },
                             {
                                 title: 'abv',
                                 url: 'https://test.ski.com/abc',

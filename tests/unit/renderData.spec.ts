@@ -602,13 +602,13 @@ describe('createWindows', () => {
                 title: 'other title',
                 color: 'blue',
                 tags: [],
-                preProcessedTags: []
+                updatedAt: 1,
             },
             {
                 title: 'my group',
                 color: 'yellow',
                 tags: ['#myTag'],
-                preProcessedTags: []
+                updatedAt: 1,
             }
         ]
 
@@ -1139,12 +1139,14 @@ describe('updateSavedGroups', () => {
             {
                 title: 'title 1',
                 color: 'red',
-                tags: ['#tag1']
+                tags: ['#tag1'],
+                updatedAt: 1,
             },
             {
                 title: 'other group',
                 color: 'yellow',
-                tags: ['#tag2']
+                tags: ['#tag2'],
+                updatedAt: 1,
             }
         ]
 

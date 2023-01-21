@@ -84,6 +84,7 @@ export interface GroupData {
     title: string
     color: string
     tags: string[]
+    updatedAt: number
 }
 
 
@@ -414,7 +415,8 @@ export function updateSavedGroups(oldGTabs: TabGroup[], newGTabs: TabGroup[], sa
             newSavedGroups[idx] = {
                 title: newTabGroup.title,
                 color: newTabGroup.color,
-                tags: savedGroups[idx].tags
+                tags: savedGroups[idx].tags,
+                updatedAt: Date.now(),
             }
         }
     })

@@ -551,6 +551,100 @@ describe('mergeData', () => {
         expect(mergeData(remoteData, localData, true)).toStrictEqual(expected)
     })
 
+    it('modify one group data', () => {
+        const localData = [
+            {
+                title: 'new title',
+                color: 'red',
+                tags: ['#tag1', '#tag3'],
+                updatedAt: 17
+            },
+            {
+                title: 'this doesnt exist',
+                color: 'red',
+                tags: ['#tag1', '#tag3'],
+                updatedAt: 17
+            },
+            {
+                title: 'same title here',
+                color: 'red',
+                tags: ['#tag1', '#tag6'],
+                updatedAt: 18
+            },
+        ]
+
+        const remoteData = [
+            {
+                title: 'old title',
+                color: 'red',
+                tags: ['#tag1', '#tag3'],
+                updatedAt: 15
+            },
+            {
+                title: 'same title here',
+                color: 'red',
+                tags: ['#tag1', '#tag3'],
+                updatedAt: 15
+            },
+        ]
+
+        const expected = {
+            frames: [
+                {
+                    title: 'same title here',
+                    color: 'red',
+                    tags: ['#tag1', '#tag6'],
+                    updatedAt: 18
+                },
+                {
+                    title: 'new title',
+                    color: 'red',
+                    tags: ['#tag1', '#tag3'],
+                    updatedAt: 17
+                },
+                {
+                    title: 'this doesnt exist',
+                    color: 'red',
+                    tags: ['#tag1', '#tag3'],
+                    updatedAt: 17
+                },
+            ],
+            itemsAdded: [
+                {
+                    title: 'new title',
+                    color: 'red',
+                    tags: ['#tag1', '#tag3'],
+                    updatedAt: 17
+                },
+                {
+                    title: 'this doesnt exist',
+                    color: 'red',
+                    tags: ['#tag1', '#tag3'],
+                    updatedAt: 17
+                },
+            ],
+            itemsModified: [
+                {
+                    oldTitle: null,
+                    newTitle: null,
+                    tagsToAdd: ['#tag6'],
+                    tagsToRemove: ['#tag3'],
+                }
+            ],
+            itemsRemoved: [
+                {
+                    title: 'old title',
+                    color: 'red',
+                    tags: ['#tag1', '#tag3'],
+                    updatedAt: 15
+                },
+            ],
+            hasChanges: true,
+        }
+
+        expect(mergeData(localData, remoteData)).toStrictEqual(expected)
+    })
+
     it('modify two item - 2', () => {
         const localData = [
             {url: 'url1', tags: ['tag1', 'tag3'], updatedAt: 13, title: 'a', favIconUrl: 'a'},

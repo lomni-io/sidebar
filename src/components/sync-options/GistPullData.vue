@@ -64,7 +64,7 @@ export default {
             const parsed = JSON.parse(dataFile.content)
             const remoteFrames = decompress(parsed)
 
-            this.mergedData = mergeData(remoteFrames, store.getters.rawFrames, true)
+            this.mergedData = mergeData(remoteFrames, store.getters.rawFullData, true)
           }else{
             this.error = 'cannot find previews data'
           }
@@ -75,7 +75,7 @@ export default {
       })
     },
     pullData(){
-      store.dispatch('setFrames', this.mergedData.frames)
+      store.dispatch('pullData', this.mergedData.frames)
 
       this.error = null
       this.mergedData = null

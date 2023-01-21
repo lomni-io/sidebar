@@ -54,6 +54,7 @@ export default defineComponent( {
         title: this.title,
         color: this.color,
         tags: newTags,
+        updatedAt: Date.now()
       }
       store.dispatch('upsertSavedGroups', groupData)
     },
@@ -64,6 +65,7 @@ export default defineComponent( {
         title: this.title,
         color: this.color,
         tags: newTags,
+        updatedAt: Date.now()
       }
       store.dispatch('upsertSavedGroups', groupData)
     },

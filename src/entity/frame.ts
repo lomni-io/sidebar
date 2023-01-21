@@ -1,3 +1,4 @@
+import {GroupData} from "@/store/renderData";
 
 
 export interface FrameRender {
@@ -15,7 +16,7 @@ export interface FrameRender {
     updatedAt: number
 }
 
-export type FramesData = (WebFrameData|NoteFrameData)[]
+export type FramesData = (WebFrameData|NoteFrameData|GroupData)[]
 
 export interface WebFrameData{
     url:   string

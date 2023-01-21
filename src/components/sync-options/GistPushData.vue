@@ -76,10 +76,10 @@ export default {
             const parsed = JSON.parse(dataFile.content)
             const remoteFrames = decompress(parsed)
 
-            this.mergedData = mergeData(store.getters.rawFrames, remoteFrames)
+            this.mergedData = mergeData(store.getters.rawFullData, remoteFrames)
           }else{
             // doesnt has file
-            this.mergedData = mergeData(store.getters.rawFrames, [])
+            this.mergedData = mergeData(store.getters.rawFullData, [])
           }
         }).finally(() => this.isLoading = false)
       }).catch(err => {

@@ -7,6 +7,7 @@ import {
   TabGroup, updateSavedGroups,
   WebFrameData
 } from "@/store/renderData";
+import {FramesData, NoteFrameData} from "@/entity/frame";
 
 // import md5 from "md5";
 
@@ -21,6 +22,7 @@ export interface State {
   tabGroups: TabGroup[]
   clipboard: string|null
   dragItem: DragItem|null,
+  savedNotes: NoteFrameData[],
   search: string[],
   savedGroups: GroupData[]
 }
@@ -38,6 +40,7 @@ export const store = createStore<State>({
       },
 
       savedGroups: [] as GroupData[],
+      savedNotes: [] as NoteFrameData[],
       // to sync data
       frames: [],
 
@@ -84,8 +87,8 @@ export const store = createStore<State>({
     frames: function (state) {
       return enrichFrames(state.frames, state.tabs)
     },
-    rawFrames: function (state) {
-      return state.frames
+    rawFullData: function (state) {
+      return [...state.frames, ...state.savedGroups] as (FramesData|GroupData)[]
     },
   },
   mutations: {
@@ -128,9 +131,15 @@ export const store = createStore<State>({
     SET_CLIPBOARD(state, clipboard) {
       state.clipboard = clipboard
     },
-    SET_FRAMES(state, frames) {
-      state.frames = frames
-      localStorage.setItem('frames', JSON.stringify(frames))
+    PULL_DATA(state, frames: FramesData) {
+      state.frames = frames.filter(x => !!(<WebFrameData>x).url) as WebFrameData[]
+      localStorage.setItem('frames', JSON.stringify(state.frames))
+
+      state.savedGroups = frames.filter(x => !!(<GroupData>x).color) as GroupData[]
+      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
+
+      state.savedNotes = frames.filter(x => !!(<NoteFrameData>x).content) as NoteFrameData[]
+      localStorage.setItem('savedNotes', JSON.stringify(state.savedNotes))
     },
     SET_GROUP_DATA(state, groupData:GroupData){
       const idx = state.savedGroups.findIndex((x:GroupData) => x.title === groupData.title)
@@ -224,8 +233,8 @@ export const store = createStore<State>({
     upsertSavedGroups(context, groupData: GroupData){
       context.commit('SET_GROUP_DATA', groupData)
     },
-    setFrames(context, frames: WebFrameData){
-      context.commit('SET_FRAMES', frames)
+    pullData(context, frames: FramesData){
+      context.commit('PULL_DATA', frames)
     },
 
     saveGroup(context, group: GroupData){

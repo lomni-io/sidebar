@@ -310,7 +310,7 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebF
                 index: tab ? tab.index : -1,
                 groupId: tab ? tab.groupId : -1,
                 windowId: tab ? tab.windowId : -1,
-                favIconUrl: webFrame.favIconUrl,
+                favIconUrl: getFavicon(webFrame.url),
                 title: webFrame.title,
                 audible: tab ? tab.audible : false,
                 preProcessedTags: processedTags,
@@ -355,7 +355,7 @@ export function mountWebFrame(tab:Tab, webData: WebTaggeable[]): WebFrameRender{
         groupId: tab ? tab.groupId : -1,
         index: tab ? tab.index : -1,
         url: tab.url,
-        favIconUrl: tab.favIconUrl,
+        favIconUrl: getFavicon(tab.url),
         title: tab.title,
         tags: tags,
         audible: tab ? tab.audible : false,
@@ -424,4 +424,8 @@ export function updateSavedGroups(oldGTabs: TabGroup[], newGTabs: TabGroup[], sa
     })
 
     return newSavedGroups
+}
+
+export const getFavicon = (url:string) => {
+    return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${url}&size=16`
 }

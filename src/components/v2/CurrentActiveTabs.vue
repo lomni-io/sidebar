@@ -2,7 +2,7 @@
   <div class="active-frame-container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
       <ActiveFrameUnit :frame="frame" :minimized="true"></ActiveFrameUnit>
-      <LineToolBar :frames="frames" :frame="frame"></LineToolBar>
+      <LineToolBar :frames="frames" :frame="frame" :groups-data="groupsData"></LineToolBar>
     </div>
 
 <!--  TABS HERE  -->
@@ -12,7 +12,7 @@
       <div v-if="tab.kind === 'web'">
         <FrameDropArea :frame-bottom="tab" :frame-top="tabIdx > 0 ? window.tabs[tabIdx-1] : -1"></FrameDropArea>
         <ActiveFrameUnit :frame="tab"></ActiveFrameUnit>
-        <LineToolBar :frames="frames" :frame="tab"></LineToolBar>
+        <LineToolBar :frames="frames" :frame="tab" :groups-data="groupsData"></LineToolBar>
       </div>
 
 <!--   GROUP TABS HERE   -->
@@ -43,7 +43,7 @@ import SuggestionFrames from "@/components/v2/SuggestionFrames.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
-  props: ['window', 'tags', 'frames', 'search'],
+  props: ['window', 'tags', 'frames', 'search', 'groupsData'],
   components: {SuggestionFrames, LineToolBar, TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
   methods: {
     getTopFrameFromGroup(frameIdx: number, tabIdx: number){

@@ -1,9 +1,12 @@
 <template>
+
   <div class="toolbar-pre" v-if="!isActive" @click="isActive = true"></div>
   <div class="toolbar" v-if="isActive">
 
     <div class="tag-input-container">
-      <p class="tag-input" v-for="(tag, index) in search" :key="index"><span v-on:click="removeTag(tag)" >{{tag}}</span></p>
+      <p class="tag-input" v-for="(tag, index) in search" :key="index">
+        <span v-on:click="removeTag(tag)" draggable="true" @drag="dragstart(tag)" @dragend="dragend" >{{tag}}</span>
+      </p>
       <input v-model="input" :placeholder="placeholder" v-on:focusout="focusOut" v-on:keydown="keydown" ref="input"/>
     </div>
 
@@ -15,20 +18,28 @@
       </div>
     </div>
 
+    <!--   IS GROUP SEARCH -->
+    <div v-if="isGroupSearch">
+      <div class="group-container" v-for="(group, index) in groupsDataFiltered.slice(0, 5)" :key="index">
+        <p @click="openGroup(group)" :class="group.color">{{group.title}} - {{group.tags.join(',')}}</p>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/TagListContainer.vue";
-import {createTags, framesFiltered, Tag} from "@/store/renderData";
+import {createTags, framesFiltered, GroupData, Tag} from "@/store/renderData";
 import ToolbarFrameUnit from "@/components/v2/ToolbarFrameUnit.vue";
 import {FrameRender} from "@/entity/frame";
+import {store} from "@/store";
 
 export default defineComponent( {
   name: "LineToolBar",
   components: {ToolbarFrameUnit, TagListContainer},
-  props: ['frames', 'frame'],
+  props: ['frames', 'frame', 'groupsData'],
   data() {
     return {
       search: [] as string[],
@@ -50,8 +61,16 @@ export default defineComponent( {
     framesFiltered(){
       return framesFiltered(this.frames, this.search)
     },
+    groupsDataFiltered(){
+      if (this.input.length <= 1){
+        return this.groupsData
+      }
+      const input = this.input.substring(1)
+      return this.groupsData.filter((x: GroupData) => x.title.startsWith(input))
+    },
     tags(): Tag[]{
       const tags = createTags(this.frames, this.search)
+
       if (this.input.length > 0){
         return tags.filter(t => t.name.includes(this.input))
       }
@@ -65,11 +84,26 @@ export default defineComponent( {
     },
     isFrameSearch(){
       return this.input.startsWith('#') || this.input.startsWith('@') || this.search.length > 0
+    },
+    isGroupSearch(){
+      return this.input.startsWith('/') || (this.input.startsWith('/') && this.search.length > 0)
     }
   },
   methods: {
+    dragstart(tagName: string){
+      const dragItem = {
+        kind: 'tag',
+        draggerId: Math.floor(Math.random() * 1000000000).toFixed(0),
+        object: tagName,
+      }
+
+      store.dispatch('setDragItem', dragItem)
+    },
+    dragend(){
+      store.dispatch('setDragItem', null)
+    },
     focusOut(){
-      if (!this.isFrameSearch){
+      if (!this.isFrameSearch && !this.isGroupSearch){
         this.isActive = false
       }
     },
@@ -94,6 +128,11 @@ export default defineComponent( {
       this.$nextTick(() => {
         html.focus()
       });
+    },
+    openGroup(group: GroupData){
+      console.log(group)
+      this.isActive = false
+      this.input = ''
     },
     keydown(e: any){
       if (e.code === 'Escape'){
@@ -161,9 +200,7 @@ export default defineComponent( {
       cursor: pointer;
       white-space: nowrap;
     }
-    span:hover{
-      background-color: #7a4d4d;
-    }
+
   }
 }
 
@@ -189,5 +226,47 @@ input {
   opacity: 0.7;
 }
 
+.group-container{
+  p{
+    padding: 0 5px 0 5px;
+    margin: 5px 0 0 0;
+    background-color: red;
+    border-radius: 5px;
+    font-size: 0.8em;
+
+    &.grey{
+      background-color: var(--white);
+    }
+    &.blue{
+      background-color: var(--blue);
+    }
+    &.cyan{
+      background-color: var(--cyan);
+    }
+    &.pink{
+      background-color: var(--pink);
+    }
+    &.purple{
+      background-color: var(--purple);
+    }
+    &.orange{
+      background-color: var(--orange);
+    }
+    &.yellow{
+      background-color: var(--yellow);
+    }
+    &.green{
+      background-color: var(--green);
+    }
+    &.red{
+      background-color: var(--red);
+    }
+
+    &:hover{
+      filter: var(--hover);
+      cursor: pointer;
+    }
+  }
+}
 
 </style>

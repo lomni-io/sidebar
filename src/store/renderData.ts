@@ -7,6 +7,7 @@ export interface RenderData {
     tags: Tag[]
     windows: Window[]
     frames: WebFrameRender[]
+    groupsData: GroupData[]
 }
 
 export interface Tag {
@@ -117,6 +118,7 @@ export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGro
         tags: createTags(enriched, searchInput),
         windows: createWindows(tabs, tabGroups, framesData, groupData),
         frames: enriched as WebFrameRender[],
+        groupsData: groupData,
     }
 }
 

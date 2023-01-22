@@ -14,11 +14,15 @@
         <font-awesome-icon icon="rotate" />
         Sync
       </li>
+      <li :class="{'active': this.selected === 'migrate'}" @click="select('migrate')">
+        migrate
+      </li>
     </ul>
 
     <TabsView v-if="renderData && selected === 'tabs'" :render-data="renderData"></TabsView>
     <FramesView v-if="renderData && selected === 'frames'" :render-data="renderData"></FramesView>
     <SyncView v-if="selected === 'sync'"></SyncView>
+    <TmpMigrate v-if="selected === 'migrate'" :frames="renderData.frames"></TmpMigrate>
 
   </div>
 
@@ -34,11 +38,12 @@ import FramesView from "@/views/FramesView.vue";
 import PluginInstallView from "@/views/PluginInstallView.vue";
 import {store} from "@/store";
 import SyncView from "@/views/SyncView.vue";
+import TmpMigrate from "@/views/TmpMigrate.vue";
 // const renderData = require('./renderData.json')
 
 export default defineComponent( {
   name: "SidebarView",
-  components: {SyncView, PluginInstallView, FramesView, TabsView},
+  components: {TmpMigrate, SyncView, PluginInstallView, FramesView, TabsView},
   data() {
     return {
       selected: 'tabs',

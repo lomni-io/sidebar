@@ -10,6 +10,17 @@ export interface RenderData {
     groupsData: GroupData[]
 }
 
+// TODO: create a migrate folder to help on that
+// migrate will get the default frames and put inside default folder
+export interface Bookmark {
+    id: string
+    dateAdded: number
+    title: string
+    index: number
+    parentId: string
+    url: string|null // when null is a folder
+}
+
 export interface Tag {
     name:  string
     count: number

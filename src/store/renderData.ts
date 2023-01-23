@@ -1,5 +1,4 @@
 import {extractRootDomain, getDomainsFromUrl} from "@/components/url";
-import {FrameRender} from "@/entity/frame";
 
 export interface RenderData {
     search: string[]
@@ -7,18 +6,25 @@ export interface RenderData {
     tags: Tag[]
     windows: Window[]
     frames: WebFrameRender[]
-    groupsData: GroupData[]
+    groupsData: GroupRender[]
 }
 
 // TODO: create a migrate folder to help on that
 // migrate will get the default frames and put inside default folder
 export interface Bookmark {
     id: string
-    dateAdded: number
     title: string
     index: number
     parentId: string
     url: string|null // when null is a folder
+}
+
+export interface BookmarkTreeNode {
+    children: BookmarkTreeNode[]
+    id: string
+    index: number
+    title: string
+    url: string
 }
 
 export interface Tag {
@@ -68,16 +74,10 @@ export interface TraceWebFrameData {
     favIconUrl: string
 }
 
-
-
-
 export interface WebFrameData{
     url:   string
     title: string
-    comment?: string
-    favIconUrl: string
     tags: string[]
-    updatedAt: number
 }
 
 export interface GroupFrameRender {
@@ -92,11 +92,10 @@ export interface GroupFrameRender {
     kind: string
 }
 
-export interface GroupData {
+export interface GroupRender {
     title: string
     color: string
     tags: string[]
-    updatedAt: number
 }
 
 
@@ -120,16 +119,29 @@ export interface WebFrameRender {
     kind: string
 }
 
-export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], groupData: GroupData[]): RenderData{
-    const enriched = enrichFrames(framesData, tabs)
+export interface BookmarkWindow {
+    treeNode: BookmarkTreeNode[]
+}
+
+
+export function createBookmarkWindow(treeNode: BookmarkTreeNode): BookmarkWindow{
+    return {
+        treeNode: treeNode.id === '0' ? treeNode.children : []
+    }
+}
+
+export function createRenderData(bookmarks: Bookmark[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
+    const webFrames = getFrames(bookmarks)
+    const groups = getGroups(bookmarks)
+    const enriched = enrichFrames(webFrames, tabs)
 
     return {
         tabs: tabs,
         search: searchInput,
         tags: createTags(enriched, searchInput),
-        windows: createWindows(tabs, tabGroups, framesData, groupData),
+        windows: createWindows(tabs, tabGroups, webFrames, groups),
         frames: enriched as WebFrameRender[],
-        groupsData: groupData,
+        groupsData: groups,
     }
 }
 
@@ -143,6 +155,8 @@ export interface WebTaggeable {
     url: string
     tags: string[]
 }
+
+
 
 
 export function createTags(framesData: Taggeable[], searchTags: string[] = []): Tag[]{
@@ -192,7 +206,7 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTaggeable[], groupsData: GroupData[]): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTaggeable[], groupsData: GroupRender[]): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -418,25 +432,38 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
     })
 }
 
-export function updateSavedGroups(oldGTabs: TabGroup[], newGTabs: TabGroup[], savedGroups: GroupData[]): GroupData[]{
-    const newSavedGroups = [...savedGroups]
-    // check if has changedName
-    oldGTabs.forEach(oldTabGroup => {
-        const newTabGroup = newGTabs.find(x => x.id === oldTabGroup.id)
-        const idx = savedGroups.findIndex(x => x.title === oldTabGroup.title)
-        if (newTabGroup && ~idx){
-            newSavedGroups[idx] = {
-                title: newTabGroup.title,
-                color: newTabGroup.color,
-                tags: savedGroups[idx].tags,
-                updatedAt: savedGroups[idx].updatedAt+1,
-            }
-        }
-    })
-
-    return newSavedGroups
-}
-
 export const getFavicon = (url:string) => {
     return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${url}&size=16`
+}
+
+export const getFrames = (bookmarks:Bookmark[]):WebFrameData[] => {
+    const frames: WebFrameData[] = []
+    bookmarks.forEach(bookmark => {
+        if (bookmark.url){
+            const titleAndtags = extractTitleAndTags(bookmark.title)
+            frames.push({
+                url: bookmark.url,
+                title: titleAndtags.title,
+                tags: titleAndtags.tags
+            })
+        }
+    })
+    return frames
+}
+
+export const getGroups = (bookmarks:Bookmark[]):GroupRender[] => {
+    return []
+}
+
+interface extractResponse {
+    title: string
+    tags: string[]
+}
+
+export const extractTitleAndTags = (title: string): extractResponse => {
+    const tags = title.match(/#[a-z]+/gi);
+    return {
+        title: title.replace(/#[a-z]+/gi, '').trim(),
+        tags: tags ? tags : []
+    }
 }

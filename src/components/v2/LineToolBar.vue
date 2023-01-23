@@ -31,7 +31,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/TagListContainer.vue";
-import {createTags, framesFiltered, GroupData, Tag} from "@/store/renderData";
+import {createTags, framesFiltered, GroupRender, Tag} from "@/store/renderData";
 import ToolbarFrameUnit from "@/components/v2/ToolbarFrameUnit.vue";
 import {FrameRender} from "@/entity/frame";
 import {store} from "@/store";
@@ -66,7 +66,7 @@ export default defineComponent( {
         return this.groupsData
       }
       const input = this.input.substring(1)
-      return this.groupsData.filter((x: GroupData) => x.title.startsWith(input))
+      return this.groupsData.filter((x: GroupRender) => x.title.startsWith(input))
     },
     tags(): Tag[]{
       const tags = createTags(this.frames, this.search)
@@ -129,7 +129,7 @@ export default defineComponent( {
         html.focus()
       });
     },
-    openGroup(group: GroupData){
+    openGroup(group: GroupRender){
       console.log(group)
       this.isActive = false
       this.input = ''

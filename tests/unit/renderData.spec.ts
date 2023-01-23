@@ -5,10 +5,10 @@ import {
     filterFramesBySelection,
     framesFiltered,
     framesSort,
-    generateTagCardinality,
+    generateTagCardinality, getFrames,
     getSuggestedFrames,
     GroupFrameRender,
-    SimpleWeFrame, updateSavedGroups,
+    SimpleWeFrame,
     WebFrameData,
     WebFrameRender,
     WebTaggeable
@@ -446,7 +446,7 @@ describe('createWindows', () => {
                         audible: false,
                         active: false,
                         domain: "test.ski.com",
-                        favIconUrl: 'url favicon',
+                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/pinned&size=16',
                         isOpened: true,
                         isPinned: true,
                         isSelected: false,
@@ -466,7 +466,7 @@ describe('createWindows', () => {
                         groupId: -1,
                         index: 1,
                         windowId: 12,
-                        favIconUrl: 'url favicon',
+                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/abc&size=16',
                         isOpened: true,
                         isPinned: false,
                         isSelected: false,
@@ -484,7 +484,7 @@ describe('createWindows', () => {
                         index: 2,
                         windowId: 12,
                         domain: "test2.ski.com",
-                        favIconUrl: 'favicon testing here',
+                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                         isOpened: true,
                         isPinned: false,
                         isSelected: false,
@@ -507,7 +507,7 @@ describe('createWindows', () => {
                         url: 'https://test.ski.com/otherWindow',
                         id: "4",
                         domain: "test.ski.com",
-                        favIconUrl: 'url favicon',
+                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/otherWindow&size=16',
                         isOpened: true,
                         active: false,
                         audible: false,
@@ -535,7 +535,7 @@ describe('createWindows', () => {
                                 windowId: 13,
                                 url: 'https://test.ski.com/otherWindow',
                                 domain: "test.ski.com",
-                                favIconUrl: 'url favicon',
+                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/otherWindow&size=16',
                                 isOpened: true,
                                 active: false,
                                 audible: false,
@@ -662,7 +662,7 @@ describe('createWindows', () => {
                                 index: 2,
                                 windowId: 12,
                                 domain: "test2.ski.com",
-                                favIconUrl: 'url favicon new again',
+                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                                 isOpened: true,
                                 isPinned: false,
                                 isSelected: false,
@@ -681,7 +681,7 @@ describe('createWindows', () => {
                                 groupId: 1,
                                 index: 1,
                                 windowId: 12,
-                                favIconUrl: 'url favicon',
+                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/abc&size=16',
                                 isOpened: true,
                                 isPinned: false,
                                 isSelected: false,
@@ -700,7 +700,7 @@ describe('createWindows', () => {
                                 index: 2,
                                 windowId: 12,
                                 domain: "test2.ski.com",
-                                favIconUrl: 'url favicon new again',
+                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                                 isOpened: true,
                                 isPinned: false,
                                 isSelected: false,
@@ -1108,75 +1108,45 @@ describe('framesSort', () => {
     })
 })
 
-
-describe('updateSavedGroups', () => {
-    it('test_1', () => {
-        const oldGTabs = [
+describe('getFrames', () => {
+    it('test 1', () => {
+        const bookmarks = [
             {
-                id: 1,
-                windowId: 1,
-                title: 'title 1',
-                collapsed: false,
-                color: 'red'
+                id: '123',
+                title: 'its the title',
+                index: 1,
+                parentId: '1',
+                url: null
             },
             {
-                id: 3,
-                windowId: 2,
-                title: 'other group',
-                collapsed: false,
-                color: 'yellow'
-            }
-        ]
-
-        const newGTabs = [
-            {
-                id: 1,
-                windowId: 1,
-                title: 'title 2',
-                collapsed: false,
-                color: 'blue'
+                id: '123',
+                title: 'its the title',
+                index: 1,
+                parentId: '1',
+                url: 'https://url.here'
             },
             {
-                id: 3,
-                windowId: 2,
-                title: 'other group',
-                collapsed: false,
-                color: 'green'
-            }
-        ]
-
-        const savedGroups = [
-            {
-                title: 'title 1',
-                color: 'red',
-                tags: ['#tag1'],
-                updatedAt: 1,
+                id: '123',
+                title: 'other title #oneTag #otherTag',
+                index: 1,
+                parentId: '1',
+                url: 'https://url.here/withTags'
             },
-            {
-                title: 'other group',
-                color: 'yellow',
-                tags: ['#tag2'],
-                updatedAt: 1,
-            }
         ]
-
-
 
         const expected = [
             {
-                title: 'title 2',
-                color: 'blue',
-                tags: ['#tag1'],
-                updatedAt: 2,
+                url:   'https://url.here',
+                title: 'its the title',
+                tags: []
             },
             {
-                title: 'other group',
-                color: 'green',
-                tags: ['#tag2'],
-                updatedAt: 2,
-            }
+                url: 'https://url.here/withTags',
+                title: 'other title',
+                tags: ['#oneTag', '#otherTag']
+            },
         ]
 
-        expect(updateSavedGroups(oldGTabs, newGTabs, savedGroups)).toStrictEqual(expected)
+        expect(getFrames(bookmarks)).toStrictEqual(expected)
     })
 })

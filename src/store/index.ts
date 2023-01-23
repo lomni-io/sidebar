@@ -1,13 +1,13 @@
-import {ActionContext, createStore} from 'vuex'
+import {createStore} from 'vuex'
 import {DragItem} from "@/store/dragItem";
 import {
+  Bookmark, BookmarkTreeNode, createBookmarkWindow,
   createRenderData,
-  enrichFrames, GroupData,
+  enrichFrames,
   Tab,
-  TabGroup, updateSavedGroups,
+  TabGroup,
   WebFrameData
 } from "@/store/renderData";
-import {FramesData, NoteFrameData} from "@/entity/frame";
 
 // import md5 from "md5";
 
@@ -15,16 +15,13 @@ import {FramesData, NoteFrameData} from "@/entity/frame";
 // define your typings for the store state
 export interface State {
   storage: any
-  // TODO: change to this:
-  // frames: (WebFrameData|GroupData)[]
-  frames: WebFrameData[]
   tabs:   Tab[]
   tabGroups: TabGroup[]
   clipboard: string|null
   dragItem: DragItem|null,
-  savedNotes: NoteFrameData[],
   search: string[],
-  savedGroups: GroupData[]
+  bookmarks: Bookmark[]
+  bookmarkTreeNode: BookmarkTreeNode
 }
 
 export const store = createStore<State>({
@@ -39,11 +36,6 @@ export const store = createStore<State>({
         gistID: ''
       },
 
-      savedGroups: [] as GroupData[],
-      savedNotes: [] as NoteFrameData[],
-      // to sync data
-      frames: [],
-
       clipboard: null,
 
       head: {
@@ -54,8 +46,10 @@ export const store = createStore<State>({
         currentSelectedFrameIdx: -1,
       },
 
-      tabs: [],
+      tabs: [] as Tab[],
       tabGroups: [] as TabGroup[],
+      bookmarks: [] as Bookmark[],
+      bookmarkTreeNode: {} as BookmarkTreeNode,
       search: []
 
     }
@@ -63,6 +57,10 @@ export const store = createStore<State>({
   getters: {
     dragItem: function (state) {
       return state.dragItem
+    },
+    bookmarkWindow: function (state){
+      console.log(createBookmarkWindow(state.bookmarkTreeNode))
+      return createBookmarkWindow(state.bookmarkTreeNode)
     },
     storage: function (state) {
       return state.storage
@@ -80,15 +78,7 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      return createRenderData(state.frames, state.tabs, state.tabGroups, state.search, state.savedGroups)
-    },
-
-    // add preProcessedTags
-    frames: function (state) {
-      return enrichFrames(state.frames, state.tabs)
-    },
-    rawFullData: function (state) {
-      return [...state.frames, ...state.savedGroups] as (FramesData|GroupData)[]
+      return createRenderData(state.bookmarks, state.tabs, state.tabGroups, state.search)
     },
   },
   mutations: {
@@ -123,85 +113,21 @@ export const store = createStore<State>({
       localStorage.setItem('storage', JSON.stringify(storage))
       state.storage = storage
     },
-    SET_DATA(state, payload) {
-      state.frames = payload.frames
-      state.storage = payload.storage
-      state.savedGroups = payload.groupsData
-    },
     SET_CLIPBOARD(state, clipboard) {
       state.clipboard = clipboard
-    },
-    PULL_DATA(state, frames: FramesData) {
-      state.frames = frames.filter(x => !!(<WebFrameData>x).url) as WebFrameData[]
-      localStorage.setItem('frames', JSON.stringify(state.frames))
-
-      state.savedGroups = frames.filter(x => !!(<GroupData>x).color) as GroupData[]
-      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
-
-      state.savedNotes = frames.filter(x => !!(<NoteFrameData>x).content) as NoteFrameData[]
-      localStorage.setItem('savedNotes', JSON.stringify(state.savedNotes))
-    },
-    SET_GROUP_DATA(state, groupData:GroupData){
-      const idx = state.savedGroups.findIndex((x:GroupData) => x.title === groupData.title)
-      if (~idx){
-        // has frame
-        state.savedGroups[idx] = groupData
-      }else{
-        // new frame
-        state.savedGroups.push(groupData)
-      }
-      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
-    },
-    SET_FRAME(state, frame:WebFrameData) {
-      frame.updatedAt = Date.now()
-
-      const frameIdx = state.frames.findIndex((x:WebFrameData) => {
-        return x.url === frame.url
-      })
-      if (~frameIdx){
-        // has frame
-        state.frames[frameIdx] = frame
-      }else{
-        // new frame
-        state.frames.push(frame)
-      }
-      // persist state on storage
-      localStorage.setItem('frames', JSON.stringify(state.frames))
     },
     SET_ALL_TABS(state, data) {
       state.tabs = data
     },
     SET_ALL_TAB_GROUPS(state, newTabGroups: TabGroup[]){
-      state.savedGroups = updateSavedGroups(state.tabGroups, newTabGroups, state.savedGroups)
-      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
-
       state.tabGroups = newTabGroups
     },
-    REMOVE_SAVED_GROUP(state, title: string){
-      const groupIdx = state.savedGroups.findIndex(x => x.title === title)
-      if (~groupIdx) {
-        // has frame
-        state.savedGroups.splice(groupIdx, 1)
-      }
-      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
+    SET_ALL_BOOKMARKS(state, bookmarks: Bookmark[]){
+      state.bookmarks = bookmarks
     },
-    SAVE_GROUP(state, group: GroupData){
-      const groupIdx = state.savedGroups.findIndex((x:GroupData) => x.title === group.title)
-      if (~groupIdx){
-        // has frame
-        state.savedGroups[groupIdx] = group
-      }else{
-        // new frame
-        state.savedGroups.push(group)
-      }
-      localStorage.setItem('savedGroups', JSON.stringify(state.savedGroups))
-    },
-    SET_NOTE(state, note) {
-      note.updatedAt = Date.now()
-
-      state.frames.push(note)
-      localStorage.setItem('frames', JSON.stringify(state.frames))
-    },
+    SET_BOOKMARK_TREE(state, bookmark: BookmarkTreeNode[]){
+      state.bookmarkTreeNode = bookmark[0]
+    }
   },
   actions: {
     addSearchItem(context, item){
@@ -227,49 +153,15 @@ export const store = createStore<State>({
     setAllTabGroups(context, data){
       context.commit('SET_ALL_TAB_GROUPS', data)
     },
-    upsertFrame(context, frame: WebFrameData){
-      context.commit('SET_FRAME', frame)
+    setAllBookmarks(context, data){
+      context.commit('SET_ALL_BOOKMARKS', data)
     },
-    upsertSavedGroups(context, groupData: GroupData){
-      context.commit('SET_GROUP_DATA', groupData)
-    },
-    pullData(context, frames: FramesData){
-      context.commit('PULL_DATA', frames)
-    },
-
-    saveGroup(context, group: GroupData){
-      context.commit('SAVE_GROUP', group)
+    setBookmarkTree(context, data){
+      context.commit('SET_BOOKMARK_TREE', data)
     },
     removeGroup(context, title: string){
       context.commit('REMOVE_SAVED_GROUP', title)
     },
-
-    // process of loading and save
-
-    loadState(context){
-      let frames = []
-      const framesRaw = localStorage.getItem('frames')
-      if (framesRaw){
-        frames = JSON.parse(framesRaw)
-      }
-
-      let storage = {kind: 'local'}
-      const storageRaw = localStorage.getItem('storage')
-      if (storageRaw){
-        storage = JSON.parse(storageRaw)
-      }
-
-      let groupsData = []
-      const groupsDataRaw = localStorage.getItem('savedGroups')
-      if (groupsDataRaw){
-        groupsData = JSON.parse(groupsDataRaw)
-      }
-
-      context.commit('SET_DATA', {frames: frames, storage: storage, groupsData:groupsData})
-    },
-    setStorage(context, storage){
-      context.commit('SET_STORAGE', storage)
-    }
   },
   modules: {
   }

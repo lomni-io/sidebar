@@ -76,17 +76,6 @@ export default defineComponent( {
     },
   },
   watch: {
-    frame: {
-      handler(currFrame) {
-        if (currFrame.active){
-          this.$nextTick(() => {
-            const frame = this.$refs.frame as HTMLInputElement
-            frame.scrollIntoView({behavior: 'smooth',   block: 'center', inline: 'center'});
-          });
-        }
-      },
-      deep: true
-    },
   },
   mounted() {
 
@@ -161,9 +150,9 @@ export default defineComponent( {
       store.dispatch('upsertFrame', newFrame)
     },
     removeTag(tag: string){
-      const newFrame = JSON.parse(JSON.stringify(this.frame)) as WebFrameRender
-      newFrame.tags = newFrame.tags.filter(t => !t.includes(tag))
-      store.dispatch('upsertFrame', newFrame)
+      console.log(tag, this.frame)
+      // @ts-ignore
+      // this.port.postMessage({kind: "upsert-bookmark", url: this.frame.url, title: titleAndTags});
     }
   }
 })

@@ -179,7 +179,8 @@ export const transformTreeNode = (nodes: BookmarkTreeNode[]): BookmarkTreeNodeRe
     return newNodes
 }
 
-export function createRenderData(bookmarks: BookmarkNode[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
+export function createRenderData(bookmarkTreeNode: BookmarkTreeNode, tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
+    const bookmarks = transformTreeIntoNode(bookmarkTreeNode)
     const webFrames = getFrames(bookmarks)
     const groups = getGroups(bookmarks)
     const enriched = enrichFrames(webFrames, tabs)
@@ -527,4 +528,21 @@ export const extractTitleAndTags = (title: string): extractResponse => {
         title: title.replace(/#[a-z]+/gi, '').trim(),
         tags: tags ? tags : []
     }
+}
+
+export const transformTreeIntoNode = (treeNode: BookmarkTreeNode): BookmarkNode[] => {
+    const bookmarks: BookmarkNode[] = []
+    bookmarks.push({
+        id: treeNode.id,
+        title: treeNode.title,
+        index: treeNode.index,
+        parentId: treeNode.parentId,
+        url: treeNode.url
+    })
+    if (treeNode.children && treeNode.children.length > 0){
+        treeNode.children.forEach(tn => {
+            bookmarks.push(...transformTreeIntoNode(tn))
+        })
+    }
+    return bookmarks
 }

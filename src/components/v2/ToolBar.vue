@@ -12,7 +12,7 @@
       <!--   IS FRAME SEARCH -->
       <div class="addframe-container" v-if="isFrameSearch">
         <TagListContainer :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
-        <div class="frames-container" v-for="(frame, index) in framesFiltered.slice(0, 5)" :key="index">
+        <div class="frames-container" v-for="(frame, index) in framesFiltered.slice(0, 3)" :key="index">
           <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
         </div>
       </div>
@@ -245,6 +245,11 @@ input {
       cursor: pointer;
     }
   }
+}
+
+.addframe-container{
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .bottom{

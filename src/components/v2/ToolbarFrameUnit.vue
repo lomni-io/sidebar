@@ -1,37 +1,25 @@
 <template>
-  <a href="#" @click="click">
-
-    <div class="frame-info-container" ref="frame" id="frame" >
-      <div class="frame-info">
-        <div class="frame-header">
-          <div class="frame-header-left">
-            <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
-            <small  :class="{'current-selected': frame.isSelected}" >{{frame.title}}</small>
-          </div>
-        </div>
-
-        <div class="frame-footer">
-          <div class="tags">
-            <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags"></TagContainer>
-          </div>
+  <div class="frame-info-container" ref="frame" id="frame" @click="click" >
+    <div class="frame-info">
+      <div class="frame-header">
+        <div class="frame-header-left">
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16" height="16">
+          <small  :class="{'current-selected': frame.isSelected}" >{{frame.title}}</small>
         </div>
       </div>
     </div>
-
-  </a>
-
+  </div>
 </template>
 
 <script lang="ts">
 
 import {defineComponent} from "vue";
-import TagContainer from "@/components/v2/TagContainer.vue";
 
 // TODO: copy link buttom
 export default defineComponent( {
   name: "ToolbarFrameUnit",
   emits: ['selected'],
-  components: {TagContainer},
+  components: {},
   props: ['frame'],
   data() {
     return {

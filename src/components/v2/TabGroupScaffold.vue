@@ -116,6 +116,7 @@ export default defineComponent( {
 .scafold-container{
   user-select: none;
   margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 .collapsed{

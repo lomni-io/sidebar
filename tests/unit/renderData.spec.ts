@@ -8,7 +8,7 @@ import {
     generateTagCardinality, getFrames,
     getSuggestedFrames,
     GroupFrameRender,
-    SimpleWeFrame, transformTreeNode,
+    SimpleWeFrame, transformTreeIntoNode, transformTreeNode,
     WebFrameData,
     WebFrameRender,
     WebTaggeable
@@ -1231,5 +1231,78 @@ describe('transformTreeNode', () => {
         ]
 
         expect(transformTreeNode(bookmarkTreeNode)).toStrictEqual(expected)
+    })
+})
+
+
+describe('transformTreeIntoNode', () => {
+    it('test 1', () => {
+        const bookmarkTreeNode = {
+                children: [
+                    {
+                        children: [],
+                        id: '2',
+                        index: 1,
+                        title: 'title2',
+                        url: 'url2',
+                        parentId: '0',
+                    },
+                    {
+                        id: '3',
+                        index: 12,
+                        title: 'title3',
+                        url: 'url3',
+                        parentId: '0',
+                        children: [
+                            {
+                                children: [],
+                                id: '13',
+                                index: 12,
+                                title: 'title4',
+                                url: 'url4',
+                                parentId: '3',
+                            },
+                        ],
+                    }
+                ],
+                id: '1',
+                index: 12,
+                title: 'title1',
+                url: 'utl1',
+                parentId: '0',
+            }
+
+        const expected = [
+            {
+                id: '1',
+                index: 12,
+                title: 'title1',
+                url: 'utl1',
+                parentId: '0',
+            },
+            {
+                id: '2',
+                index: 1,
+                title: 'title2',
+                url: 'url2',
+                parentId: '0',
+            },
+            {
+                id: '3',
+                index: 12,
+                title: 'title3',
+                url: 'url3',
+                parentId: '0',
+            },
+            {
+                id: '13',
+                index: 12,
+                title: 'title4',
+                url: 'url4',
+                parentId: '3',
+            },
+        ]
+
+        expect(transformTreeIntoNode(bookmarkTreeNode)).toStrictEqual(expected)
     })
 })

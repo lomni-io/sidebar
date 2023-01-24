@@ -77,7 +77,7 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      return createRenderData(state.bookmarks, state.tabs, state.tabGroups, state.search)
+      return createRenderData(state.bookmarkTreeNode, state.tabs, state.tabGroups, state.search)
     },
   },
   mutations: {

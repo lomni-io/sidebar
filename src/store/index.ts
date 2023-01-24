@@ -1,7 +1,7 @@
 import {createStore} from 'vuex'
 import {DragItem} from "@/store/dragItem";
 import {
-  Bookmark, BookmarkTreeNode, createBookmarkWindow,
+  BookmarkNode, BookmarkTreeNode, createBookmarkWindow,
   createRenderData,
   enrichFrames,
   Tab,
@@ -20,7 +20,7 @@ export interface State {
   clipboard: string|null
   dragItem: DragItem|null,
   search: string[],
-  bookmarks: Bookmark[]
+  bookmarks: BookmarkNode[]
   bookmarkTreeNode: BookmarkTreeNode
 }
 
@@ -48,7 +48,7 @@ export const store = createStore<State>({
 
       tabs: [] as Tab[],
       tabGroups: [] as TabGroup[],
-      bookmarks: [] as Bookmark[],
+      bookmarks: [] as BookmarkNode[],
       bookmarkTreeNode: {} as BookmarkTreeNode,
       search: []
 
@@ -59,7 +59,6 @@ export const store = createStore<State>({
       return state.dragItem
     },
     bookmarkWindow: function (state){
-      console.log(createBookmarkWindow(state.bookmarkTreeNode))
       return createBookmarkWindow(state.bookmarkTreeNode)
     },
     storage: function (state) {
@@ -122,7 +121,7 @@ export const store = createStore<State>({
     SET_ALL_TAB_GROUPS(state, newTabGroups: TabGroup[]){
       state.tabGroups = newTabGroups
     },
-    SET_ALL_BOOKMARKS(state, bookmarks: Bookmark[]){
+    SET_ALL_BOOKMARKS(state, bookmarks: BookmarkNode[]){
       state.bookmarks = bookmarks
     },
     SET_BOOKMARK_TREE(state, bookmark: BookmarkTreeNode[]){

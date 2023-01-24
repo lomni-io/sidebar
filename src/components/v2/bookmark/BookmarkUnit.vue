@@ -121,7 +121,7 @@ a:hover{
   }
 
   .bookmark-header-right{
-      font-size: 0.85em;
+      font-size: 0.7em;
 
     .edit{
       color: var(--yellow);

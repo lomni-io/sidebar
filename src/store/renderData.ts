@@ -11,7 +11,7 @@ export interface RenderData {
 
 // TODO: create a migrate folder to help on that
 // migrate will get the default frames and put inside default folder
-export interface Bookmark {
+export interface BookmarkNode {
     id: string
     title: string
     index: number
@@ -179,7 +179,7 @@ export const transformTreeNode = (nodes: BookmarkTreeNode[]): BookmarkTreeNodeRe
     return newNodes
 }
 
-export function createRenderData(bookmarks: Bookmark[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
+export function createRenderData(bookmarks: BookmarkNode[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
     const webFrames = getFrames(bookmarks)
     const groups = getGroups(bookmarks)
     const enriched = enrichFrames(webFrames, tabs)
@@ -429,7 +429,7 @@ export function mountWebFrame(tab:Tab, webData: WebTaggeable[]): WebFrameRender{
         groupId: tab ? tab.groupId : -1,
         index: tab ? tab.index : -1,
         url: tab.url,
-        favIconUrl: getFavicon(tab.url),
+        favIconUrl: tab.favIconUrl,
         title: tab.title,
         tags: tags,
         audible: tab ? tab.audible : false,
@@ -482,10 +482,22 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
 }
 
 export const getFavicon = (url:string) => {
+    let newUrl = url
+    try {
+        const u = new URL(url)
+        newUrl = `${u.protocol}//${u.hostname}`
+    }catch (e) {
+        //
+    }
+
+    return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${newUrl}&size=16`
+}
+
+export const getFaviconOld = (url:string) => {
     return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${url}&size=16`
 }
 
-export const getFrames = (bookmarks:Bookmark[]):WebFrameData[] => {
+export const getFrames = (bookmarks:BookmarkNode[]):WebFrameData[] => {
     const frames: WebFrameData[] = []
     bookmarks.forEach(bookmark => {
         if (bookmark.url){
@@ -500,7 +512,7 @@ export const getFrames = (bookmarks:Bookmark[]):WebFrameData[] => {
     return frames
 }
 
-export const getGroups = (bookmarks:Bookmark[]):GroupRender[] => {
+export const getGroups = (bookmarks:BookmarkNode[]):GroupRender[] => {
     return []
 }
 

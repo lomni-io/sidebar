@@ -8,7 +8,7 @@ import {
     generateTagCardinality, getFrames,
     getSuggestedFrames,
     GroupFrameRender,
-    SimpleWeFrame,
+    SimpleWeFrame, transformTreeNode,
     WebFrameData,
     WebFrameRender,
     WebTaggeable
@@ -1148,5 +1148,88 @@ describe('getFrames', () => {
         ]
 
         expect(getFrames(bookmarks)).toStrictEqual(expected)
+    })
+})
+
+
+describe('transformTreeNode', () => {
+    it('test 1', () => {
+        const bookmarkTreeNode = [
+            {
+                children: [
+                    {
+                        children: [],
+                        id: 'string',
+                        index: 12,
+                        title: 'string',
+                        url: 'string',
+                        parentId: '1',
+                    },
+                    {
+                        children: [
+                            {
+                                children: [],
+                                id: 'string',
+                                index: 12,
+                                title: 'string',
+                                url: 'string',
+                                parentId: '1',
+                            },
+                        ],
+                        id: 'string',
+                        index: 12,
+                        title: 'string',
+                        url: 'string',
+                        parentId: '1',
+                    }
+                ],
+                id: 'string',
+                index: 12,
+                title: 'string',
+                url: 'string',
+                parentId: '1',
+            },
+        ]
+
+        const expected = [
+            {
+                children: [
+                    {
+                        children: [],
+                        id: 'string',
+                        index: 12,
+                        title: 'string',
+                        url: 'string',
+                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=string&size=16',
+                        parentId: '1',
+                    },
+                    {
+                        children: [
+                            {
+                                children: [],
+                                id: 'string',
+                                index: 12,
+                                title: 'string',
+                                url: 'string',
+                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=string&size=16',
+                                parentId: '1',
+                            },
+                        ],
+                        id: 'string',
+                        index: 12,
+                        title: 'string',
+                        url: 'string',
+                        parentId: '1',
+                    }
+                ],
+                id: 'string',
+                index: 12,
+                title: 'string',
+                url: 'string',
+                parentId: '1',
+            },
+        ]
+
+        expect(transformTreeNode(bookmarkTreeNode)).toStrictEqual(expected)
     })
 })

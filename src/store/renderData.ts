@@ -22,9 +22,23 @@ export interface Bookmark {
 export interface BookmarkTreeNode {
     children: BookmarkTreeNode[]
     id: string
+    parentId: string
     index: number
     title: string
     url: string
+}
+
+export interface BookmarkTreeNodeRender {
+    children: BookmarkTreeNode[]
+    id: string
+    parentId: string
+    index: number
+    title: string
+    titleRaw: string
+    url: string
+    favIconUrl?: string
+    editable: boolean
+    tags: string[]
 }
 
 export interface Tag {
@@ -120,14 +134,49 @@ export interface WebFrameRender {
 }
 
 export interface BookmarkWindow {
-    treeNode: BookmarkTreeNode[]
+    treeNode: BookmarkTreeNodeRender[]
 }
 
 
 export function createBookmarkWindow(treeNode: BookmarkTreeNode): BookmarkWindow{
     return {
-        treeNode: treeNode.id === '0' ? treeNode.children : []
+        treeNode: treeNode.id === '0' ? transformTreeNode(treeNode.children) : []
     }
+}
+
+export const transformTreeNode = (nodes: BookmarkTreeNode[]): BookmarkTreeNodeRender[] => {
+    const newNodes: BookmarkTreeNodeRender[] = []
+    nodes.forEach(n => {
+        const titleAndTags = extractTitleAndTags(n.title)
+        if (n.children && n.children.length > 0){
+            newNodes.push({
+                children: transformTreeNode(n.children),
+                id: n.id,
+                parentId: n.parentId,
+                index: n.index,
+                title: titleAndTags.title,
+                titleRaw: n.title,
+                url: n.url,
+                editable: n.parentId !== '0' && n.id !== '0',
+                tags: titleAndTags.tags
+            })
+        }else{
+            newNodes.push({
+                children: [] as BookmarkTreeNodeRender[],
+                parentId: n.parentId,
+                id: n.id,
+                index: n.index,
+                title: titleAndTags.title,
+                titleRaw: n.title,
+                url: n.url,
+                favIconUrl: getFavicon(n.url),
+                editable: true,
+                tags: titleAndTags.tags
+            })
+        }
+
+    })
+    return newNodes
 }
 
 export function createRenderData(bookmarks: Bookmark[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{

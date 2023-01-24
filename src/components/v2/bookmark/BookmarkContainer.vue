@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="bookmark.children && bookmark.children.length > 0">
+  <div v-if="bookmark.children.length > 0">
     <BookmarkScaffold :bookmark="bookmark">
       <div class="bookmark-children" v-for="children in bookmark.children" :key="children.id">
         <BookmarkContainer :bookmark="children"></BookmarkContainer>
@@ -9,7 +9,7 @@
 
   </div>
 
-  <div v-if="!bookmark.children">
+  <div v-if="bookmark.children.length === 0">
     <BookmarkUnit :bookmark="bookmark"></BookmarkUnit>
   </div>
 

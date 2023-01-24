@@ -1,11 +1,22 @@
 <template>
-
-    <div class="bookmark-info-container" ref="bookmark" id="bookmark">
+   <div class="bookmark-info-container" ref="bookmark" id="bookmark" :draggable="bookmark.editable">
       <div class="bookmark-info">
         <div class="bookmark-header">
           <div class="bookmark-header-left">
-            <img :src="bookmark.favIconUrl" width="16">
-            <small >{{bookmark.title}}</small>
+            <img :src="bookmark.favIconUrl" width="16" height="16">
+            <small v-if="!editMode" v-on:dblclick="editMode = true">{{bookmark.title}}</small>
+<!--            <small v-if="editMode" contenteditable="true" >{{bookmark.titleRaw}}</small>-->
+            <input v-model="newTitle" v-if="editMode" v-on:focusout="saveTitle()" :autofocus="true" ref="input">
+            <div class="tags-container" v-if="!editMode">
+              <div class="tag" v-for="(tag, index) in bookmark.tags" :key="index" draggable="true">
+                {{tag}}
+              </div>
+            </div>
+          </div>
+          <div class="bookmark-header-right">
+            <div class="edit" @click="editMode ? editMode = false : editMode = true" title="edit frame">
+              <font-awesome-icon icon="edit" />
+            </div>
           </div>
         </div>
       </div>
@@ -23,13 +34,17 @@ export default defineComponent( {
   props: ['bookmark'],
   data() {
     return {
+      editMode: false,
+      newTitle: this.bookmark.title
     }
   },
   computed: {
 
   },
   methods: {
-
+    saveTitle(){
+      this.editMode = false
+    }
   }
 })
 
@@ -77,7 +92,9 @@ a:hover{
   justify-content: space-between;
 
   .bookmark-header-left{
+    flex: auto;
     cursor: pointer;
+    overflow: hidden;
     align-content: center;
     display: flex;
     img{
@@ -91,7 +108,6 @@ a:hover{
       }
     }
     small{
-      font-size: 0.8em;
       color: var(--text_color);
       white-space: nowrap;
       overflow: hidden;
@@ -100,6 +116,19 @@ a:hover{
 
       &.current-selected{
         color: var(--purple);
+      }
+    }
+  }
+
+  .bookmark-header-right{
+      font-size: 0.85em;
+
+    .edit{
+      color: var(--yellow);
+      opacity: 0.4;
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
       }
     }
   }
@@ -140,6 +169,27 @@ h1:hover{
 
 .tags{
   width: calc(100% - 10px);
+}
+
+.tags-container{
+  display: flex;
+  font-size: 0.8em;
+  margin-right: 10px;
+
+  .tag{
+    background-color: var(--background_tag);
+    color: var(--text_color);
+    border-radius: 4px;
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-left: 5px;
+  }
+}
+
+input{
+  width: calc(100% - 40px);
+  filter: var(--hover);
+  outline:none;
 }
 
 </style>

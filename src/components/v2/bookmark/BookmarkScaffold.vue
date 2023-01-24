@@ -1,6 +1,6 @@
 <template>
   <div class="scafold-container">
-    <div class="header" draggable="true">
+    <div class="header" :draggable="bookmark.editable">
 <!--    TODO why is not saved?  -->
       <div class="header-left">
         <div class="input" v-if="!collapsed" @click="collapsed = true">-</div>
@@ -21,7 +21,7 @@
     </div>
 
     <div class="footer">
-<!--      <TagContainer :tags="group.tags" :color="group.color" @addTag="addTag" @removeTag="removeTag"></TagContainer>-->
+<!--      <TagContainer :tags="bookmark.tags" @addTag="addTag" @removeTag="removeTag"></TagContainer>-->
     </div>
 
 
@@ -51,6 +51,9 @@ export default defineComponent( {
       console.log('TODO remove tag', tag)
     },
     editTitle(){
+      if (!this.bookmark.editable){
+        return
+      }
       this.editTitleMode = true
       this.$nextTick(() => {
         const html = this.$refs.input as HTMLInputElement
@@ -77,7 +80,6 @@ export default defineComponent( {
 
 .scafold-container{
   user-select: none;
-  margin-bottom: 5px;
 }
 
 .collapsed{

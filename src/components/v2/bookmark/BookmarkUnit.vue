@@ -112,7 +112,6 @@ a:hover{
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 60vw;
 
       &.current-selected{
         color: var(--purple);

@@ -69,7 +69,6 @@ export default defineComponent( {
 
 .active-frame-container{
   padding: 5px;
-  margin-bottom: 50px;
 }
 
 .toolbar{

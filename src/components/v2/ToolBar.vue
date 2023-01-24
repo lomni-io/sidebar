@@ -1,28 +1,33 @@
 <template>
 
   <div class="toolbar">
-
-    <div class="tag-input-container">
-      <p class="tag-input" v-for="(tag, index) in search" :key="index">
-        <span v-on:click="removeTag(tag)" draggable="true" @drag="dragstart(tag)" @dragend="dragend" >{{tag}}</span>
-      </p>
-      <input v-model="input" :placeholder="placeholder" v-on:keydown="keydown" ref="input"/>
-    </div>
-
-<!--   IS FRAME SEARCH -->
-    <div class="addframe-container" v-if="isFrameSearch">
-      <TagListContainer :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
-      <div class="frames-container" v-for="(frame, index) in framesFiltered.slice(0, 5)" :key="index">
-        <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+    <div class="main-container">
+      <div class="tag-input-container">
+        <p class="tag-input" v-for="(tag, index) in search" :key="index">
+          <span v-on:click="removeTag(tag)" draggable="true" @drag="dragstart(tag)" @dragend="dragend" >{{tag}}</span>
+        </p>
+        <input v-model="input" :placeholder="placeholder" v-on:keydown="keydown" ref="input"/>
       </div>
-    </div>
 
-    <!--   IS GROUP SEARCH -->
-    <div v-if="isGroupSearch">
-      <div class="group-container" v-for="(group, index) in groupsDataFiltered.slice(0, 5)" :key="index">
-        <p @click="openGroup(group)" :class="group.color">{{group.title}} - {{group.tags.join(',')}}</p>
+      <!--   IS FRAME SEARCH -->
+      <div class="addframe-container" v-if="isFrameSearch">
+        <TagListContainer :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
+        <div class="frames-container" v-for="(frame, index) in framesFiltered.slice(0, 5)" :key="index">
+          <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+        </div>
       </div>
+
+      <!--   IS GROUP SEARCH -->
+      <div v-if="isGroupSearch">
+        <div class="group-container" v-for="(group, index) in groupsDataFiltered.slice(0, 5)" :key="index">
+          <p @click="openGroup(group)" :class="group.color">{{group.title}} - {{group.tags.join(',')}}</p>
+        </div>
+      </div>
+
     </div>
+    <div class="bottom" v-if="isFrameSearch || isGroupSearch"></div>
+
+
 
   </div>
 </template>
@@ -101,7 +106,7 @@ export default defineComponent( {
     },
     addFrame(newFrame: FrameRender){
       // @ts-ignore
-      this.port.postMessage({kind: "open-and-update", url: newFrame.url, windowId: this.frame.windowId, index: this.frame.index+1, groupId: this.frame.groupId});
+      this.port.postMessage({kind: "open-request-new-tab", url: newFrame.url});
     },
     addTag(tag: Tag){
       this.input = ''
@@ -149,9 +154,12 @@ export default defineComponent( {
 
 .toolbar{
   //min-height: 60px;
-  margin-bottom: 10px;
   //max-height: 200px;
   //overflow: scroll;
+
+}
+
+.main-container{
   background-color: var(--background_main);
 }
 
@@ -237,6 +245,12 @@ input {
       cursor: pointer;
     }
   }
+}
+
+.bottom{
+  height: 30px;
+  width: 100%;
+  background-image: linear-gradient(to bottom, var(--background_main), rgba(0,0,0,0));
 }
 
 </style>

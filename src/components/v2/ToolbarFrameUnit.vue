@@ -74,7 +74,7 @@ a:hover{
   background-color: var(--background_input);
   border: 1px solid var(--frame_border);
   border-radius: 5px;
-  margin-bottom: 5px;
+  margin-top: 5px;
   position: relative;
   &.open{
     background-color: var(--background_frame_selected);

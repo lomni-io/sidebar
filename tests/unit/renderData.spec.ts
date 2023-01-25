@@ -1,13 +1,13 @@
 import {
     createTags,
     createWindows,
-    enrichFrames,
+    enrichFrames, extractTitleAndTags,
     filterFramesBySelection,
     framesFiltered,
     framesSort,
     generateTagCardinality, getFrames,
     getSuggestedFrames,
-    GroupFrameRender,
+    GroupFrameRender, joinTitleAndTags,
     SimpleWeFrame, transformTreeIntoNode, transformTreeNode,
     WebFrameData,
     WebFrameRender,
@@ -1304,5 +1304,31 @@ describe('transformTreeIntoNode', () => {
         ]
 
         expect(transformTreeIntoNode(bookmarkTreeNode)).toStrictEqual(expected)
+    })
+})
+
+describe('extractTitleAndTags', () => {
+    it('test 1', () => {
+        const url = "https://test.url/#theEnd #tag1 #tag2 #12/03 testing"
+
+        const expected = {
+            title: 'https://test.url/#theEnd testing',
+            tags: ['#tag1', '#tag2', '#12/03']
+        }
+
+        expect(extractTitleAndTags(url)).toStrictEqual(expected)
+    })
+})
+
+describe('joinTitleAndTags', () => {
+    it('test 1', () => {
+        const input = {
+            title: 'https://test.url/#theEnd',
+            tags: ['#tag1', '#tag2', '#12/03']
+        }
+
+        const expected = "https://test.url/#theEnd #tag1 #tag2 #12/03"
+
+        expect(joinTitleAndTags(input.title, input.tags)).toStrictEqual(expected)
     })
 })

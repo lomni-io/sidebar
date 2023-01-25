@@ -25,9 +25,6 @@
       </div>
 
     </div>
-    <div class="bottom" v-if="isFrameSearch || isGroupSearch"></div>
-
-
 
   </div>
 </template>
@@ -161,6 +158,7 @@ export default defineComponent( {
 
 .main-container{
   background-color: var(--background_main);
+  box-shadow: 5px 5px 8px 5px var(--background_main);
 }
 
 .tag-input-container{
@@ -252,10 +250,5 @@ input {
   padding-right: 5px;
 }
 
-.bottom{
-  height: 30px;
-  width: 100%;
-  background-image: linear-gradient(to bottom, var(--background_main), rgba(0,0,0,0));
-}
 
 </style>

@@ -90,8 +90,9 @@ export interface TraceWebFrameData {
 
 export interface WebFrameData{
     url:   string
-    title: string
     tags: string[]
+    title?: string
+    bookmarkId?: string
 }
 
 export interface GroupFrameRender {
@@ -120,7 +121,6 @@ export interface WebFrameRender {
     index: number
     url: string
     favIconUrl: string
-    title: string
     tags: string[]
     domain: string
     audible: boolean
@@ -131,6 +131,8 @@ export interface WebFrameRender {
     isSelected: boolean
     active: boolean
     kind: string
+    bookmarkId?: string
+    title?: string
 }
 
 export interface BookmarkWindow {
@@ -256,7 +258,7 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTaggeable[], groupsData: GroupRender[]): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFrameData[], groupsData: GroupRender[]): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -391,6 +393,7 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebF
                 preProcessedTags: processedTags,
                 tags: frame.tags,
                 domain: extractRootDomain(webFrame.url),
+                bookmarkId: webFrame.bookmarkId,
                 url: webFrame.url,
                 isPinned: tab ? tab.pinned : false,
                 isSelected: tab ? tab.selected : false,
@@ -418,10 +421,12 @@ export function mountWebFrames(urls:string[], webFrames: WebFrameRender[]): WebF
     return finalWebFrames
 }
 
-export function mountWebFrame(tab:Tab, webData: WebTaggeable[]): WebFrameRender{
+export function mountWebFrame(tab:Tab, webData: WebFrameData[]): WebFrameRender{
     const webFrame = webData.find(frame => frame.url === tab.url)
     let tags: string[] = []
+    let bookmarkId = undefined
     if (webFrame){
+        bookmarkId = webFrame.bookmarkId
         tags = webFrame.tags
     }
     return {
@@ -431,7 +436,8 @@ export function mountWebFrame(tab:Tab, webData: WebTaggeable[]): WebFrameRender{
         index: tab ? tab.index : -1,
         url: tab.url,
         favIconUrl: tab.favIconUrl,
-        title: tab.title,
+        bookmarkId: bookmarkId,
+        title: webFrame ? webFrame.title : tab.title,
         tags: tags,
         audible: tab ? tab.audible : false,
         domain: extractRootDomain(tab.url),
@@ -505,6 +511,7 @@ export const getFrames = (bookmarks:BookmarkNode[]):WebFrameData[] => {
             const titleAndtags = extractTitleAndTags(bookmark.title)
             frames.push({
                 url: bookmark.url,
+                bookmarkId: bookmark.id,
                 title: titleAndtags.title,
                 tags: titleAndtags.tags
             })
@@ -523,11 +530,16 @@ interface extractResponse {
 }
 
 export const extractTitleAndTags = (title: string): extractResponse => {
-    const tags = title.match(/#[a-z]+/gi);
+    const regex = /\s#[a-z0-9/-]+/gi
+    const tags = title.match(regex);
     return {
-        title: title.replace(/#[a-z]+/gi, '').trim(),
-        tags: tags ? tags : []
+        title: title.replace(regex, '').trim(),
+        tags: tags ? tags.map(t => t.trim()) : []
     }
+}
+
+export const joinTitleAndTags = (title: string, tags: string[]): string => {
+    return `${title} ${tags.join(' ')}`
 }
 
 export const transformTreeIntoNode = (treeNode: BookmarkTreeNode): BookmarkNode[] => {

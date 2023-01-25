@@ -7,11 +7,6 @@
         <div class="frame-header-left">
           <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
           <small v-if="!minimized" @click="copyLink">{{frame.domain}}</small>
-<!--          <div class="tags-container">-->
-<!--            <div class="tag" v-for="(tag, index) in frame.preProcessedTags" :key="index" draggable="true">-->
-<!--              {{tag}}-->
-<!--            </div>-->
-<!--          </div>-->
           <small v-if="minimized" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</small>
         </div>
 
@@ -34,6 +29,12 @@
           <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" title="pin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
+          <div class="frame-header-star star" v-if="frame.bookmarkId" @click="removeBookmark" title="remove from bookmark">
+            <font-awesome-icon icon="star" />
+          </div>
+          <div class="frame-header-star" v-if="!frame.bookmarkId" @click="addBookmark" title="add to bookmark">
+            <font-awesome-icon icon="star" />
+          </div>
           <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
             <font-awesome-icon icon="xmark" />
           </div>
@@ -41,7 +42,12 @@
       </div>
 
       <div class="title-container">
-        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
+        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:dblclick="toEditMode" v-on:click.exact="goToPage" v-if="!minimized && !editTitle">{{frame.title}}</h1>
+        <div v-if="editTitle" class="edit-title">
+          <input v-model="newTitle">
+          <font-awesome-icon class="accept" icon="circle-check" @click="upsertBookmark"/>
+          <font-awesome-icon class="cancel" icon="xmark" @click="editTitle = false" />
+        </div>
 
         <div class="tags-container">
           <div class="tag" v-for="(tag, index) in frame.tags" :key="index" draggable="true">
@@ -71,6 +77,8 @@ export default defineComponent( {
   props: ['frame', 'minimized'],
   data() {
     return {
+      editTitle: false,
+      newTitle: this.frame.title
     }
   },
   computed: {
@@ -96,6 +104,20 @@ export default defineComponent( {
         }
         store.dispatch('setDragItem', dragItem)
       }
+    },
+    toEditMode(){
+      this.editTitle = true
+      this.newTitle = this.frame.title
+    },
+    upsertBookmark(){
+      if (this.frame.bookmarkId){
+        // @ts-ignore
+        this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: this.newTitle, id: this.frame.bookmarkId});
+      }else{
+        // @ts-ignore
+        this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: this.newTitle});
+      }
+      this.editTitle = false
     },
     copyLink(){
       navigator.clipboard.writeText(this.frame.url)
@@ -137,6 +159,14 @@ export default defineComponent( {
     closeTab(){
       // @ts-ignore
       this.port.postMessage({kind: "close-tabs", tab: this.frame.id});
+    },
+    addBookmark(){
+      // @ts-ignore
+      this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: this.frame.title});
+    },
+    removeBookmark(){
+      // @ts-ignore
+      this.port.postMessage({kind: "remove-bookmark", id: this.frame.bookmarkId});
     },
     goToPage(){
       if (this.frame.isOpened){
@@ -218,6 +248,7 @@ export default defineComponent( {
 
   .frame-header-right{
     display: flex;
+
     div{
       margin-right: 5px;
     }
@@ -260,6 +291,18 @@ export default defineComponent( {
 
       &.pinned{
         color: var(--blue);
+      }
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-star{
+      color: var(--scroll);
+
+      &.star{
+        color: var(--yellow);
       }
       &:hover{
         cursor: pointer;
@@ -338,6 +381,33 @@ export default defineComponent( {
   align-items: center;
   justify-content: space-between;
 
+  .edit-title{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    input{
+      width: calc(100% - 40px);
+      filter: var(--hover);
+      outline:none;
+    }
+    .accept{
+      color: var(--green);
+      margin-right: 5px;
+      margin-left: 5px;
+      &:hover{
+        filter: var(--hover);
+        cursor: pointer;
+      }
+    }
+    .cancel{
+      color: var(--text_color);
+      margin-right: 20px;
+      &:hover{
+        filter: var(--hover);
+        cursor: pointer;
+      }
+    }
+  }
 
   h1{
     font-size: 1.0em;

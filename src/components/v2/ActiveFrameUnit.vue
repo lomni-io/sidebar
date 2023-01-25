@@ -1,16 +1,22 @@
 <template>
   <a ref="framePlc"></a>
-  <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+  <div class="frame-info-container" v-on:click.exact="goToPage" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
     <div class="frame-info">
       <div class="frame-header">
-        <div class="frame-header-left">
+        <div v-if="editTitle" class="edit-title">
           <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
-          <small v-if="!minimized" @click="copyLink">{{frame.domain}}</small>
-          <small v-if="minimized" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</small>
+          <input v-model="newTitle">
+          <font-awesome-icon class="accept" icon="circle-check" @click="upsertBookmark"/>
+          <font-awesome-icon class="cancel" icon="xmark" @click="editTitle = false" />
         </div>
 
-        <div class="frame-header-right">
+        <div class="frame-header-left" v-if="!editTitle">
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
+          <small class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:dblclick="toEditMode">{{frame.title}}</small>
+        </div>
+
+        <div class="frame-header-right" v-if="!editTitle">
           <div class="frame-volume" title="meeting" v-if="frame.audible">
             <font-awesome-icon icon="volume-up" />
           </div>
@@ -41,25 +47,26 @@
         </div>
       </div>
 
-      <div class="title-container">
-        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:dblclick="toEditMode" v-on:click.exact="goToPage" v-if="!minimized && !editTitle">{{frame.title}}</h1>
-        <div v-if="editTitle" class="edit-title">
-          <input v-model="newTitle">
-          <font-awesome-icon class="accept" icon="circle-check" @click="upsertBookmark"/>
-          <font-awesome-icon class="cancel" icon="xmark" @click="editTitle = false" />
+      <div class="tags-container">
+        <div class="tag" v-for="(tag, index) in frame.preProcessedTags" :key="index" draggable="true">
+          <span>{{tag}}</span>
         </div>
-
-        <div class="tags-container">
-          <div class="tag" v-for="(tag, index) in frame.tags" :key="index" draggable="true">
+        <div class="tag" v-for="(tag, index) in frame.tags" :key="index" draggable="true">
             <span class="remove">
               <font-awesome-icon icon="xmark" />
             </span>
-            <span>{{tag}}</span>
-          </div>
-          <div class="tag">+</div>
+          <span>{{tag}}</span>
         </div>
+<!--        <div class="tag">+</div>-->
+      </div>
+
+      <div class="title-container">
+<!--        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:dblclick="toEditMode" v-on:click.exact="goToPage" v-if="!minimized && !editTitle">{{frame.title}}</h1>-->
+
+
 
       </div>
+
     </div>
   </div>
 </template>
@@ -198,12 +205,13 @@ export default defineComponent( {
 }
 
 .frame-info-container{
-  padding: 5px;
+  padding: 2px 5px 2px 5px;
   background-color: var(--background_input);
   border: 1px solid var(--frame_border);
   border-radius: 5px;
   margin-top: 5px;
   position: relative;
+  cursor: pointer;
   &.open{
     background-color: var(--background_frame_selected);
   }
@@ -348,6 +356,10 @@ export default defineComponent( {
   max-width: 100%;
   text-align: left;
   margin: 0;
+  color: var(--blue);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .frame-tags{
@@ -376,38 +388,38 @@ export default defineComponent( {
 
 }
 
+.edit-title{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  input{
+    width: calc(100% - 40px);
+    filter: var(--hover);
+    outline:none;
+  }
+  .accept{
+    color: var(--green);
+    margin-right: 5px;
+    margin-left: 5px;
+    &:hover{
+      filter: var(--hover);
+      cursor: pointer;
+    }
+  }
+  .cancel{
+    color: var(--text_color);
+    &:hover{
+      filter: var(--hover);
+      cursor: pointer;
+    }
+  }
+}
+
 .title-container{
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  .edit-title{
-    width: 100%;
-    display: flex;
-    align-items: center;
-    input{
-      width: calc(100% - 40px);
-      filter: var(--hover);
-      outline:none;
-    }
-    .accept{
-      color: var(--green);
-      margin-right: 5px;
-      margin-left: 5px;
-      &:hover{
-        filter: var(--hover);
-        cursor: pointer;
-      }
-    }
-    .cancel{
-      color: var(--text_color);
-      margin-right: 20px;
-      &:hover{
-        filter: var(--hover);
-        cursor: pointer;
-      }
-    }
-  }
 
   h1{
     font-size: 1.0em;
@@ -438,14 +450,17 @@ export default defineComponent( {
 }
 
 
-.tags{
-  width: calc(100% - 10px);
-  display: flex;
+.tags-container::-webkit-scrollbar {
+  //display: none;  /* Safari and Chrome */
+  height: 5px;
 }
 
 .tags-container{
   display: flex;
   font-size: 0.8em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 3px;
 
   .tag{
     display: flex;
@@ -472,7 +487,8 @@ export default defineComponent( {
     border-radius: 4px;
     padding-left: 3px;
     padding-right: 3px;
-    margin-left: 5px;
+    margin-top: 3px;
+    margin-right: 5px;
     &:hover{
       filter: var(--hover);
       cursor: pointer;

@@ -37,7 +37,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/TagListContainer.vue";
-import {createTags, framesFiltered, GroupRender, Tag} from "@/store/renderData";
+import {createTags, framesFiltered, Tag} from "@/store/renderData";
 import ToolbarFrameUnit from "@/components/v2/ToolbarFrameUnit.vue";
 import {FrameRender} from "@/entity/frame";
 import {store} from "@/store";
@@ -59,13 +59,7 @@ export default defineComponent( {
     framesFiltered(){
       return framesFiltered(this.frames, this.search)
     },
-    groupsDataFiltered(){
-      if (this.input.length <= 1){
-        return this.groupsData
-      }
-      const input = this.input.substring(1)
-      return this.groupsData.filter((x: GroupRender) => x.title.startsWith(input))
-    },
+
     tags(): Tag[]{
       const tags = createTags(this.frames, this.search)
 
@@ -115,10 +109,6 @@ export default defineComponent( {
       this.$nextTick(() => {
         html.focus()
       });
-    },
-    openGroup(group: GroupRender){
-      console.log(group)
-      this.input = ''
     },
     keydown(e: any){
       if (e.code === 'Escape'){

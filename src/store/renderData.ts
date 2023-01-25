@@ -6,7 +6,6 @@ export interface RenderData {
     tags: Tag[]
     windows: Window[]
     frames: WebFrameRender[]
-    groupsData: GroupRender[]
 }
 
 // TODO: create a migrate folder to help on that
@@ -102,14 +101,14 @@ export interface GroupFrameRender {
     collapsed: boolean
     frames: WebFrameRender[]
     suggestedFrames: WebTaggeable[]
+    suggestedTags: string[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
 }
 
-export interface GroupRender {
-    title: string
-    color: string
+export interface GroupWithTags {
+    id: number
     tags: string[]
 }
 
@@ -181,19 +180,17 @@ export const transformTreeNode = (nodes: BookmarkTreeNode[]): BookmarkTreeNodeRe
     return newNodes
 }
 
-export function createRenderData(bookmarkTreeNode: BookmarkTreeNode, tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
+export function createRenderData(bookmarkTreeNode: BookmarkTreeNode, tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], groupWithTags: GroupWithTags[]): RenderData{
     const bookmarks = transformTreeIntoNode(bookmarkTreeNode)
     const webFrames = getFrames(bookmarks)
-    const groups = getGroups(bookmarks)
     const enriched = enrichFrames(webFrames, tabs, searchInput)
 
     return {
         tabs: tabs,
         search: searchInput,
         tags: createTags(enriched, searchInput),
-        windows: createWindows(tabs, tabGroups, webFrames, groups, searchInput),
+        windows: createWindows(tabs, tabGroups, webFrames, groupWithTags, searchInput),
         frames: enriched as WebFrameRender[],
-        groupsData: groups,
     }
 }
 
@@ -258,7 +255,7 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFrameData[], groupsData: GroupRender[], search: string[] = []): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFrameData[], groupsData: GroupWithTags[], search: string[] = []): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -288,15 +285,17 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFr
                 webFrame.suggestedTags = groupRender.tags.filter((groupTag: string) => {
                     return !webFrame.tags.includes(groupTag)
                 })
+                groupRender.suggestedTags.push(...webFrame.tags)
                 groupRender.frames.push(webFrame)
             }else{
-                const groupData = groupsData.find(x => x.title === tabGroup.title)
+                const groupData = groupsData.find(x => x.id === tabGroup.id)
                 let groupTags: string[] = []
                 let suggestedFrames: WebTaggeable[] = []
                 if (groupData){
                     groupTags = [...groupData.tags]
                     webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t))
                     suggestedFrames = getSuggestedFrames(webData, tabs, tabGroups, groupData)
+
                 }
                 // mount group here
                 window.tabs.push({
@@ -306,6 +305,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFr
                     collapsed: tabGroup.collapsed,
                     suggestedFrames: suggestedFrames,
                     frames: [webFrame],
+                    suggestedTags: webFrame.tags,
                     tags: groupTags,
                     preProcessedTags: ['@group'],
                     kind: 'group',
@@ -338,11 +338,11 @@ export interface TabGroupSimple{
     title: string
 }
 
-export function getSuggestedFrames(framesData: WebTaggeable[], tabs: OpenTab[], openGroups :TabGroupSimple[], groupData: GroupDataTaggeable): WebTaggeable[]{
+export function getSuggestedFrames(framesData: WebTaggeable[], tabs: OpenTab[], openGroups :TabGroupSimple[], groupData: GroupWithTags): WebTaggeable[]{
     if (groupData.tags.length === 0){
         return []
     }
-    const openGroup = openGroups.find(g => g.title === groupData.title)
+    const openGroup = openGroups.find(g => g.id === groupData.id)
     if (!openGroup){
         return []
     }
@@ -520,10 +520,6 @@ export const getFrames = (bookmarks:BookmarkNode[]):WebFrameData[] => {
         }
     })
     return frames
-}
-
-export const getGroups = (bookmarks:BookmarkNode[]):GroupRender[] => {
-    return []
 }
 
 interface extractResponse {

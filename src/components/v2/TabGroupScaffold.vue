@@ -22,7 +22,7 @@
     </div>
 
     <div class="footer">
-      <TagContainer :tags="group.tags" :color="group.color" @addTag="addTag" @removeTag="removeTag"></TagContainer>
+      <TagContainer @clickedSuggestion="addTagsToGroup" :suggested-tags="group.suggestedTags" :tags="group.tags" :color="group.color"  @addTag="addTag" @removeTag="removeTag"></TagContainer>
     </div>
 
 
@@ -33,6 +33,7 @@
 import {defineComponent} from "vue";
 import {store} from "@/store";
 import TagContainer from "@/components/v2/TagContainer.vue";
+import {GroupWithTags} from "@/store/renderData";
 
 export default defineComponent( {
   name: "TabGroupScaffold",
@@ -45,6 +46,14 @@ export default defineComponent( {
     }
   },
   methods: {
+    addTagsToGroup(tag: string){
+      const tags = [...this.group.tags, tag]
+      const gt: GroupWithTags = {
+        id: this.group.id,
+        tags: tags,
+      }
+      store.dispatch('upsertGroupWithTags', gt)
+    },
     addTag(tag: string){
       console.log('TODO add tags', tag)
     },

@@ -609,12 +609,16 @@ describe('createWindows', () => {
 
         const groupsData = [
             {
+                id: 12,
+                suggestedTags: [],
                 title: 'other title',
                 color: 'blue',
                 tags: [],
                 updatedAt: 1,
             },
             {
+                id: 12,
+                suggestedTags: [],
                 title: 'my group',
                 color: 'yellow',
                 tags: ['#myTag'],
@@ -744,7 +748,9 @@ describe('getSuggestedFrames', () => {
 
 
         const savedGroupData = {
+            id: 1,
             tags: ['#tag1'],
+            suggestedTags: [],
             title:  'my title',
         }
 
@@ -777,8 +783,10 @@ describe('getSuggestedFrames', () => {
 
 
         const savedGroupData = {
+            id: 1,
             tags: ['#tag1'],
             title:  'my title',
+            suggestedTags: [],
         }
 
         const expected = [

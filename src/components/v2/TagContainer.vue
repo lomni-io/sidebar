@@ -1,6 +1,9 @@
 <template>
   <div class="tags-container">
-    <div class="tag" v-for="(tag, index) in suggestedTags" :key="index" draggable="true">
+    <div class="tag add" v-for="(tag, index) in suggestedTags" :key="index" draggable="true">
+      <span class="add">
+        <font-awesome-icon icon="check-circle" />
+      </span>
       <span @click="$emit('clickedSuggestion', tag)">{{tag}}</span>
     </div>
     <div class="tag" v-for="(tag, index) in fixedTags" :key="index" draggable="true">
@@ -200,6 +203,27 @@ a{
       }
       svg{
         vertical-align: baseline;
+      }
+    }
+
+    &.add{
+      color: var(--green);
+      opacity: 0.8;
+
+      .add{
+        text-align: center;
+        border-radius: 10px;
+        width: 1em;
+        height: 1em;
+        padding: 1px;
+        opacity: 0.6;
+        margin-right: 2px;
+        &:hover{
+          filter: var(--hover);
+        }
+        svg{
+          vertical-align: baseline;
+        }
       }
     }
 

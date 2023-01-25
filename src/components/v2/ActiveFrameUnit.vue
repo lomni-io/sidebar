@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <TagContainer :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" ></TagContainer>
+      <TagContainer :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" ></TagContainer>
 
     </div>
   </div>

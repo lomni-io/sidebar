@@ -125,7 +125,7 @@ export interface WebFrameRender {
     domain: string
     audible: boolean
     preProcessedTags: string[]
-    suggestedTags?: string[]
+    suggestedTags: string[]
     isPinned: boolean
     isOpened: boolean
     isSelected: boolean
@@ -185,13 +185,13 @@ export function createRenderData(bookmarkTreeNode: BookmarkTreeNode, tabs: Tab[]
     const bookmarks = transformTreeIntoNode(bookmarkTreeNode)
     const webFrames = getFrames(bookmarks)
     const groups = getGroups(bookmarks)
-    const enriched = enrichFrames(webFrames, tabs)
+    const enriched = enrichFrames(webFrames, tabs, searchInput)
 
     return {
         tabs: tabs,
         search: searchInput,
         tags: createTags(enriched, searchInput),
-        windows: createWindows(tabs, tabGroups, webFrames, groups),
+        windows: createWindows(tabs, tabGroups, webFrames, groups, searchInput),
         frames: enriched as WebFrameRender[],
         groupsData: groups,
     }
@@ -258,7 +258,7 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFrameData[], groupsData: GroupRender[]): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFrameData[], groupsData: GroupRender[], search: string[] = []): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -273,17 +273,17 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebFr
         }
 
         if (tab.pinned){
-            window.pinneds.push(mountWebFrame(tab, webData))
+            window.pinneds.push(mountWebFrame(tab, webData, search))
             return
         }
         if (tab.groupId === -1){
-            window.tabs.push(mountWebFrame(tab, webData))
+            window.tabs.push(mountWebFrame(tab, webData, search))
         }
 
         const tabGroup = tabGroups.find(tabGroup => tabGroup.id === tab.groupId)
         if (tabGroup){
             const groupRender = window.tabs.find(wTab => (<GroupFrameRender>wTab).id === tab.groupId) as GroupFrameRender
-            const webFrame = mountWebFrame(tab, webData)
+            const webFrame = mountWebFrame(tab, webData, search)
             if (groupRender){
                 webFrame.suggestedTags = groupRender.tags.filter((groupTag: string) => {
                     return !webFrame.tags.includes(groupTag)
@@ -360,7 +360,7 @@ export function getSuggestedFrames(framesData: WebTaggeable[], tabs: OpenTab[], 
     return framesFiltered
 }
 
-export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebFrameRender[]{
+export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = [], search: string[] = []): WebFrameRender[]{
 
     if (framesData.length === 0){
         return []
@@ -390,6 +390,7 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebF
                 favIconUrl: getFavicon(webFrame.url),
                 title: webFrame.title,
                 audible: tab ? tab.audible : false,
+                suggestedTags: search,
                 preProcessedTags: processedTags,
                 tags: frame.tags,
                 domain: extractRootDomain(webFrame.url),
@@ -421,7 +422,7 @@ export function mountWebFrames(urls:string[], webFrames: WebFrameRender[]): WebF
     return finalWebFrames
 }
 
-export function mountWebFrame(tab:Tab, webData: WebFrameData[]): WebFrameRender{
+export function mountWebFrame(tab:Tab, webData: WebFrameData[], search: string[] = []): WebFrameRender{
     const webFrame = webData.find(frame => frame.url === tab.url)
     let tags: string[] = []
     let bookmarkId = undefined
@@ -436,6 +437,7 @@ export function mountWebFrame(tab:Tab, webData: WebFrameData[]): WebFrameRender{
         index: tab ? tab.index : -1,
         url: tab.url,
         favIconUrl: tab.favIconUrl,
+        suggestedTags: search.filter(t => webFrame ? !webFrame.tags.includes(t) : true),
         bookmarkId: bookmarkId,
         title: webFrame ? webFrame.title : tab.title,
         tags: tags,

@@ -1,8 +1,8 @@
 <template>
-  <ToolBar class="toolbar" :frames="frames" :groups-data="groupsData"></ToolBar>
+  <ToolBar class="toolbar" :frames="frames" :groups-data="groupsData" :search="search"></ToolBar>
   <div class="active-frame-container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
-      <ActiveFrameUnit :frame="frame" :minimized="true"></ActiveFrameUnit>
+      <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
     </div>
 
 <!--  TABS HERE  -->

@@ -12,8 +12,13 @@
       <!--   IS FRAME SEARCH -->
       <div class="addframe-container" v-if="isFrameSearch">
         <TagListContainer :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
-        <div class="frames-container" v-for="(frame, index) in framesFiltered.slice(0, 3)" :key="index">
-          <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+        <span class="show-suggestions" v-if="!showFrameSuggestions" @click="showFrameSuggestions = true">Show <b>+{{framesFiltered.length}}</b> frames suggestions</span>
+        <span class="show-suggestions" v-if="showFrameSuggestions" @click="showFrameSuggestions = false">Hide all suggestions</span>
+
+        <div v-if="showFrameSuggestions">
+          <div class="frames-container" v-for="(frame, index) in framesFiltered" :key="index">
+            <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+          </div>
         </div>
       </div>
 
@@ -40,11 +45,11 @@ import {store} from "@/store";
 export default defineComponent( {
   name: "ToolBar",
   components: {ToolbarFrameUnit, TagListContainer},
-  props: ['frames', 'groupsData'],
+  props: ['frames', 'groupsData', 'search'],
   data() {
     return {
-      search: [] as string[],
-      input: ''
+      input: '',
+      showFrameSuggestions: false,
     }
   },
   watch: {
@@ -96,20 +101,15 @@ export default defineComponent( {
       store.dispatch('setDragItem', null)
     },
     removeTag(tag: string){
-      const idx = this.search.findIndex(x => x === tag)
-      if (~idx){
-        this.search.splice(idx, 1)
-      }
+      store.dispatch('removeSearchItem', tag)
     },
     addFrame(newFrame: FrameRender){
       // @ts-ignore
       this.port.postMessage({kind: "open-request-new-tab", url: newFrame.url});
     },
     addTag(tag: Tag){
+      store.dispatch('addSearchItem', tag.name)
       this.input = ''
-      if (!this.search.some(x => x === tag.name)){
-        this.search.push(tag.name)
-      }
 
       const html = this.$refs.input as HTMLInputElement
       this.$nextTick(() => {
@@ -122,17 +122,15 @@ export default defineComponent( {
     },
     keydown(e: any){
       if (e.code === 'Escape'){
-        this.search = []
+        // this.search = []
         e.preventDefault()
       }
       if (e.code === 'Backspace' && this.input.length === 0){
-        this.search.pop()
+        store.dispatch('removeSearchItem', this.search[this.search.length-1])
         e.preventDefault()
       }
       if (e.code === 'Enter' && this.input.length > 1 && this.input.startsWith('#')) {
-        if (!this.search.some(x => x === this.input)){
-          this.search.push(this.input)
-        }
+        store.dispatch('addSearchItem', this.input)
 
         this.input = ''
         e.preventDefault()
@@ -248,6 +246,21 @@ input {
 .addframe-container{
   padding-left: 5px;
   padding-right: 5px;
+
+  .show-suggestions{
+    color: var(--text_color);
+    background-color: var(--background_input);
+    border-radius: 5px;
+    font-size: 0.8em;
+    text-align: center;
+    display: block;
+    user-select: none;
+    width: 100%;
+    &:hover{
+      cursor: pointer;
+      filter: var(--hover);
+    }
+  }
 }
 
 

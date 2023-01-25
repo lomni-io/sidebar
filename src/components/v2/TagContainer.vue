@@ -1,26 +1,18 @@
 <template>
-  <ul class="tags">
-
-    <div @dragover="dragover" @dragleave="dragleave" @drop="onDropAdd" @dragover.prevent @dragenter.prevent>
-      <a class="tag new" :class="{'drag-over': isDraggingOver}" v-if="isAddingDroppable" >add here</a>
+  <div class="tags-container">
+    <div class="tag" v-for="(tag, index) in suggestedTags" :key="index" draggable="true">
+      <span @click="$emit('clickedSuggestion', tag)">{{tag}}</span>
     </div>
-
-    <li v-if="isRemoveDroppable" @dragover="dragover" @dragleave="dragleave" @drop="onDropRemove" @dragover.prevent @dragenter.prevent>
-      <a class="tag remove" :class="{'drag-over': isDraggingOver}">
-        <font-awesome-icon icon="trash" />
-      </a>
-    </li>
-
-    <li v-for="(tag, index) in suggestedTags" :key="index">
-      <a class="tag suggested" @click="$emit('clickedSuggestion', tag)">{{tag}}</a>
-    </li>
-    <li v-for="(tag, index) in fixedTags" :key="index">
-      <a class="tag fixed" @click="clickedTag(tag)">{{tag}}</a>
-    </li>
-    <li v-for="(tag, index) in tags" :key="index">
-      <a class="tag" @click="clickedTag(tag)" id="tag" :class="color" draggable="true" @drag="dragstart(tag)" @dragend="dragend">{{tag}}</a>
-    </li>
-  </ul>
+    <div class="tag" v-for="(tag, index) in fixedTags" :key="index" draggable="true">
+      <span @click="$emit('clickedTag', tag)">{{tag}}</span>
+    </div>
+    <div class="tag" v-for="(tag, index) in tags" :key="index" draggable="true">
+      <span class="remove" @click="$emit('removeTag', tag)">
+        <font-awesome-icon icon="xmark" />
+      </span>
+      <span @click="$emit('clickedTag', tag)">{{tag}}</span>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -65,9 +57,6 @@ export default {
     },
     dragend(){
       store.dispatch('setDragItem', null)
-    },
-    clickedTag(tag){
-      this.$emit('clickedTag', tag)
     },
     dragover(){
       this.isDraggingOver = true
@@ -181,5 +170,51 @@ a{
   color: var(--blue);
 }
 
+
+.tags-container::-webkit-scrollbar {
+  //display: none;  /* Safari and Chrome */
+  height: 5px;
+}
+
+.tags-container{
+  display: flex;
+  font-size: 0.8em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 3px;
+
+  .tag{
+    display: flex;
+    align-items: center;
+    .remove{
+      text-align: center;
+      color: var(--red);
+      border-radius: 10px;
+      width: 1em;
+      height: 1em;
+      padding: 1px;
+      opacity: 0.6;
+      margin-right: 2px;
+      &:hover{
+        filter: var(--hover);
+      }
+      svg{
+        vertical-align: baseline;
+      }
+    }
+
+    background-color: var(--background_tag);
+    color: var(--text_color);
+    border-radius: 4px;
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-top: 3px;
+    margin-right: 5px;
+    &:hover{
+      filter: var(--hover);
+      cursor: pointer;
+    }
+  }
+}
 
 </style>

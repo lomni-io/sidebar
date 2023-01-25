@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <TagContainer :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" ></TagContainer>
+      <TagContainer @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" ></TagContainer>
 
     </div>
   </div>
@@ -58,7 +58,7 @@
 import {defineComponent} from "vue";
 import {store} from "@/store";
 import {DragItem} from "@/store/dragItem";
-import {WebFrameRender} from "@/store/renderData";
+import {joinTitleAndTags, WebFrameRender} from "@/store/renderData";
 import TagContainer from "@/components/v2/TagContainer.vue";
 
 export default defineComponent( {
@@ -95,17 +95,30 @@ export default defineComponent( {
         store.dispatch('setDragItem', dragItem)
       }
     },
+    clickedSuggestion(tag: string){
+      const tags = [...this.frame.tags, tag]
+      const newTitle = joinTitleAndTags(this.frame.title, tags)
+
+      if (this.frame.bookmarkId){
+        // @ts-ignore
+        this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: newTitle, id: this.frame.bookmarkId});
+      }else{
+        // @ts-ignore
+        this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: newTitle});
+      }
+    },
     toEditMode(){
       this.editTitle = true
       this.newTitle = this.frame.title
     },
     upsertBookmark(){
+      const newTitle = joinTitleAndTags(this.newTitle, this.frame.tags)
       if (this.frame.bookmarkId){
         // @ts-ignore
-        this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: this.newTitle, id: this.frame.bookmarkId});
+        this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: newTitle, id: this.frame.bookmarkId});
       }else{
         // @ts-ignore
-        this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: this.newTitle});
+        this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: newTitle});
       }
       this.editTitle = false
     },

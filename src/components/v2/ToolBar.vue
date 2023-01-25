@@ -11,7 +11,7 @@
 
       <!--   IS FRAME SEARCH -->
       <div class="addframe-container" v-if="isFrameSearch">
-        <TagListContainer :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
+        <TagListContainer :tags="tagsFiltered" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
         <span class="show-suggestions" v-if="!showFrameSuggestions" @click="showFrameSuggestions = true">Show <b>+{{framesFiltered.length}}</b> frames suggestions</span>
         <span class="show-suggestions" v-if="showFrameSuggestions" @click="showFrameSuggestions = false">Hide all suggestions</span>
 
@@ -19,13 +19,6 @@
           <div class="frames-container" v-for="(frame, index) in framesFiltered" :key="index">
             <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
           </div>
-        </div>
-      </div>
-
-      <!--   IS GROUP SEARCH -->
-      <div v-if="isGroupSearch">
-        <div class="group-container" v-for="(group, index) in groupsDataFiltered.slice(0, 5)" :key="index">
-          <p @click="openGroup(group)" :class="group.color">{{group.title}} - {{group.tags.join(',')}}</p>
         </div>
       </div>
 
@@ -37,7 +30,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/TagListContainer.vue";
-import {createTags, framesFiltered, Tag} from "@/store/renderData";
+import {framesFiltered, Tag} from "@/store/renderData";
 import ToolbarFrameUnit from "@/components/v2/ToolbarFrameUnit.vue";
 import {FrameRender} from "@/entity/frame";
 import {store} from "@/store";
@@ -45,7 +38,7 @@ import {store} from "@/store";
 export default defineComponent( {
   name: "ToolBar",
   components: {ToolbarFrameUnit, TagListContainer},
-  props: ['frames', 'groupsData', 'search'],
+  props: ['frames', 'search', 'tags'],
   data() {
     return {
       input: '',
@@ -57,16 +50,17 @@ export default defineComponent( {
   },
   computed: {
     framesFiltered(){
+      if (!this.frames || this.search.length === 0){
+        return []
+      }
       return framesFiltered(this.frames, this.search)
     },
 
-    tags(): Tag[]{
-      const tags = createTags(this.frames, this.search)
-
-      if (this.input.length > 0){
-        return tags.filter(t => t.name.includes(this.input))
+    tagsFiltered(): Tag[]{
+      if (this.input.length > 1){
+        return this.tags.filter((t: Tag) => t.name.includes(this.input))
       }
-      return tags
+      return this.tags
     },
     placeholder(){
       if (this.search.length === 0){

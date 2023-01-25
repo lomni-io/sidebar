@@ -5,13 +5,12 @@ import {
     filterFramesBySelection,
     framesFiltered,
     framesSort,
-    generateTagCardinality, getFrames,
+    generateTagCardinality,
     getSuggestedFrames,
-    GroupFrameRender, joinTitleAndTags,
-    SimpleWeFrame, transformTreeIntoNode, transformTreeNode,
+    GroupFrameRender, joinTitleAndTags, mountWebFrame,
+    SuggestedFramesRequest, transformTreeIntoNode, transformTreeNode,
     WebFrameData,
     WebFrameRender,
-    WebTaggeable
 } from "@/store/renderData";
 import {FrameRender} from "@/entity/frame";
 
@@ -44,7 +43,7 @@ describe('enrichFrames', () => {
             {
                 title: 'a',
                 url: 'https://test2.ski.com',
-                favIconUrl: 'a',
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                 groupId: -1,
                 index: -1,
                 windowId: -1,
@@ -52,8 +51,10 @@ describe('enrichFrames', () => {
                 kind: 'web',
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
+                suggestedTags: [],
                 tags: ['#ski2023'],
                 isPinned: false,
+                bookmarkId: undefined,
                 audible: false,
                 active: false,
                 isOpened: false,
@@ -66,14 +67,16 @@ describe('enrichFrames', () => {
                 groupId: -1,
                 index: -1,
                 windowId: -1,
-                favIconUrl: 'a',
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com&size=16',
                 kind: 'web',
                 domain: 'test.ski.com',
                 preProcessedTags: ['@ski', '@test'],
                 tags: ['#ski2023', '#24k', '#abcc'],
+                suggestedTags: [],
                 isPinned: false,
                 audible: false,
                 active: false,
+                bookmarkId: undefined,
                 isOpened: false,
                 isSelected: false,
             },
@@ -84,11 +87,13 @@ describe('enrichFrames', () => {
                 index: -1,
                 windowId: -1,
                 url: 'https://test2.ski.com/abc2',
-                favIconUrl: 'a',
+                suggestedTags: [],
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                 kind: 'web',
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023', '#24k'],
+                bookmarkId: undefined,
                 isPinned: false,
                 active: false,
                 audible: false,
@@ -140,9 +145,11 @@ describe('enrichFrames', () => {
                 windowId: -1,
                 id: '',
                 url: 'https://test2.ski.com',
-                favIconUrl: 'a',
                 kind: 'web',
                 domain: 'test2.ski.com',
+                bookmarkId: undefined,
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
+                suggestedTags: [],
                 preProcessedTags: ['@ski', '@test2'],
                 tags: ['#ski2023'],
                 active: false,
@@ -158,7 +165,9 @@ describe('enrichFrames', () => {
                 windowId: 12,
                 id: '12',
                 url: 'https://test.ski.com/abc',
-                favIconUrl: 'a',
+                bookmarkId: undefined,
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com&size=16',
+                suggestedTags: [],
                 kind: 'web',
                 domain: 'test.ski.com',
                 preProcessedTags: ['@ski', '@test'],
@@ -240,12 +249,14 @@ describe('enrichFrames', () => {
                 windowId: -1,
                 id: '',
                 url: 'https://test2.ski.com',
-                favIconUrl: 'a',
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                 kind: 'web',
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
+                suggestedTags: [],
                 tags: ['#ski2023'],
                 isPinned: false,
+                bookmarkId: undefined,
                 audible: false,
                 active: false,
                 isOpened: false,
@@ -258,9 +269,11 @@ describe('enrichFrames', () => {
                 windowId: 12,
                 id: '1',
                 url: 'https://test.ski.com/abc',
-                favIconUrl: 'a',
                 kind: 'web',
+                bookmarkId: undefined,
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com&size=16',
                 domain: 'test.ski.com',
+                suggestedTags: [],
                 preProcessedTags: ['@ski', '@test'],
                 tags: ['#ski2023', '#abcc', '#24k'],
                 isPinned: false,
@@ -290,9 +303,11 @@ describe('enrichFrames', () => {
                 windowId: -1,
                 id: '',
                 url: 'https://test2.ski.com',
-                favIconUrl: 'a',
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                 kind: 'web',
                 domain: 'test2.ski.com',
+                bookmarkId: undefined,
+                suggestedTags: [],
                 isPinned: false,
                 isOpened: false,
                 active: false,
@@ -322,10 +337,12 @@ describe('enrichFrames', () => {
                 index: -1,
                 windowId: -1,
                 url: 'https://test2.ski.com',
-                favIconUrl: 'a',
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
                 kind: 'web',
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
+                bookmarkId: undefined,
+                suggestedTags: [],
                 isPinned: false,
                 audible: false,
                 active: false,
@@ -426,6 +443,8 @@ describe('createWindows', () => {
 
         const framesRender = [
             {
+                id: '12',
+                title: 'my title #myTag',
                 url: 'https://test2.ski.com',
                 tags: ['#myTag'],
             },
@@ -446,7 +465,9 @@ describe('createWindows', () => {
                         audible: false,
                         active: false,
                         domain: "test.ski.com",
-                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/pinned&size=16',
+                        favIconUrl: 'url favicon',
+                        bookmarkId: undefined,
+                        suggestedTags: [],
                         isOpened: true,
                         isPinned: true,
                         isSelected: false,
@@ -466,7 +487,9 @@ describe('createWindows', () => {
                         groupId: -1,
                         index: 1,
                         windowId: 12,
-                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/abc&size=16',
+                        favIconUrl: 'url favicon',
+                        bookmarkId: undefined,
+                        suggestedTags: [],
                         isOpened: true,
                         isPinned: false,
                         isSelected: false,
@@ -475,7 +498,7 @@ describe('createWindows', () => {
                         tags: [],
                     },
                     {
-                        title: 'newHere',
+                        title: 'my title',
                         url: 'https://test2.ski.com',
                         active: false,
                         audible: false,
@@ -484,7 +507,9 @@ describe('createWindows', () => {
                         index: 2,
                         windowId: 12,
                         domain: "test2.ski.com",
-                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
+                        favIconUrl: 'favicon testing here',
+                        bookmarkId: '12',
+                        suggestedTags: [],
                         isOpened: true,
                         isPinned: false,
                         isSelected: false,
@@ -507,7 +532,9 @@ describe('createWindows', () => {
                         url: 'https://test.ski.com/otherWindow',
                         id: "4",
                         domain: "test.ski.com",
-                        favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/otherWindow&size=16',
+                        favIconUrl: 'url favicon',
+                        bookmarkId: undefined,
+                        suggestedTags: [],
                         isOpened: true,
                         active: false,
                         audible: false,
@@ -525,6 +552,7 @@ describe('createWindows', () => {
                         collapsed: false,
                         color: 'red',
                         preProcessedTags: ["@group"],
+                        suggestedTags: [],
                         tags: [],
                         frames: [
                             {
@@ -535,7 +563,9 @@ describe('createWindows', () => {
                                 windowId: 13,
                                 url: 'https://test.ski.com/otherWindow',
                                 domain: "test.ski.com",
-                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/otherWindow&size=16',
+                                favIconUrl: 'url favicon',
+                                suggestedTags: [],
+                                bookmarkId: undefined,
                                 isOpened: true,
                                 active: false,
                                 audible: false,
@@ -626,18 +656,21 @@ describe('createWindows', () => {
             }
         ]
 
-        const framesRender = [
+        const bookmarks = [
             {
+                id: '1',
+                title: 'title1 #myTag',
                 url: 'https://test2.ski.com',
-                tags: ['#myTag'],
             },
             {
+                id: '2',
+                title: 'title2 #otherTag',
                 url: 'https://test.ski.com/abc',//
-                tags: ['#otherTag'],
             },
             {
+                id: '3',
+                title: 'title3 #myTag',
                 url: 'https://test.ski.com/notOpenedButHasTo',
-                tags: ['#myTag'],
             },
         ]
 
@@ -654,10 +687,11 @@ describe('createWindows', () => {
                         collapsed: false,
                         color: 'red',
                         preProcessedTags: ["@group"],
-                        tags: ['#myTag'],
+                        tags: [],
+                        suggestedTags: ['#myTag', '#otherTag', '#myTag'],
                         frames: [
                             {
-                                title: 'newHere',
+                                title: 'title1',
                                 url: 'https://test2.ski.com',
                                 active: false,
                                 audible: false,
@@ -666,17 +700,18 @@ describe('createWindows', () => {
                                 index: 2,
                                 windowId: 12,
                                 domain: "test2.ski.com",
-                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
+                                favIconUrl: 'url favicon new again',
+                                bookmarkId: '1',
                                 isOpened: true,
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
                                 suggestedTags: [],
                                 preProcessedTags: ["@test2", "@ski"],
-                                tags: ['#myTag'],
+                                tags: ['#myTag', '#otherTag', '#myTag'],
                             },
                             {
-                                title: 'abv',
+                                title: 'title2',
                                 url: 'https://test.ski.com/abc',
                                 domain: "test.ski.com",
                                 active: false,
@@ -685,17 +720,18 @@ describe('createWindows', () => {
                                 groupId: 1,
                                 index: 1,
                                 windowId: 12,
-                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com/abc&size=16',
+                                favIconUrl: 'url favicon',
+                                bookmarkId: '2',
                                 isOpened: true,
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
-                                suggestedTags: ['#myTag'],
+                                suggestedTags: [],
                                 preProcessedTags: ["@test", "@ski"],
                                 tags: ['#otherTag'],
                             },
                             {
-                                title: 'newHere',
+                                title: 'title1',
                                 url: 'https://test2.ski.com',
                                 active: false,
                                 audible: false,
@@ -704,7 +740,8 @@ describe('createWindows', () => {
                                 index: 2,
                                 windowId: 12,
                                 domain: "test2.ski.com",
-                                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https://test2.ski.com&size=16',
+                                bookmarkId: '1',
+                                favIconUrl: 'url favicon new again',
                                 isOpened: true,
                                 isPinned: false,
                                 isSelected: false,
@@ -714,85 +751,69 @@ describe('createWindows', () => {
                                 tags: ['#myTag'],
                             },
                         ],
-                        suggestedFrames: [
-                            {tags: ['#myTag'], url: "https://test.ski.com/notOpenedButHasTo"}
-                        ]
+                        suggestedFrames: []
                     },
                 ],
             }
         ]
-        expect(createWindows(activeTabs, tabGroups, framesRender, groupsData)).toStrictEqual(expected)
+        expect(createWindows(activeTabs, tabGroups, bookmarks, groupsData)).toStrictEqual(expected)
     })
 })
 
 describe('getSuggestedFrames', () => {
     test('test 1', () => {
-        const frames = [
-            {url: 'url1', title: 'hello',  favIconUrl: 'fav1', tags: ['#tag1']},
-            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
-        ]
-
-        const openTab = [
-            {
-                url: 'url1',
-                groupId: 1,
-            }
-        ]
-
-        const openGroups = [
-            {
+        const request: SuggestedFramesRequest = {
+            bookmarks: [
+                {url: 'url1', title: 'hello #tag1'},
+                {url: 'url2', title: 'hello closed #tag1'}
+            ],
+            tabs:[
+                {url: 'url1', groupId: 1}
+            ],
+            openGroups:[
+                {id: 1, title: 'my title'}
+            ],
+            savedGroup: {
                 id: 1,
-                title: 'my title'
+                tags: ['#tag1']
             }
-        ]
-
-
-        const savedGroupData = {
-            id: 1,
-            tags: ['#tag1'],
-            suggestedTags: [],
-            title:  'my title',
         }
 
         const expected = [
-            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
+            {
+                url: 'url2',
+                title: 'hello closed',
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=url2&size=16', tags: ['#tag1'],
+                preProcessedTags: [],
+            }
         ]
-        expect(getSuggestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
+        expect(getSuggestedFrames(request)).toStrictEqual(expected)
     })
 
     test('test 2', () => {
-        const frames = [
-            {url: 'url1', title: 'hello',  favIconUrl: 'fav1', tags: ['#tag1']},
-            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']},
-            {url: 'url3', title: 'hello closed2',  favIconUrl: 'fav3', tags: ['#tag2']}
-        ]
 
-        const openTab = [
-            {
-                url: 'url1',
-                groupId: 1,
+        const request: SuggestedFramesRequest = {
+            bookmarks: [
+                {url: 'url1', title: 'hello #tag1'},
+                {url: 'url2', title: 'hello closed #tag1'},
+                {url: 'url3', title: 'hello closed2 #tag2'}
+            ],
+            tabs:[
+                {url: 'url1', groupId: 1}
+            ],
+            openGroups:[
+                {id: 1, title: 'my title'}
+            ],
+            savedGroup: {
+                id: 1, tags: ['#tag1']
             }
-        ]
-
-        const openGroups = [
-            {
-                id: 1,
-                title: 'my title'
-            }
-        ]
-
-
-        const savedGroupData = {
-            id: 1,
-            tags: ['#tag1'],
-            title:  'my title',
-            suggestedTags: [],
         }
 
+
         const expected = [
-            {url: 'url2', title: 'hello closed',  favIconUrl: 'fav2', tags: ['#tag1']}
+            {url: 'url2', title: 'hello closed',  favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=url2&size=16', tags: ['#tag1'], preProcessedTags: []}
         ]
-        expect(getSuggestedFrames(frames, openTab, openGroups, savedGroupData)).toStrictEqual(expected)
+        expect(getSuggestedFrames(request)).toStrictEqual(expected)
     })
 })
 
@@ -820,8 +841,8 @@ describe('generateTagCardinality', () => {
 
 describe('filterFramesBySelection', () => {
     it('test_1', () => {
-        const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: []}
+        const bookmarks = [
+            {title: 'my title #tag1 #tag3', url: 'my url here'}
         ]
 
         const tags = ['#tag1']
@@ -830,12 +851,12 @@ describe('filterFramesBySelection', () => {
             {tags: ['#tag1', '#tag3'], preProcessedTags: []}
         ]
 
-        expect(filterFramesBySelection(frames, tags)).toStrictEqual(expected)
+        expect(filterFramesBySelection(bookmarks, tags)).toStrictEqual(expected)
     })
     it('test_1 with domain', () => {
-        const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain']},
-            {tags: ['#tag1', '#tag3'], preProcessedTags: []}
+        const bookmarks = [
+            {title: 'my title #tag1 #tag3', url: 'https://domain.com'},
+            {title: 'my title #tag1 #tag3', url: 'https://testing.com'}
         ]
 
         const tags = ['@domain']
@@ -844,13 +865,14 @@ describe('filterFramesBySelection', () => {
             {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain']},
         ]
 
-        expect(filterFramesBySelection(frames, tags)).toStrictEqual(expected)
+        expect(filterFramesBySelection(bookmarks, tags)).toStrictEqual(expected)
     })
     it('test_2 with domain', () => {
-        const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain2']}
+
+        const bookmarks = [
+            {title: 'my title #tag1 #tag3', url: 'https://domain1.com'},
+            {title: 'my title #tag1 #tag4', url: 'https://domain1.com'},
+            {title: 'my title #tag1 #tag3', url: 'https://domain2.com'},
         ]
 
         const tags = ['@domain1']
@@ -860,13 +882,13 @@ describe('filterFramesBySelection', () => {
             {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
         ]
 
-        expect(filterFramesBySelection(frames, tags)).toStrictEqual(expected)
+        expect(filterFramesBySelection(bookmarks, tags)).toStrictEqual(expected)
     })
     it('test_3 with domain', () => {
-        const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain2']}
+        const bookmarks = [
+            {title: 'my title #tag1 #tag3', url: 'https://domain1.com'},
+            {title: 'my title #tag1 #tag4', url: 'https://domain1.com'},
+            {title: 'my title #tag1 #tag3', url: 'https://domain2.com'},
         ]
 
         const tags = ['@domain1', '#tag4']
@@ -875,14 +897,14 @@ describe('filterFramesBySelection', () => {
             {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
         ]
 
-        expect(filterFramesBySelection(frames, tags)).toStrictEqual(expected)
+        expect(filterFramesBySelection(bookmarks, tags)).toStrictEqual(expected)
     })
 })
 
 describe('createTags', () => {
     it('test_1', () => {
         const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: []}
+            {title: 'my title #tag1 #tag3', url: ''},
         ]
 
         const selectedTags: string[] = []
@@ -896,7 +918,7 @@ describe('createTags', () => {
     })
     it('test_2', () => {
         const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1']}
+            {title: 'my title #tag1 #tag3', url: 'https://domain1.com'},
         ]
 
         const selectedTags: string[] = []
@@ -911,9 +933,9 @@ describe('createTags', () => {
     })
     it('test_3', () => {
         const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag6', '#tag7'], preProcessedTags: ['@domain2']},
+            {title: 'my title #tag1 #tag3', url: 'https://domain1.com'},
+            {title: 'my title #tag1 #tag4', url: 'https://domain1.com'},
+            {title: 'my title #tag6 #tag7', url: 'https://domain2.com'},
         ]
 
         const selectedTags: string[] = []
@@ -932,9 +954,9 @@ describe('createTags', () => {
     })
     it('test_3 with selected', () => {
         const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag6', '#tag7'], preProcessedTags: ['@domain2']},
+            {title: 'my title #tag1 #tag3', url: 'https://domain1.com'},
+            {title: 'my title #tag1 #tag4', url: 'https://domain1.com'},
+            {title: 'my title #tag6 #tag7', url: 'https://domain2.com'},
         ]
 
         const selectedTags = ['#tag1']
@@ -948,9 +970,9 @@ describe('createTags', () => {
     })
     it('test_3 with selected domain1', () => {
         const frames = [
-            {tags: ['#tag1', '#tag3'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag1', '#tag4'], preProcessedTags: ['@domain1']},
-            {tags: ['#tag6', '#tag7'], preProcessedTags: ['@domain2']},
+            {title: 'my title #tag1 #tag3', url: 'https://domain1.com'},
+            {title: 'my title #tag1 #tag4', url: 'https://domain1.com'},
+            {title: 'my title #tag6 #tag7', url: 'https://domain2.com'},
         ]
 
         const selectedTags = ['@domain1']
@@ -1116,50 +1138,6 @@ describe('framesSort', () => {
     })
 })
 
-describe('getFrames', () => {
-    it('test 1', () => {
-        const bookmarks = [
-            {
-                id: '123',
-                title: 'its the title',
-                index: 1,
-                parentId: '1',
-                url: null
-            },
-            {
-                id: '123',
-                title: 'its the title',
-                index: 1,
-                parentId: '1',
-                url: 'https://url.here'
-            },
-            {
-                id: '123',
-                title: 'other title #oneTag #otherTag',
-                index: 1,
-                parentId: '1',
-                url: 'https://url.here/withTags'
-            },
-        ]
-
-        const expected = [
-            {
-                url:   'https://url.here',
-                title: 'its the title',
-                tags: []
-            },
-            {
-                url: 'https://url.here/withTags',
-                title: 'other title',
-                tags: ['#oneTag', '#otherTag']
-            },
-        ]
-
-        expect(getFrames(bookmarks)).toStrictEqual(expected)
-    })
-})
-
-
 describe('transformTreeNode', () => {
     it('test 1', () => {
         const bookmarkTreeNode = [
@@ -1209,6 +1187,9 @@ describe('transformTreeNode', () => {
                         title: 'string',
                         url: 'string',
                         favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=string&size=16',
+                        tags: [],
+                        titleRaw: 'string',
+                        editable: true,
                         parentId: '1',
                     },
                     {
@@ -1220,6 +1201,9 @@ describe('transformTreeNode', () => {
                                 title: 'string',
                                 url: 'string',
                                 favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=string&size=16',
+                                tags: [],
+                                titleRaw: 'string',
+                                editable: true,
                                 parentId: '1',
                             },
                         ],
@@ -1227,11 +1211,17 @@ describe('transformTreeNode', () => {
                         index: 12,
                         title: 'string',
                         url: 'string',
+                        tags: [],
+                        titleRaw: 'string',
+                        editable: true,
                         parentId: '1',
                     }
                 ],
                 id: 'string',
                 index: 12,
+                tags: [],
+                titleRaw: 'string',
+                editable: true,
                 title: 'string',
                 url: 'string',
                 parentId: '1',
@@ -1283,31 +1273,23 @@ describe('transformTreeIntoNode', () => {
         const expected = [
             {
                 id: '1',
-                index: 12,
                 title: 'title1',
                 url: 'utl1',
-                parentId: '0',
             },
             {
                 id: '2',
-                index: 1,
                 title: 'title2',
                 url: 'url2',
-                parentId: '0',
             },
             {
                 id: '3',
-                index: 12,
                 title: 'title3',
                 url: 'url3',
-                parentId: '0',
             },
             {
                 id: '13',
-                index: 12,
                 title: 'title4',
                 url: 'url4',
-                parentId: '3',
             },
         ]
 
@@ -1338,5 +1320,55 @@ describe('joinTitleAndTags', () => {
         const expected = "https://test.url/#theEnd #tag1 #tag2 #12/03"
 
         expect(joinTitleAndTags(input.title, input.tags)).toStrictEqual(expected)
+    })
+})
+
+describe('mountWebFrame', () => {
+    it('test_1', () => {
+        const tab = {
+            id: '12',
+            index: 1,
+            title: 'abv',
+            url: 'https://test.ski.com/abc',
+            active: false,
+            audible: false,
+            favIconUrl: 'url favicon',
+            pinned: false,
+            windowId: 12,
+            groupId: -1,
+            selected: false
+        }
+
+        const bookmark = {
+            id: '1',
+            title: 'my title here #tag1',
+            url: 'https://test.ski.com/abc'
+        }
+
+        const search = ['#tag1','#tag3']
+
+        const expected = {
+            id: '12',
+            windowId: 12,
+            groupId: -1,
+            index: 1,
+            url: 'https://test.ski.com/abc',
+            favIconUrl: 'url favicon',
+            tags: ['#tag1'],
+            domain: 'test.ski.com',
+            audible: false,
+            preProcessedTags: ['@test','@ski'],
+            suggestedTags: ['#tag3'],
+            isPinned: false,
+            isOpened: true,
+            isSelected: false,
+            active: false,
+            kind: 'web',
+            bookmarkId: '1',
+            title: 'my title here'
+        }
+
+        expect(mountWebFrame(tab, bookmark, search)).toStrictEqual(expected)
+
     })
 })

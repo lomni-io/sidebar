@@ -236,8 +236,8 @@ export default defineComponent( {
       }
     }
     p{
-      font-size: 0.9em;
       white-space: nowrap;
+      font-weight: bold;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 60vw;

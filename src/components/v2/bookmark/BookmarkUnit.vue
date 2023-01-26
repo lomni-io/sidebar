@@ -178,6 +178,7 @@ h1:hover{
   .tag{
     background-color: var(--background_tag);
     color: var(--text_color);
+    white-space: nowrap;
     border-radius: 4px;
     padding-left: 3px;
     padding-right: 3px;

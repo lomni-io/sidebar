@@ -639,15 +639,7 @@ describe('createWindows', () => {
 
         const groupsData = [
             {
-                id: 12,
-                suggestedTags: [],
-                title: 'other title',
-                color: 'blue',
-                tags: [],
-                updatedAt: 1,
-            },
-            {
-                id: 12,
+                id: 1,
                 suggestedTags: [],
                 title: 'my group',
                 color: 'yellow',
@@ -687,8 +679,8 @@ describe('createWindows', () => {
                         collapsed: false,
                         color: 'red',
                         preProcessedTags: ["@group"],
-                        tags: [],
-                        suggestedTags: ['#myTag', '#otherTag', '#myTag'],
+                        tags: ['#myTag'],
+                        suggestedTags: ['#otherTag'],
                         frames: [
                             {
                                 title: 'title1',
@@ -708,7 +700,7 @@ describe('createWindows', () => {
                                 kind: "web",
                                 suggestedTags: [],
                                 preProcessedTags: ["@test2", "@ski"],
-                                tags: ['#myTag', '#otherTag', '#myTag'],
+                                tags: ['#myTag'],
                             },
                             {
                                 title: 'title2',
@@ -726,7 +718,7 @@ describe('createWindows', () => {
                                 isPinned: false,
                                 isSelected: false,
                                 kind: "web",
-                                suggestedTags: [],
+                                suggestedTags: ['#myTag'],
                                 preProcessedTags: ["@test", "@ski"],
                                 tags: ['#otherTag'],
                             },
@@ -751,7 +743,15 @@ describe('createWindows', () => {
                                 tags: ['#myTag'],
                             },
                         ],
-                        suggestedFrames: []
+                        suggestedFrames: [
+                            {
+                                favIconUrl: "chrome-extension://undefined/_favicon/?pageUrl=https://test.ski.com&size=16",
+                                preProcessedTags: ["@test","@ski"],
+                                tags: ["#myTag"],
+                                title: "title3",
+                                url: "https://test.ski.com/notOpenedButHasTo",
+                            }
+                        ]
                     },
                 ],
             }

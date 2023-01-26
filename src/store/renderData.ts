@@ -276,6 +276,8 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
                     return !webFrame.tags.includes(groupTag)
                 })
                 groupRender.suggestedTags.push(...webFrame.tags)
+                groupRender.suggestedTags = groupRender.suggestedTags.filter((t,i) =>
+                    groupRender.suggestedTags.indexOf(t) === i && !groupRender.tags.includes(t))
                 groupRender.frames.push(webFrame)
             }else{
                 const groupData = groupsData.find(x => x.id === tabGroup.id)
@@ -283,7 +285,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
                 let suggestedFrames: WebFrameClosed[] = []
                 if (groupData){
                     groupTags = [...groupData.tags]
-                    webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t))
+                    webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t) && !webFrame.suggestedTags.includes(t))
                     suggestedFrames = getSuggestedFrames({
                         bookmarks: bookmarks,
                         tabs: tabs,
@@ -300,7 +302,8 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
                     collapsed: tabGroup.collapsed,
                     suggestedFrames: suggestedFrames,
                     frames: [webFrame],
-                    suggestedTags: webFrame.tags,
+                    suggestedTags: webFrame.tags.filter(t => !groupTags.includes(t)),
+                    // suggestedTags: webFrame.tags,
                     tags: groupTags,
                     preProcessedTags: ['@group'],
                     kind: 'group',
@@ -316,12 +319,6 @@ export interface OpenTab {
     groupId: number
 }
 
-
-export interface SimpleWeFrame {
-    url:   string
-    title: string
-    favIconUrl: string
-}
 
 export interface GroupDataTaggeable {
     title: string
@@ -483,14 +480,6 @@ export function generateTagCardinality(tags: string[]){
 interface FrameWithTags {
     tags: string[]
     preProcessedTags: string[]
-}
-
-interface FilterFramesBySelection {
-    tags: string[]
-    bookmarks: {
-        title: string
-        url: string|null
-    }[]
 }
 
 export function filterFramesBySelection(bookmarks: {title: string,url: string}[], tags: string[]): FrameWithTags[] {

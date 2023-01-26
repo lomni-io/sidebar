@@ -227,6 +227,7 @@ export default defineComponent( {
     display: flex;
     img{
       margin-right: 5px;
+      margin-top: 2px;
     }
     .copy{
       margin-left: 5px;

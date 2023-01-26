@@ -10,14 +10,10 @@
         <font-awesome-icon icon="star" />
         Bookmarks
       </li>
-      <li :class="{'active': this.selected === 'migrate'}" @click="select('migrate')">
-        migrate
-      </li>
     </ul>
 
     <TabsView v-if="renderData && selected === 'tabs'" :render-data="renderData"></TabsView>
     <BookmarksView v-if="renderData && selected === 'frames'" :bookmark-window="bookmarkWindow"></BookmarksView>
-    <TmpMigrate v-if="selected === 'migrate'" :frames="renderData.frames"></TmpMigrate>
 
   </div>
 
@@ -31,12 +27,11 @@ import {defineComponent} from "vue";
 import TabsView from "@/views/ActiveAndFramesView.vue";
 import PluginInstallView from "@/views/PluginInstallView.vue";
 import {store} from "@/store";
-import TmpMigrate from "@/views/TmpMigrate.vue";
 import BookmarksView from "@/views/BookmarksView.vue";
 
 export default defineComponent( {
   name: "SidebarView",
-  components: {BookmarksView, TmpMigrate, PluginInstallView, TabsView},
+  components: {BookmarksView, PluginInstallView, TabsView},
   data() {
     return {
       selected: 'tabs',

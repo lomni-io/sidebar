@@ -189,6 +189,7 @@ a{
   .tag{
     display: flex;
     align-items: center;
+    white-space: nowrap;
     .remove{
       text-align: center;
       color: var(--red);

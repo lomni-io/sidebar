@@ -59,7 +59,7 @@ a:hover{
 
 .frame-info-container{
   padding: 5px;
-  background-color: var(--background_input);
+  background-color: var(--background_frame_selected);
   border: 1px solid var(--frame_border);
   border-radius: 5px;
   margin-top: 5px;

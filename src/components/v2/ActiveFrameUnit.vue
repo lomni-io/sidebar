@@ -5,15 +5,15 @@
     <div class="frame-info">
       <div class="frame-header" v-on:click.exact="goToPage">
         <div v-if="editTitle" class="edit-title">
-          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16" height="16">
           <input v-model="newTitle">
           <font-awesome-icon class="accept" icon="circle-check" @click="upsertBookmark"/>
           <font-awesome-icon class="cancel" icon="xmark" @click="editTitle = false" />
         </div>
 
         <div class="frame-header-left" v-if="!editTitle">
-          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
-          <small class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:dblclick="toEditMode">{{frame.title}}</small>
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16" height="16">
+          <p class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:dblclick="toEditMode">{{frame.title}}</p>
         </div>
 
         <div class="frame-header-right" v-if="!editTitle">
@@ -235,13 +235,16 @@ export default defineComponent( {
         filter: var(--hover);
       }
     }
-    small{
-      font-size: 0.8em;
-      color: var(--text_color);
+    p{
+      font-size: 0.9em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 60vw;
+
+      &:hover{
+        filter: var(--hover);
+      }
 
       &.current-selected{
         color: var(--purple);

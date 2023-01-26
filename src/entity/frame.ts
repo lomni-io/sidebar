@@ -1,4 +1,3 @@
-import {GroupData} from "@/store/renderData";
 
 
 export interface FrameRender {
@@ -15,8 +14,6 @@ export interface FrameRender {
     pinned: boolean
     updatedAt: number
 }
-
-export type FramesData = (WebFrameData|NoteFrameData|GroupData)[]
 
 export interface WebFrameData{
     url:   string

@@ -52,6 +52,7 @@ export default defineComponent( {
 <style scoped lang="scss">
 
 .suggestion-show-container{
+  margin-top: 5px;
   display: flex;
   margin-bottom: 3px;
   flex-direction: row-reverse;

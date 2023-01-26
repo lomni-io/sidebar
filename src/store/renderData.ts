@@ -1,24 +1,43 @@
 import {extractRootDomain, getDomainsFromUrl} from "@/components/url";
-import {FrameRender} from "@/entity/frame";
 
 export interface RenderData {
     search: string[]
     tabs: Tab[]
     tags: Tag[]
     windows: Window[]
-    frames: WebFrameRender[]
-    groupsData: GroupData[]
+    frames: WebFrameClosed[]
 }
 
 // TODO: create a migrate folder to help on that
 // migrate will get the default frames and put inside default folder
-export interface Bookmark {
+export interface BookmarkNode {
     id: string
-    dateAdded: number
     title: string
     index: number
     parentId: string
     url: string|null // when null is a folder
+}
+
+export interface BookmarkTreeNode {
+    children: BookmarkTreeNode[]
+    id: string
+    parentId: string
+    index: number
+    title: string
+    url: string
+}
+
+export interface BookmarkTreeNodeRender {
+    children: BookmarkTreeNode[]
+    id: string
+    parentId: string
+    index: number
+    title: string
+    titleRaw: string
+    url: string
+    favIconUrl?: string
+    editable: boolean
+    tags: string[]
 }
 
 export interface Tag {
@@ -56,28 +75,12 @@ export interface Window {
     tabs: (GroupFrameRender|WebFrameRender)[]
 }
 
-export interface TraceGroupFrameData {
-    id: string
-    tags: string[]
-    frames: TraceWebFrameData[]
-}
-
-export interface TraceWebFrameData {
-    url:   string
-    title: string
-    favIconUrl: string
-}
-
-
-
 
 export interface WebFrameData{
     url:   string
-    title: string
-    comment?: string
-    favIconUrl: string
     tags: string[]
-    updatedAt: number
+    title?: string
+    bookmarkId?: string
 }
 
 export interface GroupFrameRender {
@@ -86,17 +89,16 @@ export interface GroupFrameRender {
     color: string
     collapsed: boolean
     frames: WebFrameRender[]
-    suggestedFrames: WebTaggeable[]
+    suggestedFrames: WebFrameClosed[]
+    suggestedTags: string[]
     tags: string[]
     preProcessedTags: string[]
     kind: string
 }
 
-export interface GroupData {
-    title: string
-    color: string
+export interface GroupWithTags {
+    id: number
     tags: string[]
-    updatedAt: number
 }
 
 
@@ -107,48 +109,91 @@ export interface WebFrameRender {
     index: number
     url: string
     favIconUrl: string
-    title: string
     tags: string[]
     domain: string
     audible: boolean
     preProcessedTags: string[]
-    suggestedTags?: string[]
+    suggestedTags: string[]
     isPinned: boolean
     isOpened: boolean
     isSelected: boolean
     active: boolean
     kind: string
+    bookmarkId?: string
+    title?: string
 }
 
-export function createRenderData(framesData: WebFrameData[], tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], groupData: GroupData[]): RenderData{
-    const enriched = enrichFrames(framesData, tabs)
+
+export interface WebFrameClosed {
+    url: string
+    favIconUrl: string
+    tags: string[]
+    preProcessedTags: string[]
+    title: string
+}
+
+export interface BookmarkWindow {
+    treeNode: BookmarkTreeNodeRender[]
+}
+
+
+export function createBookmarkWindow(treeNode: BookmarkTreeNode): BookmarkWindow{
+    return {
+        treeNode: treeNode.id === '0' ? transformTreeNode(treeNode.children) : []
+    }
+}
+
+export const transformTreeNode = (nodes: BookmarkTreeNode[]): BookmarkTreeNodeRender[] => {
+    const newNodes: BookmarkTreeNodeRender[] = []
+    nodes.forEach(n => {
+        const titleAndTags = extractTitleAndTags(n.title)
+        if (n.children && n.children.length > 0){
+            newNodes.push({
+                children: transformTreeNode(n.children),
+                id: n.id,
+                parentId: n.parentId,
+                index: n.index,
+                title: titleAndTags.title,
+                titleRaw: n.title,
+                url: n.url,
+                editable: n.parentId !== '0' && n.id !== '0',
+                tags: titleAndTags.tags
+            })
+        }else{
+            newNodes.push({
+                children: [] as BookmarkTreeNodeRender[],
+                parentId: n.parentId,
+                id: n.id,
+                index: n.index,
+                title: titleAndTags.title,
+                titleRaw: n.title,
+                url: n.url,
+                favIconUrl: getFavicon(n.url),
+                editable: true,
+                tags: titleAndTags.tags
+            })
+        }
+
+    })
+    return newNodes
+}
+
+export function createRenderData(bookmarkTreeNode: BookmarkTreeNode, tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], groupWithTags: GroupWithTags[]): RenderData{
+    const bookmarks = transformTreeIntoNode(bookmarkTreeNode)
 
     return {
         tabs: tabs,
         search: searchInput,
-        tags: createTags(enriched, searchInput),
-        windows: createWindows(tabs, tabGroups, framesData, groupData),
-        frames: enriched as WebFrameRender[],
-        groupsData: groupData,
+        tags: createTags(bookmarks, searchInput),
+        windows: createWindows(tabs, tabGroups, bookmarks, groupWithTags, searchInput),
+        frames: createFrames(bookmarks)
     }
 }
 
-export interface Taggeable {
-    tags: string[]
-    preProcessedTags: string[]
-}
-
-
-export interface WebTaggeable {
-    url: string
-    tags: string[]
-}
-
-
-export function createTags(framesData: Taggeable[], searchTags: string[] = []): Tag[]{
+export function createTags(bookmarks: {title: string, url: string}[], searchTags: string[] = []): Tag[]{
     let finalList: Tag[] = []
 
-    const framesFiltered = filterFramesBySelection(framesData, searchTags)
+    const framesFiltered = filterFramesBySelection(bookmarks, searchTags)
 
     framesFiltered.forEach(frame => {
 
@@ -192,7 +237,13 @@ export function createTags(framesData: Taggeable[], searchTags: string[] = []): 
     return finalList.sort((x,y) => x.count > y.count ? -1 : 1)
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTaggeable[], groupsData: GroupData[]): Window[]{
+export interface WindowBookmarkNode {
+    id: string
+    title: string
+    url: string
+}
+
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: WindowBookmarkNode[], groupsData: GroupWithTags[], search: string[] = []): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -206,31 +257,42 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
             windows.push(window)
         }
 
+        const bookmark = bookmarks.find(bm => bm.url === tab.url)
+
         if (tab.pinned){
-            window.pinneds.push(mountWebFrame(tab, webData))
+            window.pinneds.push(mountWebFrame(tab, bookmark, search))
             return
         }
         if (tab.groupId === -1){
-            window.tabs.push(mountWebFrame(tab, webData))
+            window.tabs.push(mountWebFrame(tab, bookmark, search))
         }
 
         const tabGroup = tabGroups.find(tabGroup => tabGroup.id === tab.groupId)
         if (tabGroup){
             const groupRender = window.tabs.find(wTab => (<GroupFrameRender>wTab).id === tab.groupId) as GroupFrameRender
-            const webFrame = mountWebFrame(tab, webData)
+            const webFrame = mountWebFrame(tab, bookmark, search)
             if (groupRender){
                 webFrame.suggestedTags = groupRender.tags.filter((groupTag: string) => {
                     return !webFrame.tags.includes(groupTag)
                 })
+                groupRender.suggestedTags.push(...webFrame.tags)
+                groupRender.suggestedTags = groupRender.suggestedTags.filter((t,i) =>
+                    groupRender.suggestedTags.indexOf(t) === i && !groupRender.tags.includes(t))
                 groupRender.frames.push(webFrame)
             }else{
-                const groupData = groupsData.find(x => x.title === tabGroup.title)
+                const groupData = groupsData.find(x => x.id === tabGroup.id)
                 let groupTags: string[] = []
-                let suggestedFrames: WebTaggeable[] = []
+                let suggestedFrames: WebFrameClosed[] = []
                 if (groupData){
                     groupTags = [...groupData.tags]
-                    webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t))
-                    suggestedFrames = getSuggestedFrames(webData, tabs, tabGroups, groupData)
+                    webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t) && !webFrame.suggestedTags.includes(t))
+                    suggestedFrames = getSuggestedFrames({
+                        bookmarks: bookmarks,
+                        tabs: tabs,
+                        openGroups :tabGroups,
+                        savedGroup: groupData,
+                    })
+
                 }
                 // mount group here
                 window.tabs.push({
@@ -240,6 +302,8 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], webData: WebTa
                     collapsed: tabGroup.collapsed,
                     suggestedFrames: suggestedFrames,
                     frames: [webFrame],
+                    suggestedTags: webFrame.tags.filter(t => !groupTags.includes(t)),
+                    // suggestedTags: webFrame.tags,
                     tags: groupTags,
                     preProcessedTags: ['@group'],
                     kind: 'group',
@@ -256,12 +320,6 @@ export interface OpenTab {
 }
 
 
-export interface SimpleWeFrame {
-    url:   string
-    title: string
-    favIconUrl: string
-}
-
 export interface GroupDataTaggeable {
     title: string
     tags: string[]
@@ -272,29 +330,54 @@ export interface TabGroupSimple{
     title: string
 }
 
-export function getSuggestedFrames(framesData: WebTaggeable[], tabs: OpenTab[], openGroups :TabGroupSimple[], groupData: GroupDataTaggeable): WebTaggeable[]{
-    if (groupData.tags.length === 0){
+export interface SuggestedFramesRequest {
+    bookmarks: {
+        title: string
+        url: string|null
+    }[]
+    tabs: OpenTab[],
+    openGroups :TabGroupSimple[],
+    savedGroup: GroupWithTags
+}
+
+export function getSuggestedFrames(request: SuggestedFramesRequest): WebFrameClosed[]{
+    if (request.savedGroup.tags.length === 0){
         return []
     }
-    const openGroup = openGroups.find(g => g.title === groupData.title)
+    const openGroup = request.openGroups.find(g => g.id === request.savedGroup.id)
     if (!openGroup){
         return []
     }
 
     // find all frames that has the tags of group
-    let framesFiltered = framesData.filter(frameData => {
-        return groupData.tags.every(t => frameData.tags.includes(t))
+    let bookmarksFiltered = request.bookmarks.filter(bookmark => {
+        return request.savedGroup.tags.every(t => extractTags(bookmark.title).includes(t))
     })
 
-    const urlsInGroup: string[] = tabs.filter(tab => tab.groupId === openGroup.id).map(x => x.url)
+    const urlsInGroup: string[] = request.tabs.filter(tab => tab.groupId === openGroup.id).map(x => x.url)
 
     // remove all that is oppened in current group
-    framesFiltered = framesFiltered.filter(frameData => !urlsInGroup.includes(frameData.url))
+    bookmarksFiltered = bookmarksFiltered.filter(bm => !urlsInGroup.includes(bm.url ? bm.url : ''))
 
-    return framesFiltered
+    const framesClosed: WebFrameClosed[] = []
+
+    bookmarksFiltered.forEach(bookmark => {
+        if (!bookmark.url){
+            return
+        }
+        framesClosed.push({
+            url: bookmark.url,
+            favIconUrl: getFavicon(bookmark.url),
+            tags: extractTags(bookmark.title),
+            title: extractTitle(bookmark.title),
+            preProcessedTags: getDomainsFromUrl(bookmark.url).map(t => '@' + t)
+        })
+    })
+
+    return framesClosed
 }
 
-export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebFrameRender[]{
+export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = [], search: string[] = []): WebFrameRender[]{
 
     if (framesData.length === 0){
         return []
@@ -324,9 +407,11 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = []): WebF
                 favIconUrl: getFavicon(webFrame.url),
                 title: webFrame.title,
                 audible: tab ? tab.audible : false,
+                suggestedTags: search,
                 preProcessedTags: processedTags,
                 tags: frame.tags,
                 domain: extractRootDomain(webFrame.url),
+                bookmarkId: webFrame.bookmarkId,
                 url: webFrame.url,
                 isPinned: tab ? tab.pinned : false,
                 isSelected: tab ? tab.selected : false,
@@ -354,11 +439,15 @@ export function mountWebFrames(urls:string[], webFrames: WebFrameRender[]): WebF
     return finalWebFrames
 }
 
-export function mountWebFrame(tab:Tab, webData: WebTaggeable[]): WebFrameRender{
-    const webFrame = webData.find(frame => frame.url === tab.url)
+export function mountWebFrame(tab:Tab, bookmark: WindowBookmarkNode|undefined, search: string[] = []): WebFrameRender{
     let tags: string[] = []
-    if (webFrame){
-        tags = webFrame.tags
+    let bookmarkId = undefined
+    let title = tab.title
+    if (bookmark){
+        const e = extractTitleAndTags(bookmark.title)
+        bookmarkId = bookmark.id
+        title = e.title
+        tags = e.tags
     }
     return {
         id: tab.id,
@@ -366,8 +455,10 @@ export function mountWebFrame(tab:Tab, webData: WebTaggeable[]): WebFrameRender{
         groupId: tab ? tab.groupId : -1,
         index: tab ? tab.index : -1,
         url: tab.url,
-        favIconUrl: getFavicon(tab.url),
-        title: tab.title,
+        favIconUrl: tab.favIconUrl,
+        suggestedTags: search.filter(t => !tags.includes(t)),
+        bookmarkId: bookmarkId,
+        title: title,
         tags: tags,
         audible: tab ? tab.audible : false,
         domain: extractRootDomain(tab.url),
@@ -391,14 +482,21 @@ interface FrameWithTags {
     preProcessedTags: string[]
 }
 
-export function filterFramesBySelection(frames: FrameWithTags[], tags: string[]): FrameWithTags[] {
+export function filterFramesBySelection(bookmarks: {title: string,url: string}[], tags: string[]): FrameWithTags[] {
+    if (!bookmarks){
+        return []
+    }
+
     const tagsHash = tags.filter(x => x.startsWith("#"))
     const tagsAt = tags.filter(x => x.startsWith("@"))
-    return frames = frames.filter(frame => {
-        const hasTagAt = tagsAt.length > 0 ? tagsAt.every(tag => frame.preProcessedTags.includes(tag)) : true
-        const hasTagHash = tagsHash.length > 0 ? tagsHash.every(tag => frame.tags.includes(tag)) : true
+
+    return bookmarks.filter(bookmark => {
+        const domains = '@' + getDomainsFromUrl(bookmark.url)
+        const tags = extractTags(bookmark.title)
+        const hasTagAt = tagsAt.length > 0 ? tagsAt.every(tag => domains.includes(tag)) : true
+        const hasTagHash = tagsHash.length > 0 ? tagsHash.every(tag => tags.includes(tag)) : true
         return hasTagAt && hasTagHash
-    })
+    }).map(b => ({preProcessedTags: getDomainsFromUrl(b.url).map(t => '@'+ t), tags: extractTags(b.title)}))
 }
 
 export function framesFiltered(frames: FrameWithTags[], tags: string[]): FrameWithTags[]{
@@ -418,25 +516,73 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
     })
 }
 
-export function updateSavedGroups(oldGTabs: TabGroup[], newGTabs: TabGroup[], savedGroups: GroupData[]): GroupData[]{
-    const newSavedGroups = [...savedGroups]
-    // check if has changedName
-    oldGTabs.forEach(oldTabGroup => {
-        const newTabGroup = newGTabs.find(x => x.id === oldTabGroup.id)
-        const idx = savedGroups.findIndex(x => x.title === oldTabGroup.title)
-        if (newTabGroup && ~idx){
-            newSavedGroups[idx] = {
-                title: newTabGroup.title,
-                color: newTabGroup.color,
-                tags: savedGroups[idx].tags,
-                updatedAt: savedGroups[idx].updatedAt+1,
-            }
-        }
-    })
+export const getFavicon = (url:string) => {
+    let newUrl = url
+    try {
+        const u = new URL(url)
+        newUrl = `${u.protocol}//${u.hostname}`
+    }catch (e) {
+        //
+    }
 
-    return newSavedGroups
+    return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${newUrl}&size=16`
 }
 
-export const getFavicon = (url:string) => {
+export const getFaviconOld = (url:string) => {
     return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${url}&size=16`
+}
+
+interface extractResponse {
+    title: string
+    tags: string[]
+}
+
+export const extractTitleAndTags = (title: string): extractResponse => {
+    const regex = /\s#[a-z0-9/-]+/gi
+    const tags = title.match(regex);
+    return {
+        title: title.replace(regex, '').trim(),
+        tags: tags ? tags.map(t => t.trim()) : []
+    }
+}
+
+export const extractTitle = (title: string): string => {
+    return title.replace(/\s#[a-z0-9/-]+/gi, '').trim()
+}
+
+export const extractTags = (title: string): string[] => {
+    if (!title){
+        return []
+    }
+    const tags = title.match(/\s#[a-z0-9/-]+/gi);
+    return tags ? tags.map(t => t.trim()) : []
+}
+
+export const joinTitleAndTags = (title: string, tags: string[]): string => {
+    return `${title} ${tags.join(' ')}`
+}
+
+export const transformTreeIntoNode = (treeNode: BookmarkTreeNode): WindowBookmarkNode[] => {
+    const bookmarks: WindowBookmarkNode[] = []
+    bookmarks.push({
+        id: treeNode.id,
+        title: treeNode.title,
+        url: treeNode.url
+    })
+    if (treeNode.children && treeNode.children.length > 0){
+        treeNode.children.forEach(tn => {
+            bookmarks.push(...transformTreeIntoNode(tn))
+        })
+    }
+    return bookmarks
+}
+
+export const createFrames = (bookmarks: WindowBookmarkNode[]): WebFrameClosed[] => {
+    return bookmarks.filter(bm => bm.url && bm.title).map(bookmark => ({
+        url: bookmark.url,
+        favIconUrl: getFavicon(bookmark.url),
+        tags: extractTags(bookmark.title),
+        title: extractTitle(bookmark.title),
+        preProcessedTags: getDomainsFromUrl(bookmark.url).map((x:string) => '@'+ x)
+    }))
 }

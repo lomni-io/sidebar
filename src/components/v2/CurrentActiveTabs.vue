@@ -1,8 +1,8 @@
 <template>
+  <ToolBar class="toolbar" :frames="frames" :groups-data="groupsData" :search="search" :tags="tags"></ToolBar>
   <div class="active-frame-container">
     <div v-for="(frame, index) in window.pinneds" :key="index">
-      <ActiveFrameUnit :frame="frame" :minimized="true"></ActiveFrameUnit>
-      <LineToolBar :frames="frames" :frame="frame" :groups-data="groupsData"></LineToolBar>
+      <ActiveFrameUnit :frame="frame"></ActiveFrameUnit>
     </div>
 
 <!--  TABS HERE  -->
@@ -12,7 +12,6 @@
       <div v-if="tab.kind === 'web'">
         <FrameDropArea :frame-bottom="tab" :frame-top="tabIdx > 0 ? window.tabs[tabIdx-1] : -1"></FrameDropArea>
         <ActiveFrameUnit :frame="tab"></ActiveFrameUnit>
-        <LineToolBar :frames="frames" :frame="tab" :groups-data="groupsData"></LineToolBar>
       </div>
 
 <!--   GROUP TABS HERE   -->
@@ -38,13 +37,13 @@ import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit.vue";
 import FrameDropArea from "@/components/v2/FrameDropArea.vue";
 import {GroupFrameRender, WebFrameRender} from "@/store/renderData";
 import TabGroupScaffold from "@/components/v2/TabGroupScaffold.vue";
-import LineToolBar from "@/components/v2/LineToolBar.vue";
 import SuggestionFrames from "@/components/v2/SuggestionFrames.vue";
+import ToolBar from "@/components/v2/ToolBar.vue";
 
 export default defineComponent( {
   name: "CurrentActiveTabs",
   props: ['window', 'tags', 'frames', 'search', 'groupsData'],
-  components: {SuggestionFrames, LineToolBar, TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
+  components: {ToolBar, SuggestionFrames, TabGroupScaffold, FrameDropArea, ActiveFrameUnit},
   methods: {
     getTopFrameFromGroup(frameIdx: number, tabIdx: number){
       if (frameIdx > 0){
@@ -70,7 +69,12 @@ export default defineComponent( {
 
 .active-frame-container{
   padding: 5px;
-  margin-bottom: 50px;
+}
+
+.toolbar{
+  position: sticky !important;
+  top: 0;
+  z-index: 100000;
 }
 
 </style>

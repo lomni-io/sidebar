@@ -22,7 +22,7 @@
     </div>
 
     <div class="footer">
-      <TagContainer :tags="group.tags" :color="group.color" @addTag="addTag" @removeTag="removeTag"></TagContainer>
+      <TagContainer @clickedSuggestion="addTagsToGroup" :suggested-tags="group.suggestedTags" :tags="group.tags" :color="group.color"  @addTag="addTag" @removeTag="removeTag"></TagContainer>
     </div>
 
 
@@ -31,9 +31,9 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {GroupData} from "@/store/renderData";
 import {store} from "@/store";
 import TagContainer from "@/components/v2/TagContainer.vue";
+import {GroupWithTags} from "@/store/renderData";
 
 export default defineComponent( {
   name: "TabGroupScaffold",
@@ -46,28 +46,19 @@ export default defineComponent( {
     }
   },
   methods: {
-    addTag(tag: string){
-      const newTags = [...this.group.tags]
-      newTags.push(tag)
-
-      const groupData: GroupData = {
-        title: this.title,
-        color: this.color,
-        tags: newTags,
-        updatedAt: Date.now()
+    addTagsToGroup(tag: string){
+      const tags = [...this.group.tags, tag]
+      const gt: GroupWithTags = {
+        id: this.group.id,
+        tags: tags,
       }
-      store.dispatch('upsertSavedGroups', groupData)
+      store.dispatch('upsertGroupWithTags', gt)
+    },
+    addTag(tag: string){
+      console.log('TODO add tags', tag)
     },
     removeTag(tag: string){
-      const newTags = [...this.group.tags].filter(x => x !== tag)
-
-      const groupData: GroupData = {
-        title: this.title,
-        color: this.color,
-        tags: newTags,
-        updatedAt: Date.now()
-      }
-      store.dispatch('upsertSavedGroups', groupData)
+      console.log('TODO remove tag', tag)
     },
     collapse(collapsed: boolean){
       // @ts-ignore
@@ -134,6 +125,7 @@ export default defineComponent( {
 .scafold-container{
   user-select: none;
   margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 .collapsed{

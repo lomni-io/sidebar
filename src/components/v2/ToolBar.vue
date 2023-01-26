@@ -1,28 +1,27 @@
 <template>
 
-  <div class="toolbar-pre" v-if="!isActive" @click="isActive = true"></div>
-  <div class="toolbar" v-if="isActive">
-
-    <div class="tag-input-container">
-      <p class="tag-input" v-for="(tag, index) in search" :key="index">
-        <span v-on:click="removeTag(tag)" draggable="true" @drag="dragstart(tag)" @dragend="dragend" >{{tag}}</span>
-      </p>
-      <input v-model="input" :placeholder="placeholder" v-on:focusout="focusOut" v-on:keydown="keydown" ref="input"/>
-    </div>
-
-<!--   IS FRAME SEARCH -->
-    <div class="addframe-container" v-if="isFrameSearch">
-      <TagListContainer :tags="tags" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
-      <div class="frames-container" v-for="(frame, index) in framesFiltered.slice(0, 5)" :key="index">
-        <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+  <div class="toolbar">
+    <div class="main-container">
+      <div class="tag-input-container">
+        <p class="tag-input" v-for="(tag, index) in search" :key="index">
+          <span v-on:click="removeTag(tag)" draggable="true" @drag="dragstart(tag)" @dragend="dragend" >{{tag}}</span>
+        </p>
+        <input v-model="input" :placeholder="placeholder" v-on:keydown="keydown" ref="input"/>
       </div>
-    </div>
 
-    <!--   IS GROUP SEARCH -->
-    <div v-if="isGroupSearch">
-      <div class="group-container" v-for="(group, index) in groupsDataFiltered.slice(0, 5)" :key="index">
-        <p @click="openGroup(group)" :class="group.color">{{group.title}} - {{group.tags.join(',')}}</p>
+      <!--   IS FRAME SEARCH -->
+      <div class="addframe-container" v-if="isFrameSearch">
+        <TagListContainer :tags="tagsFiltered" class="tag-list-container" :initial-show="10" @addTag="addTag"></TagListContainer>
+        <span class="show-suggestions" v-if="!showFrameSuggestions" @click="showFrameSuggestions = true">Show <b>+{{framesFiltered.length}}</b> frames suggestions</span>
+        <span class="show-suggestions" v-if="showFrameSuggestions" @click="showFrameSuggestions = false">Hide all suggestions</span>
+
+        <div v-if="showFrameSuggestions">
+          <div class="frames-container" v-for="(frame, index) in framesFiltered" :key="index">
+            <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+          </div>
+        </div>
       </div>
+
     </div>
 
   </div>
@@ -31,50 +30,37 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/TagListContainer.vue";
-import {createTags, framesFiltered, GroupData, Tag} from "@/store/renderData";
+import {framesFiltered, Tag} from "@/store/renderData";
 import ToolbarFrameUnit from "@/components/v2/ToolbarFrameUnit.vue";
 import {FrameRender} from "@/entity/frame";
 import {store} from "@/store";
 
 export default defineComponent( {
-  name: "LineToolBar",
+  name: "ToolBar",
   components: {ToolbarFrameUnit, TagListContainer},
-  props: ['frames', 'frame', 'groupsData'],
+  props: ['frames', 'search', 'tags'],
   data() {
     return {
-      search: [] as string[],
-      isActive: false,
-      input: ''
+      input: '',
+      showFrameSuggestions: false,
     }
   },
   watch: {
-    isActive(val){
-      if (val){
-        this.$nextTick(() => {
-          const html = this.$refs.input as HTMLInputElement
-          html.focus()
-        });
-      }
-    }
+
   },
   computed: {
     framesFiltered(){
+      if (!this.frames || this.search.length === 0){
+        return []
+      }
       return framesFiltered(this.frames, this.search)
     },
-    groupsDataFiltered(){
-      if (this.input.length <= 1){
-        return this.groupsData
-      }
-      const input = this.input.substring(1)
-      return this.groupsData.filter((x: GroupData) => x.title.startsWith(input))
-    },
-    tags(): Tag[]{
-      const tags = createTags(this.frames, this.search)
 
-      if (this.input.length > 0){
-        return tags.filter(t => t.name.includes(this.input))
+    tagsFiltered(): Tag[]{
+      if (this.input.length > 1){
+        return this.tags.filter((t: Tag) => t.name.includes(this.input))
       }
-      return tags
+      return this.tags
     },
     placeholder(){
       if (this.search.length === 0){
@@ -102,55 +88,33 @@ export default defineComponent( {
     dragend(){
       store.dispatch('setDragItem', null)
     },
-    focusOut(){
-      if (!this.isFrameSearch && !this.isGroupSearch){
-        this.isActive = false
-      }
-    },
     removeTag(tag: string){
-      const idx = this.search.findIndex(x => x === tag)
-      if (~idx){
-        this.search.splice(idx, 1)
-      }
+      store.dispatch('removeSearchItem', tag)
     },
     addFrame(newFrame: FrameRender){
       // @ts-ignore
-      this.port.postMessage({kind: "open-and-update", url: newFrame.url, windowId: this.frame.windowId, index: this.frame.index+1, groupId: this.frame.groupId});
-      this.isActive = false
+      this.port.postMessage({kind: "open-request-new-tab", url: newFrame.url});
     },
     addTag(tag: Tag){
+      store.dispatch('addSearchItem', tag.name)
       this.input = ''
-      if (!this.search.some(x => x === tag.name)){
-        this.search.push(tag.name)
-      }
 
       const html = this.$refs.input as HTMLInputElement
       this.$nextTick(() => {
         html.focus()
       });
     },
-    openGroup(group: GroupData){
-      console.log(group)
-      this.isActive = false
-      this.input = ''
-    },
     keydown(e: any){
       if (e.code === 'Escape'){
-        this.isActive = false
-        this.search = []
+        // this.search = []
         e.preventDefault()
       }
-      if (e.code === 'Backspace' && this.input.length === 0 && this.search.length === 0){
-        this.isActive = false
-      }
       if (e.code === 'Backspace' && this.input.length === 0){
-        this.search.pop()
+        store.dispatch('removeSearchItem', this.search[this.search.length-1])
         e.preventDefault()
       }
       if (e.code === 'Enter' && this.input.length > 1 && this.input.startsWith('#')) {
-        if (!this.search.some(x => x === this.input)){
-          this.search.push(this.input)
-        }
+        store.dispatch('addSearchItem', this.input)
 
         this.input = ''
         e.preventDefault()
@@ -169,6 +133,14 @@ export default defineComponent( {
 
 .toolbar{
   //min-height: 60px;
+  //max-height: 200px;
+  //overflow: scroll;
+
+}
+
+.main-container{
+  background-color: var(--background_main);
+  box-shadow: 5px 5px 8px 5px var(--background_main);
 }
 
 .tag-input-container{
@@ -181,8 +153,7 @@ export default defineComponent( {
     background-color: var(--background_input);
     color: var(--text_color);
     font-weight: bold;
-    padding-top: 0.1em;
-    padding-bottom: 0.1em;
+    padding: 3px;
     font-size: 0.85em;
 
     &:first-child{
@@ -206,24 +177,11 @@ export default defineComponent( {
 
 input {
   outline: none;
+  padding: 3px;
   width: calc(100% - 8px);
 }
 
-.toolbar-pre{
-  height: 5px;
-  margin-top: -5px;
-  z-index: 100000;
-  &:hover{
-    opacity: 0.1;
-    border-radius: 5px;
-    background-color: var(--text_color);
-    filter: var(--hover);
-    cursor: pointer;
-  }
-}
-
 .frames-container{
-  opacity: 0.7;
 }
 
 .group-container{
@@ -268,5 +226,26 @@ input {
     }
   }
 }
+
+.addframe-container{
+  padding-left: 5px;
+  padding-right: 5px;
+
+  .show-suggestions{
+    color: var(--text_color);
+    background-color: var(--background_input);
+    border-radius: 5px;
+    font-size: 0.8em;
+    text-align: center;
+    display: block;
+    user-select: none;
+    width: 100%;
+    &:hover{
+      cursor: pointer;
+      filter: var(--hover);
+    }
+  }
+}
+
 
 </style>

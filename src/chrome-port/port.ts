@@ -26,6 +26,12 @@ export class ChromePort {
             if (msg.kind === 'all-tab-groups-response') {
                 store.dispatch('setAllTabGroups', msg.data)
             }
+            if (msg.kind === 'all-bookmarks-response'){
+                store.dispatch('setAllBookmarks', msg.data)
+            }
+            if (msg.kind ===  'all-bookmarks-tree-response'){
+                store.dispatch('setBookmarkTree', msg.data)
+            }
         })
         this.port.onDisconnect.addListener(() => {
             setTimeout(() => {

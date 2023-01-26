@@ -756,7 +756,7 @@ describe('createWindows', () => {
                 ],
             }
         ]
-        expect(createWindows(activeTabs, tabGroups, bookmarks, groupsData)).toStrictEqual(expected)
+        expect(createWindows(activeTabs, tabGroups, bookmarks, groupsData, ['@test'])).toStrictEqual(expected)
     })
 })
 
@@ -1345,7 +1345,7 @@ describe('mountWebFrame', () => {
             url: 'https://test.ski.com/abc'
         }
 
-        const search = ['#tag1','#tag3']
+        const search = ['#tag1','#tag3', '@domain']
 
         const expected = {
             id: '12',

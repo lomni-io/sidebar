@@ -2,7 +2,7 @@
   <div class="tags-container">
     <div class="tag add" v-for="(tag, index) in suggestedTags" :key="index" draggable="true">
       <span class="add">
-        <font-awesome-icon icon="check-circle" />
+        <font-awesome-icon icon="square-plus" />
       </span>
       <span @click="$emit('clickedSuggestion', tag)">{{tag}}</span>
     </div>

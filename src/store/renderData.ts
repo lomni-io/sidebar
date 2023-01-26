@@ -456,7 +456,7 @@ export function mountWebFrame(tab:Tab, bookmark: WindowBookmarkNode|undefined, s
         index: tab ? tab.index : -1,
         url: tab.url,
         favIconUrl: tab.favIconUrl,
-        suggestedTags: search.filter(t => !tags.includes(t)),
+        suggestedTags: search.filter(t => !tags.includes(t) && t.startsWith("#")),
         bookmarkId: bookmarkId,
         title: title,
         tags: tags,

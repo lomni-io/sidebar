@@ -153,8 +153,7 @@ export default defineComponent( {
     background-color: var(--background_input);
     color: var(--text_color);
     font-weight: bold;
-    padding-top: 0.1em;
-    padding-bottom: 0.1em;
+    padding: 3px;
     font-size: 0.85em;
 
     &:first-child{
@@ -178,6 +177,7 @@ export default defineComponent( {
 
 input {
   outline: none;
+  padding: 3px;
   width: calc(100% - 8px);
 }
 

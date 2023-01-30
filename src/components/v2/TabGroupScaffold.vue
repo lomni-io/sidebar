@@ -21,7 +21,7 @@
       <slot></slot>
     </div>
 
-    <div class="footer">
+    <div class="footer" v-if="!collapsed">
       <TagContainer @clickedSuggestion="addTagsToGroup" :suggested-tags="group.suggestedTags" :tags="group.tags" :color="group.color" @addTag="removeTag"  @removeTag="removeTag"></TagContainer>
     </div>
 

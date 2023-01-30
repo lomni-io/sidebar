@@ -22,7 +22,6 @@ export interface State {
   search: string[],
   bookmarks: BookmarkNode[]
   bookmarkTreeNode: BookmarkTreeNode
-  savedGroups: GroupWithTags[]
 }
 
 export const store = createStore<State>({
@@ -52,7 +51,6 @@ export const store = createStore<State>({
       bookmarks: [] as BookmarkNode[],
       bookmarkTreeNode: {} as BookmarkTreeNode,
       search: [],
-      savedGroups: [] as GroupWithTags[]
 
     }
   },
@@ -79,7 +77,7 @@ export const store = createStore<State>({
     },
 
     renderData: function (state) {
-      return createRenderData(state.bookmarkTreeNode, state.tabs, state.tabGroups, state.search, state.savedGroups)
+      return createRenderData(state.bookmarkTreeNode, state.tabs, state.tabGroups, state.search)
     },
   },
   mutations: {
@@ -129,19 +127,8 @@ export const store = createStore<State>({
     SET_BOOKMARK_TREE(state, bookmark: BookmarkTreeNode[]){
       state.bookmarkTreeNode = bookmark[0]
     },
-    UPSERT_GROUP_TAGS(state, group: GroupWithTags){
-      const idx = state.savedGroups.findIndex(x => x.id === group.id)
-      if (~idx){
-        state.savedGroups[idx] = group
-      }else{
-        state.savedGroups.push(group)
-      }
-    }
   },
   actions: {
-    upsertGroupWithTags(context, item){
-      context.commit('UPSERT_GROUP_TAGS', item)
-    },
     addSearchItem(context, item){
       context.commit('ADD_SEARCH_ITEM', item)
     },

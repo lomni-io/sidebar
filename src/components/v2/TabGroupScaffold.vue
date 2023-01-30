@@ -22,7 +22,7 @@
     </div>
 
     <div class="footer">
-      <TagContainer @clickedSuggestion="addTagsToGroup" :suggested-tags="group.suggestedTags" :tags="group.tags" :color="group.color"  @addTag="addTag" @removeTag="removeTag"></TagContainer>
+      <TagContainer @clickedSuggestion="addTagsToGroup" :suggested-tags="group.suggestedTags" :tags="group.tags" :color="group.color" @addTag="removeTag"  @removeTag="removeTag"></TagContainer>
     </div>
 
 
@@ -33,7 +33,7 @@
 import {defineComponent} from "vue";
 import {store} from "@/store";
 import TagContainer from "@/components/v2/TagContainer.vue";
-import {GroupWithTags} from "@/store/renderData";
+import {joinTitleAndTags} from "@/store/renderData";
 
 export default defineComponent( {
   name: "TabGroupScaffold",
@@ -47,18 +47,14 @@ export default defineComponent( {
   },
   methods: {
     addTagsToGroup(tag: string){
-      const tags = [...this.group.tags, tag]
-      const gt: GroupWithTags = {
-        id: this.group.id,
-        tags: tags,
-      }
-      store.dispatch('upsertGroupWithTags', gt)
-    },
-    addTag(tag: string){
-      console.log('TODO add tags', tag)
+      const title = joinTitleAndTags(this.group.title, [tag])
+      // @ts-ignore
+      this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: title});
     },
     removeTag(tag: string){
-      console.log('TODO remove tag', tag)
+      const newTitle = this.group.title.replace(tag, '')
+      // @ts-ignore
+      this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: newTitle});
     },
     collapse(collapsed: boolean){
       // @ts-ignore
@@ -109,8 +105,9 @@ export default defineComponent( {
     },
     saveNewTitle(){
       if (this.newTitle){
+        const title = joinTitleAndTags(this.newTitle, this.group.tags)
         // @ts-ignore
-        this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: this.newTitle});
+        this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: title});
       }
       this.editTitleMode = false
     },

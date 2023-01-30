@@ -630,22 +630,11 @@ describe('createWindows', () => {
         const tabGroups = [
             {
                 id: 1,
-                title: 'my group',
+                title: 'my group #myTag',
                 collapsed: false,
                 color: 'red',
                 windowId: 12,
             },
-        ]
-
-        const groupsData = [
-            {
-                id: 1,
-                suggestedTags: [],
-                title: 'my group',
-                color: 'yellow',
-                tags: ['#myTag'],
-                updatedAt: 1,
-            }
         ]
 
         const bookmarks = [
@@ -675,7 +664,7 @@ describe('createWindows', () => {
                     {
                         id: 1,
                         kind: "group",
-                        title: 'my group',
+                        title: 'my group #myTag',
                         collapsed: false,
                         color: 'red',
                         preProcessedTags: ["@group"],
@@ -756,7 +745,7 @@ describe('createWindows', () => {
                 ],
             }
         ]
-        expect(createWindows(activeTabs, tabGroups, bookmarks, groupsData, ['@test'])).toStrictEqual(expected)
+        expect(createWindows(activeTabs, tabGroups, bookmarks, ['@test'])).toStrictEqual(expected)
     })
 })
 
@@ -770,20 +759,16 @@ describe('getSuggestedFrames', () => {
             tabs:[
                 {url: 'url1', groupId: 1}
             ],
-            openGroups:[
-                {id: 1, title: 'my title'}
-            ],
-            savedGroup: {
-                id: 1,
-                tags: ['#tag1']
-            }
+            openGroup:{id: 1, title: 'my title'},
+            groupTags: ['#tag1'],
         }
 
         const expected = [
             {
                 url: 'url2',
                 title: 'hello closed',
-                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=url2&size=16', tags: ['#tag1'],
+                favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=url2&size=16',
+                tags: ['#tag1'],
                 preProcessedTags: [],
             }
         ]
@@ -801,12 +786,8 @@ describe('getSuggestedFrames', () => {
             tabs:[
                 {url: 'url1', groupId: 1}
             ],
-            openGroups:[
-                {id: 1, title: 'my title'}
-            ],
-            savedGroup: {
-                id: 1, tags: ['#tag1']
-            }
+            openGroup:{id: 1, title: 'my title'},
+            groupTags: ['#tag1'],
         }
 
 

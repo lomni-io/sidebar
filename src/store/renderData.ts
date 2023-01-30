@@ -178,14 +178,14 @@ export const transformTreeNode = (nodes: BookmarkTreeNode[]): BookmarkTreeNodeRe
     return newNodes
 }
 
-export function createRenderData(bookmarkTreeNode: BookmarkTreeNode, tabs: Tab[], tabGroups:TabGroup[], searchInput: string[], groupWithTags: GroupWithTags[]): RenderData{
+export function createRenderData(bookmarkTreeNode: BookmarkTreeNode, tabs: Tab[], tabGroups:TabGroup[], searchInput: string[]): RenderData{
     const bookmarks = transformTreeIntoNode(bookmarkTreeNode)
 
     return {
         tabs: tabs,
         search: searchInput,
         tags: createTags(bookmarks, searchInput),
-        windows: createWindows(tabs, tabGroups, bookmarks, groupWithTags, searchInput),
+        windows: createWindows(tabs, tabGroups, bookmarks, searchInput),
         frames: createFrames(bookmarks)
     }
 }
@@ -243,7 +243,7 @@ export interface WindowBookmarkNode {
     url: string
 }
 
-export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: WindowBookmarkNode[], groupsData: GroupWithTags[], search: string[] = []): Window[]{
+export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: WindowBookmarkNode[], search: string[] = []): Window[]{
     const windows: Window[] = []
     tabs.forEach(tab => {
         let window = windows.find(w => w.id === tab.windowId)
@@ -280,17 +280,15 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
                     groupRender.suggestedTags.indexOf(t) === i && !groupRender.tags.includes(t))
                 groupRender.frames.push(webFrame)
             }else{
-                const groupData = groupsData.find(x => x.id === tabGroup.id)
-                let groupTags: string[] = []
+                const groupTags = extractTags(tabGroup.title)
                 let suggestedFrames: WebFrameClosed[] = []
-                if (groupData){
-                    groupTags = [...groupData.tags]
+                if (groupTags.length > 0){
                     webFrame.suggestedTags = groupTags.filter(t => !webFrame.tags.includes(t) && !webFrame.suggestedTags.includes(t))
                     suggestedFrames = getSuggestedFrames({
                         bookmarks: bookmarks,
                         tabs: tabs,
-                        openGroups :tabGroups,
-                        savedGroup: groupData,
+                        openGroup :tabGroup,
+                        groupTags: groupTags,
                     })
 
                 }
@@ -336,25 +334,21 @@ export interface SuggestedFramesRequest {
         url: string|null
     }[]
     tabs: OpenTab[],
-    openGroups :TabGroupSimple[],
-    savedGroup: GroupWithTags
+    openGroup :TabGroupSimple,
+    groupTags: string[]
 }
 
 export function getSuggestedFrames(request: SuggestedFramesRequest): WebFrameClosed[]{
-    if (request.savedGroup.tags.length === 0){
-        return []
-    }
-    const openGroup = request.openGroups.find(g => g.id === request.savedGroup.id)
-    if (!openGroup){
+    if (request.groupTags.length === 0){
         return []
     }
 
     // find all frames that has the tags of group
     let bookmarksFiltered = request.bookmarks.filter(bookmark => {
-        return request.savedGroup.tags.every(t => extractTags(bookmark.title).includes(t))
+        return request.groupTags.every(t => extractTags(bookmark.title).includes(t))
     })
 
-    const urlsInGroup: string[] = request.tabs.filter(tab => tab.groupId === openGroup.id).map(x => x.url)
+    const urlsInGroup: string[] = request.tabs.filter(tab => tab.groupId === request.openGroup.id).map(x => x.url)
 
     // remove all that is oppened in current group
     bookmarksFiltered = bookmarksFiltered.filter(bm => !urlsInGroup.includes(bm.url ? bm.url : ''))

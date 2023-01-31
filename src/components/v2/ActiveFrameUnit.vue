@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <TagContainer @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" ></TagContainer>
+      <TagContainer @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
 
     </div>
   </div>
@@ -186,9 +186,11 @@ export default defineComponent( {
       store.dispatch('upsertFrame', newFrame)
     },
     removeTag(tag: string){
-      console.log(tag, this.frame)
+      const newTags = this.frame.tags.filter((t: string) => t !== tag)
+      const newTitle = joinTitleAndTags(this.frame.title, newTags)
+
       // @ts-ignore
-      // this.port.postMessage({kind: "upsert-bookmark", url: this.frame.url, title: titleAndTags});
+      this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: newTitle, id: this.frame.bookmarkId});
     }
   }
 })

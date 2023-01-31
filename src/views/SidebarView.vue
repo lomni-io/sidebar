@@ -10,15 +10,10 @@
         <font-awesome-icon icon="star" />
         Bookmarks
       </li>
-      <li :class="{'active': this.selected === 'sync'}" @click="select('sync')">
-        <font-awesome-icon icon="rotate" />
-        Sync
-      </li>
     </ul>
 
     <TabsView v-if="renderData && selected === 'tabs'" :render-data="renderData"></TabsView>
-    <FramesView v-if="renderData && selected === 'frames'" :render-data="renderData"></FramesView>
-    <SyncView v-if="selected === 'sync'"></SyncView>
+    <BookmarksView v-if="renderData && selected === 'frames'" :bookmark-window="bookmarkWindow"></BookmarksView>
 
   </div>
 
@@ -30,15 +25,13 @@
 
 import {defineComponent} from "vue";
 import TabsView from "@/views/ActiveAndFramesView.vue";
-import FramesView from "@/views/FramesView.vue";
 import PluginInstallView from "@/views/PluginInstallView.vue";
 import {store} from "@/store";
-import SyncView from "@/views/SyncView.vue";
-// const renderData = require('./renderData.json')
+import BookmarksView from "@/views/BookmarksView.vue";
 
 export default defineComponent( {
   name: "SidebarView",
-  components: {SyncView, PluginInstallView, FramesView, TabsView},
+  components: {BookmarksView, PluginInstallView, TabsView},
   data() {
     return {
       selected: 'tabs',
@@ -46,6 +39,9 @@ export default defineComponent( {
     }
   },
   computed: {
+    bookmarkWindow(){
+      return store.getters.bookmarkWindow
+    },
     renderData(){
       return store.getters.renderData
     }
@@ -64,7 +60,6 @@ export default defineComponent( {
       this.port.postMessage({kind: "all-tabs-request"});
       // @ts-ignore
       this.port.postMessage({kind: "all-tab-groups-request"});
-      store.dispatch('loadState')
     }
 
   }

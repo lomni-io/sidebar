@@ -80,7 +80,7 @@ export default {
 }
 
 .tag-add:hover {
-  background-color: var(--gray_1);
+  background-color: var(--scroll);
   color: white;
 }
 

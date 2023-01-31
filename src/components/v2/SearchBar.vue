@@ -111,7 +111,7 @@ export default defineComponent( {
     padding-left: 3px;
     padding-right: 3px;
     font-size: 0.8em;
-    background-color: var(--gray_1);
+    background-color: var(--scroll);
     border-radius: 5px;
     cursor: pointer;
     white-space: nowrap;

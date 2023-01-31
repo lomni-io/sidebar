@@ -1,14 +1,15 @@
 <template>
-  <div class="frame-info-container" ref="frame" id="frame" @click="click" >
-    <div class="frame-info">
-      <div class="frame-header">
-        <div class="frame-header-left">
-          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16" height="16">
-          <small  :class="{'current-selected': frame.isSelected}" >{{frame.title}}</small>
+
+    <div class="frame-info-container" ref="frame" id="frame" @click="click">
+      <div class="frame-info">
+        <div class="frame-header">
+          <div class="frame-header-left">
+            <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
+            <small  :class="{'current-selected': frame.isSelected}" >{{frame.title}}</small>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -17,7 +18,7 @@ import {defineComponent} from "vue";
 
 // TODO: copy link buttom
 export default defineComponent( {
-  name: "ToolbarFrameUnit",
+  name: "MinimalFrameUnit",
   emits: ['selected'],
   components: {},
   props: ['frame'],
@@ -59,13 +60,14 @@ a:hover{
 
 .frame-info-container{
   padding: 5px;
-  background-color: var(--background_frame_selected);
+  background-color: var(--background_input);
   border: 1px solid var(--frame_border);
   border-radius: 5px;
-  margin-top: 5px;
+  margin-bottom: 5px;
   position: relative;
-  &.open{
-    background-color: var(--background_frame_selected);
+  &:hover{
+    cursor: pointer;
+    filter: var(--hover);
   }
 }
 

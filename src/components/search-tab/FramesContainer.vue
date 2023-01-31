@@ -118,7 +118,7 @@ export default {
   .divider{
     margin-top: 10px;
     margin-bottom: 10px;
-    border-bottom: 1px dashed var(--gray_1);
+    border-bottom: 1px dashed var(--scroll);
   }
 }
 

@@ -30,8 +30,6 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {PinnedSearchData} from "@/store/renderData";
-import {store} from "@/store";
 
 export default defineComponent( {
   name: "FramesScaffold",
@@ -54,14 +52,6 @@ export default defineComponent( {
     },
   },
   methods: {
-    save(){
-      const newPinned: PinnedSearchData = {
-        color: this.color,
-        tags: this.pinned.tags,
-        preProcessedTags: this.pinned.preProcessedTags
-      }
-      store.dispatch('upsertPinned', newPinned)
-    },
     collapse(collapsed: boolean){
       this.forceCollapse = collapsed
     },
@@ -153,7 +143,7 @@ export default defineComponent( {
 
     .right-cancel{
       cursor: pointer;
-      color: var(--gray_1);
+      color: var(--scroll);
       margin-right: 5px;
     }
     .right-pin{
@@ -314,7 +304,7 @@ label{
 
 .edit-mode{
   &.grey{
-    background-color: var(--gray_1);
+    background-color: var(--scroll);
   }
   &.blue{
     background-color: var(--blue);

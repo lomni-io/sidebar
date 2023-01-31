@@ -159,7 +159,7 @@ export default {
 
 h1{
   font-size: 1.1em;
-  color: var(--gray_1);
+  color: var(--scroll);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;

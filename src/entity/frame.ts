@@ -15,8 +15,6 @@ export interface FrameRender {
     updatedAt: number
 }
 
-export type FramesData = (WebFrameData|NoteFrameData)[]
-
 export interface WebFrameData{
     url:   string
     title: string

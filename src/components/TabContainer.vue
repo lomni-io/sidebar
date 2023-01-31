@@ -88,7 +88,7 @@ input {
     justify-content: space-between;
     text-overflow: ellipsis;
     background: var(--background_tab);
-    border-bottom: solid var(--gray_1) 1px;
+    border-bottom: solid var(--scroll) 1px;
     font-size: 0.8em;
     font-weight: bold;
     max-height: 1.2em;

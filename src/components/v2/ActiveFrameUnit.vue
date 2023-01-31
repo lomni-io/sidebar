@@ -1,22 +1,22 @@
 <template>
+  <a ref="framePlc"></a>
   <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
 
-    <small class="frame-footer-drag" v-if="!minimized">
-      <font-awesome-icon icon="bars" />
-    </small>
-
     <div class="frame-info">
-      <div class="frame-header">
-        <div class="frame-header-left">
-          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16">
-          <small v-if="!minimized">{{frame.domain}}</small>
-          <small v-if="minimized" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage">{{frame.title}}</small>
-          <small class="copy" @click="copyLink">
-            <font-awesome-icon icon="copy" />
-          </small>
+      <div class="frame-header" v-on:click.exact="goToPage">
+        <div v-if="editTitle" class="edit-title">
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16" height="16">
+          <input v-model="newTitle">
+          <font-awesome-icon class="accept" icon="circle-check" @click="upsertBookmark"/>
+          <font-awesome-icon class="cancel" icon="xmark" @click="editTitle = false" />
         </div>
 
-        <div class="frame-header-right">
+        <div class="frame-header-left" v-if="!editTitle">
+          <img v-if="frame.favIconUrl" :src="frame.favIconUrl" width="16" height="16">
+          <p class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:dblclick="toEditMode">{{frame.title}}</p>
+        </div>
+
+        <div class="frame-header-right" v-if="!editTitle">
           <div class="frame-volume" title="meeting" v-if="frame.audible">
             <font-awesome-icon icon="volume-up" />
           </div>
@@ -35,20 +35,20 @@
           <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" title="pin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
+          <div class="frame-header-star star" v-if="frame.bookmarkId" @click="removeBookmark" title="remove from bookmark">
+            <font-awesome-icon icon="star" />
+          </div>
+          <div class="frame-header-star" v-if="!frame.bookmarkId" @click="addBookmark" title="add to bookmark">
+            <font-awesome-icon icon="star" />
+          </div>
           <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
             <font-awesome-icon icon="xmark" />
           </div>
         </div>
       </div>
 
-      <div class="title-container">
-        <h1 class="frame-title" :class="{'current-selected': frame.isSelected}" v-on:click.exact="goToPage" v-if="!minimized">{{frame.title}}</h1>
-      </div>
-      <div class="frame-footer">
-        <div class="tags">
-          <TagContainer :tags="frame.tags" :fixed-tags="frame.preProcessedTags" @addTag="addTag" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
-        </div>
-      </div>
+      <TagContainer @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+
     </div>
   </div>
 </template>
@@ -56,18 +56,19 @@
 <script lang="ts">
 
 import {defineComponent} from "vue";
-import TagContainer from "@/components/v2/TagContainer.vue";
 import {store} from "@/store";
 import {DragItem} from "@/store/dragItem";
-import {WebFrameRender} from "@/store/renderData";
+import {joinTitleAndTags, WebFrameRender} from "@/store/renderData";
+import TagContainer from "@/components/v2/TagContainer.vue";
 
-// TODO: copy link buttom
 export default defineComponent( {
   name: "ActiveFrameUnit",
   components: {TagContainer},
-  props: ['frame', 'minimized'],
+  props: ['frame'],
   data() {
     return {
+      editTitle: false,
+      newTitle: this.frame.title
     }
   },
   computed: {
@@ -76,7 +77,6 @@ export default defineComponent( {
     },
   },
   watch: {
-
   },
   mounted() {
 
@@ -94,6 +94,33 @@ export default defineComponent( {
         }
         store.dispatch('setDragItem', dragItem)
       }
+    },
+    clickedSuggestion(tag: string){
+      const tags = [...this.frame.tags, tag]
+      const newTitle = joinTitleAndTags(this.frame.title, tags)
+
+      if (this.frame.bookmarkId){
+        // @ts-ignore
+        this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: newTitle, id: this.frame.bookmarkId});
+      }else{
+        // @ts-ignore
+        this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: newTitle});
+      }
+    },
+    toEditMode(){
+      this.editTitle = true
+      this.newTitle = this.frame.title
+    },
+    upsertBookmark(){
+      const newTitle = joinTitleAndTags(this.newTitle, this.frame.tags)
+      if (this.frame.bookmarkId){
+        // @ts-ignore
+        this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: newTitle, id: this.frame.bookmarkId});
+      }else{
+        // @ts-ignore
+        this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: newTitle});
+      }
+      this.editTitle = false
     },
     copyLink(){
       navigator.clipboard.writeText(this.frame.url)
@@ -136,6 +163,14 @@ export default defineComponent( {
       // @ts-ignore
       this.port.postMessage({kind: "close-tabs", tab: this.frame.id});
     },
+    addBookmark(){
+      // @ts-ignore
+      this.port.postMessage({kind: "create-bookmark", url: this.frame.url, title: this.frame.title});
+    },
+    removeBookmark(){
+      // @ts-ignore
+      this.port.postMessage({kind: "remove-bookmark", id: this.frame.bookmarkId});
+    },
     goToPage(){
       if (this.frame.isOpened){
         // @ts-ignore
@@ -151,9 +186,11 @@ export default defineComponent( {
       store.dispatch('upsertFrame', newFrame)
     },
     removeTag(tag: string){
-      const newFrame = JSON.parse(JSON.stringify(this.frame)) as WebFrameRender
-      newFrame.tags = newFrame.tags.filter(t => !t.includes(tag))
-      store.dispatch('upsertFrame', newFrame)
+      const newTags = this.frame.tags.filter((t: string) => t !== tag)
+      const newTitle = joinTitleAndTags(this.frame.title, newTags)
+
+      // @ts-ignore
+      this.port.postMessage({kind: "update-bookmark", url: this.frame.url, title: newTitle, id: this.frame.bookmarkId});
     }
   }
 })
@@ -166,11 +203,11 @@ export default defineComponent( {
 }
 
 .frame-info-container{
-  padding: 5px;
+  padding: 2px 5px 2px 5px;
   background-color: var(--background_input);
   border: 1px solid var(--frame_border);
   border-radius: 5px;
-  margin-bottom: 5px;
+  margin-top: 5px;
   position: relative;
   &.open{
     background-color: var(--background_frame_selected);
@@ -192,6 +229,7 @@ export default defineComponent( {
     display: flex;
     img{
       margin-right: 5px;
+      margin-top: 2px;
     }
     .copy{
       margin-left: 5px;
@@ -200,13 +238,16 @@ export default defineComponent( {
         filter: var(--hover);
       }
     }
-    small{
-      font-size: 0.8em;
-      color: var(--text_color);
+    p{
       white-space: nowrap;
+      font-weight: bold;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 60vw;
+
+      &:hover{
+        filter: var(--hover);
+      }
 
       &.current-selected{
         color: var(--purple);
@@ -216,6 +257,7 @@ export default defineComponent( {
 
   .frame-header-right{
     display: flex;
+
     div{
       margin-right: 5px;
     }
@@ -224,7 +266,7 @@ export default defineComponent( {
     border-radius: 10px;
 
     .frame-header-status{
-      color: var(--gray_1);
+      color: var(--scroll);
 
       &.active{
         color: var(--blue);
@@ -254,10 +296,22 @@ export default defineComponent( {
     }
 
     .frame-header-pinned{
-      color: var(--gray_1);
+      color: var(--scroll);
 
       &.pinned{
         color: var(--blue);
+      }
+      &:hover{
+        cursor: pointer;
+        filter: var(--hover);
+      }
+    }
+
+    .frame-header-star{
+      color: var(--scroll);
+
+      &.star{
+        color: var(--yellow);
       }
       &:hover{
         cursor: pointer;
@@ -303,21 +357,12 @@ export default defineComponent( {
   max-width: 100%;
   text-align: left;
   margin: 0;
-}
-
-
-h1{
-  font-size: 1.1em;
-  margin: 0;
+  color: var(--blue);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 2em;
-  cursor: pointer;
 }
-h1:hover{
-  filter: var(--hover);
-}
+
 .frame-tags{
 
 }
@@ -340,23 +385,60 @@ h1:hover{
   align-items: center;
 }
 
-.frame-footer-drag{
-  cursor: pointer;
-  position: absolute;
-  bottom: 0;
-  right: 5px;
-  &:hover{
-    filter: var(--hover);
-  }
-}
-
 .drag-container{
 
+}
+
+.edit-title{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  input{
+    width: calc(100% - 40px);
+    filter: var(--hover);
+    outline:none;
+  }
+  .accept{
+    color: var(--green);
+    margin-right: 5px;
+    margin-left: 5px;
+    &:hover{
+      filter: var(--hover);
+      cursor: pointer;
+    }
+  }
+  .cancel{
+    color: var(--text_color);
+    &:hover{
+      filter: var(--hover);
+      cursor: pointer;
+    }
+  }
 }
 
 .title-container{
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  h1{
+    font-size: 1.0em;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 2em;
+    cursor: pointer;
+  }
+  h1:hover{
+    filter: var(--hover);
+  }
+
+  .tags{
+      font-size: 0.95em;
+  }
+
 }
 
 .frame-volume{
@@ -366,11 +448,6 @@ h1:hover{
     filter: var(--hover);
     cursor: pointer;
   }
-}
-
-
-.tags{
-  width: calc(100% - 10px);
 }
 
 </style>

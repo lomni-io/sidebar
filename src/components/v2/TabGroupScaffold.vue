@@ -20,8 +20,9 @@
     <div class="content" :class="color" v-if="!collapsed">
       <slot></slot>
     </div>
-    <div class="footer">
-      <TagContainer :tags="group.tags" :color="group.color"></TagContainer>
+
+    <div class="footer" v-if="!collapsed">
+      <TagContainer @clickedSuggestion="addTagsToGroup" :suggested-tags="group.suggestedTags" :tags="group.tags" :color="group.color" @addTag="removeTag"  @removeTag="removeTag"></TagContainer>
     </div>
 
 
@@ -30,9 +31,9 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
-import {groupToSave} from "@/store/renderData";
 import {store} from "@/store";
 import TagContainer from "@/components/v2/TagContainer.vue";
+import {joinTitleAndTags} from "@/store/renderData";
 
 export default defineComponent( {
   name: "TabGroupScaffold",
@@ -45,6 +46,16 @@ export default defineComponent( {
     }
   },
   methods: {
+    addTagsToGroup(tag: string){
+      const title = joinTitleAndTags(this.group.title, [tag])
+      // @ts-ignore
+      this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: title});
+    },
+    removeTag(tag: string){
+      const newTitle = this.group.title.replace(tag, '')
+      // @ts-ignore
+      this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: newTitle});
+    },
     collapse(collapsed: boolean){
       // @ts-ignore
       this.port.postMessage({kind: "collapse-tab-groups", group: this.group.id, collapse: collapsed});
@@ -57,10 +68,7 @@ export default defineComponent( {
       });
     },
     removeGroup(){
-      store.dispatch('removeGroup', this.group.id)
-    },
-    saveGroup(){
-      store.dispatch('saveGroup', groupToSave(this.group))
+      store.dispatch('removeGroup', this.group.title)
     },
     changeColor(){
       let newColor = this.color
@@ -97,8 +105,9 @@ export default defineComponent( {
     },
     saveNewTitle(){
       if (this.newTitle){
+        const title = joinTitleAndTags(this.newTitle, this.group.tags)
         // @ts-ignore
-        this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: this.newTitle});
+        this.port.postMessage({kind: "title-tab-groups", group: this.group.id, title: title});
       }
       this.editTitleMode = false
     },
@@ -113,6 +122,7 @@ export default defineComponent( {
 .scafold-container{
   user-select: none;
   margin-bottom: 5px;
+  margin-top: 5px;
 }
 
 .collapsed{
@@ -168,7 +178,7 @@ export default defineComponent( {
   padding-left: 5px;
   padding-right: 5px;
   margin-right: 10px;
-  color: var(--background_dark);
+  color: var(--background_main);
   &:hover{
     filter: var(--hover);
   }
@@ -243,7 +253,7 @@ export default defineComponent( {
 }
 
 label{
-  color: var(--background_dark);
+  color: var(--background_input);
   border-radius: 5px;
   cursor: pointer;
   padding-right: 5px;
@@ -332,7 +342,7 @@ label{
 
 .edit-mode{
   &.grey{
-    background-color: var(--gray_1);
+    background-color: var(--scroll);
   }
   &.blue{
     background-color: var(--blue);

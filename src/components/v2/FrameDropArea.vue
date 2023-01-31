@@ -69,7 +69,7 @@ export default {
 <style scoped lang="scss">
 
 .hover-area{
-  width: 100%;
+  width: calc(100% - 20px);
   height: 40px;
   position: absolute;
   z-index: 10000000;

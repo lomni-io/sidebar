@@ -16,16 +16,21 @@ export class ChromePort {
         this.port = chrome.runtime.connect(this.id,{name: 'dashboard'});
 
         this.port.onMessage.addListener((msg:any) => {
+            console.log('port-data:: ', msg)
             if (msg.kind === 'load-response') {
                 this.emitter.emit("load-response", msg)
             }
             if (msg.kind === 'all-tabs-response') {
-                console.log('all-tabs-response:: ', msg.data)
                 store.dispatch('setAllTabs', msg.data)
             }
             if (msg.kind === 'all-tab-groups-response') {
-                console.log('all-tab-groups-response:: ', msg.data)
                 store.dispatch('setAllTabGroups', msg.data)
+            }
+            if (msg.kind === 'all-bookmarks-response'){
+                store.dispatch('setAllBookmarks', msg.data)
+            }
+            if (msg.kind ===  'all-bookmarks-tree-response'){
+                store.dispatch('setBookmarkTree', msg.data)
             }
         })
         this.port.onDisconnect.addListener(() => {

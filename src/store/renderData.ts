@@ -580,3 +580,10 @@ export const createFrames = (bookmarks: WindowBookmarkNode[]): WebFrameClosed[] 
         preProcessedTags: getDomainsFromUrl(bookmark.url).map((x:string) => '@'+ x)
     }))
 }
+
+export function framesInputFiltered(frames: {title: string,url: string}[], inputStr: string): {title: string,url: string}[]{
+    const input = inputStr.toLowerCase()
+    const filtered = frames.filter(f => f.title.toLowerCase().includes(input))
+
+    return filtered.sort((a,b) => a.title.indexOf(input) > b.title.indexOf(input) ? 1 : -1)
+}

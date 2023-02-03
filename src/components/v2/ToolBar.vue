@@ -22,6 +22,13 @@
         </div>
       </div>
 
+      <!--   IS TITLE SEARCH -->
+      <div class="addframe-container" v-if="isTitleSearch">
+        <div class="frames-container" v-for="(frame, index) in framesByTitle" :key="index">
+          <ToolbarFrameUnit :frame="frame" @selected="addFrame"></ToolbarFrameUnit>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -30,7 +37,7 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import TagListContainer from "@/components/TagListContainer.vue";
-import {framesFiltered, Tag} from "@/store/renderData";
+import {framesFiltered, framesInputFiltered, Tag} from "@/store/renderData";
 import ToolbarFrameUnit from "@/components/v2/ToolbarFrameUnit.vue";
 import {FrameRender} from "@/entity/frame";
 import {store} from "@/store";
@@ -49,6 +56,9 @@ export default defineComponent( {
 
   },
   computed: {
+    framesByTitle(){
+      return framesInputFiltered(this.frames, this.input)
+    },
     framesFiltered(){
       if (!this.frames || this.search.length === 0){
         return []
@@ -70,6 +80,9 @@ export default defineComponent( {
     },
     isFrameSearch(){
       return this.input.startsWith('#') || this.input.startsWith('@') || this.search.length > 0
+    },
+    isTitleSearch(){
+      return this.input.match(/^\w+/gi)
     },
     isGroupSearch(){
       return this.input.startsWith('/') || (this.input.startsWith('/') && this.search.length > 0)

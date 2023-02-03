@@ -74,7 +74,7 @@ export default defineComponent( {
     },
     placeholder(){
       if (this.search.length === 0){
-        return "Start #,@ to select frame, or type '/' for command"
+        return "Start a text or #,@ to search by tags"
       }
       return 'Add more tags here'
     },

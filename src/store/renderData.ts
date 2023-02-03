@@ -510,20 +510,11 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
     })
 }
 
-export const getFavicon = (url:string) => {
-    let newUrl = url
-    try {
-        const u = new URL(url)
-        newUrl = `${u.protocol}//${u.hostname}`
-    }catch (e) {
-        //
-    }
-
-    return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${newUrl}&size=16`
-}
-
-export const getFaviconOld = (url:string) => {
-    return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${url}&size=16`
+function getFavicon(u: string) {
+    const url = new URL(`chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/`);
+    url.searchParams.set("pageUrl", u);
+    url.searchParams.set("size", "16");
+    return url.toString();
 }
 
 interface extractResponse {
@@ -579,4 +570,11 @@ export const createFrames = (bookmarks: WindowBookmarkNode[]): WebFrameClosed[] 
         title: extractTitle(bookmark.title),
         preProcessedTags: getDomainsFromUrl(bookmark.url).map((x:string) => '@'+ x)
     }))
+}
+
+export function framesInputFiltered(frames: {title: string,url: string}[], inputStr: string): {title: string,url: string}[]{
+    const input = inputStr.toLowerCase()
+    const filtered = frames.filter(f => f.title.toLowerCase().includes(input))
+
+    return filtered.sort((a,b) => a.title.indexOf(input) > b.title.indexOf(input) ? 1 : -1)
 }

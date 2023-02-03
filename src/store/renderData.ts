@@ -510,20 +510,11 @@ export function framesSort(frames: FrameWithTags[]): FrameWithTags[]{
     })
 }
 
-export const getFavicon = (url:string) => {
-    let newUrl = url
-    try {
-        const u = new URL(url)
-        newUrl = `${u.protocol}//${u.hostname}`
-    }catch (e) {
-        //
-    }
-
-    return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${newUrl}&size=16`
-}
-
-export const getFaviconOld = (url:string) => {
-    return `chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/?pageUrl=${url}&size=16`
+function getFavicon(u: string) {
+    const url = new URL(`chrome-extension://${process.env.VUE_APP_CHROME_EXTENSION_ID}/_favicon/`);
+    url.searchParams.set("pageUrl", u);
+    url.searchParams.set("size", "16");
+    return url.toString();
 }
 
 interface extractResponse {

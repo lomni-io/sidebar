@@ -1,6 +1,6 @@
 <template>
   <div class="scafold-container">
-    <div class="header" :class="color" draggable="true">
+    <div class="header" :class="color">
 <!--    TODO why is not saved?  -->
       <div class="header-left">
         <div class="input" v-if="!collapsed" @click="collapse(true)" :class="color">-</div>

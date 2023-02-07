@@ -1,6 +1,5 @@
 <template>
-  <a ref="framePlc"></a>
-  <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+  <div class="frame-info-container" :class="{'open': frame.isSelected}" ref="frame" id="frame" >
 
     <div class="frame-info">
       <div class="frame-header" v-on:click.exact="goToPage">
@@ -57,7 +56,6 @@
 
 import {defineComponent} from "vue";
 import {store} from "@/store";
-import {DragItem} from "@/store/dragItem";
 import {joinTitleAndTags, WebFrameRender} from "@/store/renderData";
 import TagContainer from "@/components/v2/TagContainer.vue";
 
@@ -82,19 +80,6 @@ export default defineComponent( {
 
   },
   methods: {
-    dragstart(e: any){
-      if (e.toElement.id === 'frame'){
-        let frame = this.$refs.frame as HTMLDivElement
-        frame.style.opacity = '0.4'
-
-        const dragItem: DragItem = {
-          draggerId: this.frame.id,
-          kind: 'frame',
-          object: this.frame,
-        }
-        store.dispatch('setDragItem', dragItem)
-      }
-    },
     clickedSuggestion(tag: string){
       const tags = [...this.frame.tags, tag]
       const newTitle = joinTitleAndTags(this.frame.title, tags)
@@ -124,12 +109,6 @@ export default defineComponent( {
     },
     copyLink(){
       navigator.clipboard.writeText(this.frame.url)
-    },
-    dragend(){
-      let frame = this.$refs.frame as HTMLDivElement
-      frame.style.opacity = '1'
-
-      store.dispatch('setDragItem', null)
     },
     clickedTag(tag: string){
       store.dispatch('addSearchItem', tag)

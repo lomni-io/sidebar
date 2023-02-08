@@ -578,3 +578,73 @@ export function framesInputFiltered(frames: {title: string,url: string}[], input
 
     return filtered.sort((a,b) => a.title.indexOf(input) > b.title.indexOf(input) ? 1 : -1)
 }
+
+interface frameInput {
+    id: number
+    frames?: frameInput[]
+}
+
+interface frameReduced {
+    id: number
+    groupId: number
+}
+
+interface actionOutput {
+    id: number
+    index: number
+    groupId: number
+}
+
+export function getActionOutput(oldList: frameInput[], newList: frameInput[]): actionOutput|null{
+    const oldF = flatten(oldList, -1)
+    const newF = flatten(newList, -1)
+
+    // check normal order
+    for (let  idx = 0; idx < newF.length; idx++) {
+        const newV = newF[idx]
+        const oldV = oldF[idx]
+        if (newV.id !== oldV.id){
+            const oldIdx = oldF.findIndex(x => x.id === newV.id)
+             if (Math.abs(idx - oldIdx) === 1){
+                 break
+             }else{
+                 return {
+                     id: newV.id,
+                     groupId: newV.groupId,
+                     index: idx
+                 }
+             }
+        }
+    }
+
+    // check inverse order
+    for (let  idx = newF.length-1; idx >= 0; idx--) {
+        const newV = newF[idx]
+        const oldV = oldF[idx]
+        if (newV.id !== oldV.id){
+            return {
+                id: newV.id,
+                groupId: newV.groupId,
+                index: idx
+            }
+        }
+    }
+
+    return null
+}
+
+export const flatten = (list: frameInput[], groupId: number): frameReduced[] => {
+    const finalList:frameReduced[] = []
+    list.forEach(f => {
+        if (f.frames){
+            finalList.push(...flatten(f.frames, f.id))
+        }else{
+            finalList.push({
+                id: f.id,
+                groupId: groupId,
+            })
+        }
+    })
+
+    return finalList
+}

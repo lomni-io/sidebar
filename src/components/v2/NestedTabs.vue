@@ -1,7 +1,7 @@
 <template>
-  <draggable tag="div" v-model="frameList" v-bind="dragOptions" item-key="title">
+  <draggable tag="transition-group" :component-data="{tag: 'div',type: 'transition-group',name: !drag ? 'flip-list' : null}" @start="start" @end="drag = false" v-model="frameList" v-bind="dragOptions" item-key="title">
     <template #item="{ element }">
-      <div class="list-group-item">
+      <div class="list-group-item" :data-id="element.id" >
 
         <!--   WEB TABS HERE   -->
         <div v-if="element.kind === 'web'">
@@ -11,7 +11,7 @@
         <!--   GROUP TABS HERE   -->
         <div v-if="element.kind === 'group'">
           <TabGroupScaffold :title="element.title" :color="element.color" :collapsed="element.collapsed" :group="element" :count-frames="element.frames.length">
-            <NestedFrames :frames="element.frames" :group="element"></NestedFrames>
+            <NestedFrames :frames="element.frames" :is-inner="true"></NestedFrames>
             <SuggestionFrames :frames="element.suggestedFrames" :group="element"></SuggestionFrames>
           </TabGroupScaffold>
         </div>
@@ -26,8 +26,9 @@ import draggable from "@marshallswain/vuedraggable";
 import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit";
 import TabGroupScaffold from "@/components/v2/TabGroupScaffold";
 import SuggestionFrames from "@/components/v2/SuggestionFrames";
+import {getActionOutput} from "@/store/renderData";
 export default {
-  props: ['frames' , 'group'],
+  props: ['frames' , 'isInner'],
   components: {
     SuggestionFrames,
     TabGroupScaffold,
@@ -47,35 +48,19 @@ export default {
       },
       set(value) {
         this.data = value
-        const groupId = this.group ? this.group.id : -1
 
-        if (this.frames.length < value.length){
-          // some item was added here
-          const addedItem = value
-              .map((item, index) => {return { ...item, order: index + 1 }})
-              .filter(o1 => !this.frames.some(o2 => o1.id === o2.id))[0];
+        const output = getActionOutput(this.frames, value)
+        console.log(output)
 
-          // @ts-ignore
-          this.port.postMessage({kind: "move-tab", tab: addedItem.id, windowId: addedItem.windowId, index: addedItem.order, groupId: groupId});
 
-          console.log('add: ',{kind: "move-tab", tab: addedItem.id, windowId: addedItem.windowId, index: addedItem.order, groupId: groupId})
-        }else if (this.frames.length === value.length){
-
-          // only happens some MOVEMENTS
-          const changedItem = value
-              .map((item, index) => {return { ...item, order: index}})
-              .find((item,index) => this.frames[index].id !== item.id)
-
-          // @ts-ignore
-          this.port.postMessage({kind: "move-tab", tab: changedItem.id, windowId: changedItem.windowId, index: changedItem.order, groupId: groupId});
-          console.log('move: ',changedItem)
-        }
+        // @ts-ignore
+        // this.port.postMessage({kind: "move-tab", tab: draggedFrame.id, windowId: draggedFrame.windowId, index: finalIdx, groupId: groupId});
 
       }
     },
     dragOptions() {
       return {
-        animation: 120,
+        animation: 150,
         group: "description",
         disabled: false,
         ghostClass: "ghost"
@@ -85,11 +70,16 @@ export default {
   data(){
     return {
       drag: false,
-      data: this.frames
+      data: this.frames,
+      frameId: -1,
+      frameIdx: -1,
     }
   },
   methods: {
-    start(){
+    start(ev){
+      this.frameId = parseInt(ev.item.getAttribute('data-id'))
+      console.log(this.frameId)
+      this.frameIdx = ev.oldIndex
       this.drag = true
     },
     dragEnd(){
@@ -100,16 +90,19 @@ export default {
 </script>
 <style scoped>
 
+.flip-list-move {
+  transition: transform 0.15s;
+}
+
+.no-move {
+  transition: transform 0s;
+}
+
 .ghost {
   opacity: 0;
 }
 
-.list-group {
-  min-height: 20px;
-}
 
-.list-group-item {
-  cursor: move;
-}
+
 
 </style>

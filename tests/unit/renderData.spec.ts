@@ -5,7 +5,7 @@ import {
     filterFramesBySelection,
     framesFiltered,
     framesSort,
-    generateTagCardinality,
+    generateTagCardinality, getActionOutput,
     getSuggestedFrames,
     GroupFrameRender, joinTitleAndTags, mountWebFrame,
     SuggestedFramesRequest, transformTreeIntoNode, transformTreeNode,
@@ -1351,5 +1351,176 @@ describe('mountWebFrame', () => {
 
         expect(mountWebFrame(tab, bookmark, search)).toStrictEqual(expected)
 
+    })
+})
+
+
+describe('getActionOutput', () => {
+    it('simple change order', () => {
+        const oldList = [
+            {
+                id: 1334,
+            },
+            {
+                id: 1335,
+            },
+            {
+                id: 4421,
+                frames: [
+                    {
+                        id: 1388,
+                    },
+                    {
+                        id: 1398,
+                    },
+                ],
+            },
+            {
+                id: 1336,
+            }
+        ]
+
+        const newList = [
+            {
+                id: 1336,
+            },
+            {
+                id: 1334,
+            },
+            {
+                id: 1335,
+            },
+            {
+                id: 4421,
+                frames: [
+                    {
+                        id: 1388,
+                    },
+                    {
+                        id: 1398,
+                    },
+                ],
+            },
+        ]
+
+        const expected = {
+            id: 1336,
+            index: 0,
+            groupId: -1
+        }
+
+        expect(getActionOutput(oldList, newList)).toStrictEqual(expected)
+    })
+
+    it('simple add to group', () => {
+        const oldList = [
+            {
+                id: 1334,
+            },
+            {
+                id: 1335,
+            },
+            {
+                id: 4421,
+                frames: [
+                    {
+                        id: 1388,
+                    },
+                    {
+                        id: 1398,
+                    },
+                ],
+            },
+            {
+                id: 1336,
+            }
+        ]
+
+        const newList = [
+            {
+                id: 1334,
+            },
+            {
+                id: 4421,
+                frames: [
+                    {
+                        id: 1388,
+                    },
+                    {
+                        id: 1398,
+                    },
+                    {
+                        id: 1335,
+                    },
+                ],
+            },
+            {
+                id: 1336,
+            }
+        ]
+
+        const expected = {
+            id: 1335,
+            index: 3,
+            groupId: 4421
+        }
+
+        expect(getActionOutput(oldList, newList)).toStrictEqual(expected)
+    })
+
+    it('simple remove on group', () => {
+        const oldList = [
+            {
+                id: 1334,
+            },
+            {
+                id: 1335,
+            },
+            {
+                id: 4421,
+                frames: [
+                    {
+                        id: 1388,
+                    },
+                    {
+                        id: 1398,
+                    },
+                ],
+            },
+            {
+                id: 1336,
+            }
+        ]
+
+        const newList = [
+            {
+                id: 1334,
+            },
+            {
+                id: 1398,
+            },
+            {
+                id: 1335,
+            },
+            {
+                id: 4421,
+                frames: [
+                    {
+                        id: 1388,
+                    },
+                ],
+            },
+            {
+                id: 1336,
+            }
+        ]
+
+        const expected = {
+            id: 1398,
+            index: 1,
+            groupId: -1
+        }
+
+        expect(getActionOutput(oldList, newList)).toStrictEqual(expected)
     })
 })

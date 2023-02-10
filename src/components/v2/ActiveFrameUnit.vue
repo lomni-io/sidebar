@@ -40,7 +40,7 @@
           <div class="frame-header-star" v-if="!frame.bookmarkId" @click="addBookmark" title="add to bookmark">
             <font-awesome-icon icon="star" />
           </div>
-          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
+          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" v-on:click.stop title="close current tab">
             <font-awesome-icon icon="xmark" />
           </div>
         </div>

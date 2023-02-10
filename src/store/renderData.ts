@@ -71,7 +71,6 @@ export interface TabGroup{
 export interface Window {
     name:  string
     id: number
-    pinneds: WebFrameRender[]
     tabs: (GroupFrameRender|WebFrameRender)[]
 }
 
@@ -251,7 +250,6 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
             window = {
                 name: 'main',
                 id: tab.windowId,
-                pinneds: [],
                 tabs: []
             }
             windows.push(window)
@@ -260,7 +258,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
         const bookmark = bookmarks.find(bm => bm.url === tab.url)
 
         if (tab.pinned){
-            window.pinneds.push(mountWebFrame(tab, bookmark, search))
+            window.tabs.push(mountWebFrame(tab, bookmark, search))
             return
         }
         if (tab.groupId === -1){
@@ -588,24 +586,22 @@ export const getFinalDragAction = (ev: any, frames: any[], groupId: number): any
     if (!element){
         return null
     }
+
+    frames = removeById(frames, element.id)
     if (ev.moved){
         if (groupId === -1){
-            frames.splice(ev.moved.oldIndex, 1)
             frames.splice(ev.moved.newIndex, 0, element)
         }else{
             // add to group
             const gFrame = frames.find(f => f.id === groupId)
-            gFrame.frames.splice(ev.moved.oldIndex, 1)
             gFrame.frames.splice(ev.moved.newIndex, 0, element)
         }
 
     }else if (ev.added){
+
         if (groupId === -1){
             frames.splice(ev.added.newIndex, 0, element)
         }else{
-            // remove from root
-            frames = frames.filter(f => f.id !== element.id)
-
             // add to group
             const gFrame = frames.find(f => f.id === groupId)
             gFrame.frames.splice(ev.added.newIndex, 0, element)
@@ -624,37 +620,16 @@ export const getFinalDragAction = (ev: any, frames: any[], groupId: number): any
     }
 }
 
-export const getFinalDragActionOld = (ev: any, frames: any[], group: any): any => {
-    const groupId = group ? group.id : -1
 
-    if (ev.moved){
-        swapElements(frames, ev.moved.oldIndex, ev.moved.newIndex)
-        // can be frame or group
-        const frame = ev.moved.element
-        if (frame.kind === 'web'){
-            const idx = flatten(frames, -1).findIndex(f => f.id === frame.id)
-            return {kind: "move-tab", tab: frame.id, windowId: frame.windowId, index: idx, groupId: groupId}
-        }else{
-            const idx = frames.findIndex(f => f.id === frame.id)
-            return {kind: "move-group", id: frame.id, windowId: frame.windowId, index: idx}
+export const removeById = (list: any[], id: number): any[] => {
+    list = list.filter(item => item.id !== id)
+    list.forEach(f => {
+        if (f.frames){
+            f.frames = removeById(f.frames, id)
         }
-    }
-    if (ev.added){
+    })
 
-        // only frame is added
-        const frame = ev.added.element
-        // frames.splice(ev.added.newIndex, 0, frame)
-        const idx = ev.added.newIndex > 0 ? frames[ev.added.newIndex -1].index : frames[ev.added.newIndex +1].index -1
-
-        return {kind: "move-tab", tab: frame.id, windowId: frame.windowId, index: idx , groupId: groupId};
-    }
-    return {}
-}
-
-function swapElements(arr: any[], oldIdx: number, newIdx: number) {
-    const item = arr[oldIdx]
-    arr.splice(oldIdx, 1)
-    arr.splice(newIdx, 0, item)
+    return list
 }
 
 export const flatten = (list: any[], groupId: number): any[] => {

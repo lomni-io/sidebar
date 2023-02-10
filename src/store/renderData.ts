@@ -47,7 +47,7 @@ export interface Tag {
 }
 
 export interface Tab{
-    id: string
+    id: number
     index: number
     url: string
     active: boolean,
@@ -103,7 +103,7 @@ export interface GroupWithTags {
 
 
 export interface WebFrameRender {
-    id: string
+    id: number
     windowId: number
     groupId: number
     index: number
@@ -394,7 +394,7 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = [], searc
             const tab = tabs.find(tab => tab.url === webFrame.url)
 
             finalWebFrames.push({
-                id: tab ? tab.id : '',
+                id: tab ? tab.id : 0,
                 index: tab ? tab.index : -1,
                 groupId: tab ? tab.groupId : -1,
                 windowId: tab ? tab.windowId : -1,
@@ -579,62 +579,86 @@ export function framesInputFiltered(frames: {title: string,url: string}[], input
     return filtered.sort((a,b) => a.title.indexOf(input) > b.title.indexOf(input) ? 1 : -1)
 }
 
-interface frameInput {
-    id: number
-    frames?: frameInput[]
-}
 
-interface frameReduced {
-    id: number
-    groupId: number
-}
+// TODO refazer, simplificar
+// 1. verificar se é moved ou added, caso
 
-interface actionOutput {
-    id: number
-    index: number
-    groupId: number
-}
+export const getFinalDragAction = (ev: any, frames: any[], groupId: number): any => {
+    const element = ev.moved ? ev.moved.element : ev.added ? ev.added.element : null
+    if (!element){
+        return null
+    }
+    if (ev.moved){
+        if (groupId === -1){
+            frames.splice(ev.moved.oldIndex, 1)
+            frames.splice(ev.moved.newIndex, 0, element)
+        }else{
+            // add to group
+            const gFrame = frames.find(f => f.id === groupId)
+            gFrame.frames.splice(ev.moved.oldIndex, 1)
+            gFrame.frames.splice(ev.moved.newIndex, 0, element)
+        }
 
-export function getActionOutput(oldList: frameInput[], newList: frameInput[]): actionOutput|null{
-    const oldF = flatten(oldList, -1)
-    const newF = flatten(newList, -1)
+    }else if (ev.added){
+        if (groupId === -1){
+            frames.splice(ev.added.newIndex, 0, element)
+        }else{
+            // remove from root
+            frames = frames.filter(f => f.id !== element.id)
 
-    // check normal order
-    for (let  idx = 0; idx < newF.length; idx++) {
-        const newV = newF[idx]
-        const oldV = oldF[idx]
-        if (newV.id !== oldV.id){
-            const oldIdx = oldF.findIndex(x => x.id === newV.id)
-             if (Math.abs(idx - oldIdx) === 1){
-                 break
-             }else{
-                 return {
-                     id: newV.id,
-                     groupId: newV.groupId,
-                     index: idx
-                 }
-             }
+            // add to group
+            const gFrame = frames.find(f => f.id === groupId)
+            gFrame.frames.splice(ev.added.newIndex, 0, element)
         }
     }
+    // apply flattern
+    const framesFlatten = flatten(frames, -1)
 
-    // check inverse order
-    for (let  idx = newF.length-1; idx >= 0; idx--) {
-        const newV = newF[idx]
-        const oldV = oldF[idx]
-        if (newV.id !== oldV.id){
-            return {
-                id: newV.id,
-                groupId: newV.groupId,
-                index: idx
-            }
-        }
+
+    if (element.kind === 'web'){
+        const idx = framesFlatten.findIndex(f => f.id === element.id)
+        return {kind: "move-tab", tab: element.id, windowId: element.windowId, index: idx, groupId: groupId}
+    }else{
+        const idx = framesFlatten.findIndex(f => f.groupId === element.id)
+        return {kind: "move-group", id: element.id, windowId: element.windowId, index: idx}
     }
-
-    return null
 }
 
-export const flatten = (list: frameInput[], groupId: number): frameReduced[] => {
-    const finalList:frameReduced[] = []
+export const getFinalDragActionOld = (ev: any, frames: any[], group: any): any => {
+    const groupId = group ? group.id : -1
+
+    if (ev.moved){
+        swapElements(frames, ev.moved.oldIndex, ev.moved.newIndex)
+        // can be frame or group
+        const frame = ev.moved.element
+        if (frame.kind === 'web'){
+            const idx = flatten(frames, -1).findIndex(f => f.id === frame.id)
+            return {kind: "move-tab", tab: frame.id, windowId: frame.windowId, index: idx, groupId: groupId}
+        }else{
+            const idx = frames.findIndex(f => f.id === frame.id)
+            return {kind: "move-group", id: frame.id, windowId: frame.windowId, index: idx}
+        }
+    }
+    if (ev.added){
+
+        // only frame is added
+        const frame = ev.added.element
+        // frames.splice(ev.added.newIndex, 0, frame)
+        const idx = ev.added.newIndex > 0 ? frames[ev.added.newIndex -1].index : frames[ev.added.newIndex +1].index -1
+
+        return {kind: "move-tab", tab: frame.id, windowId: frame.windowId, index: idx , groupId: groupId};
+    }
+    return {}
+}
+
+function swapElements(arr: any[], oldIdx: number, newIdx: number) {
+    const item = arr[oldIdx]
+    arr.splice(oldIdx, 1)
+    arr.splice(newIdx, 0, item)
+}
+
+export const flatten = (list: any[], groupId: number): any[] => {
+    const finalList:any[] = []
     list.forEach(f => {
         if (f.frames){
             finalList.push(...flatten(f.frames, f.id))

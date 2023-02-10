@@ -1,5 +1,5 @@
 <template>
-  <draggable tag="transition-group" :component-data="{tag: 'div',type: 'transition-group',name: !drag ? 'flip-list' : null}" @start="start" @end="drag = false" v-model="frameList" v-bind="dragOptions" item-key="title">
+  <draggable tag="div" @start="drag = true" @change="log" @end="this.drag = false" v-model="finalList" v-bind="dragOptions" item-key="id">
     <template #item="{ element }">
       <div class="list-group-item" :data-id="element.id" >
 
@@ -11,7 +11,7 @@
         <!--   GROUP TABS HERE   -->
         <div v-if="element.kind === 'group'">
           <TabGroupScaffold :title="element.title" :color="element.color" :collapsed="element.collapsed" :group="element" :count-frames="element.frames.length">
-            <NestedFrames :frames="element.frames" :is-inner="true"></NestedFrames>
+            <NestedFrames :frames="element.frames" :group="element" :raw-list="rawList"></NestedFrames>
             <SuggestionFrames :frames="element.suggestedFrames" :group="element"></SuggestionFrames>
           </TabGroupScaffold>
         </div>
@@ -26,9 +26,11 @@ import draggable from "@marshallswain/vuedraggable";
 import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit";
 import TabGroupScaffold from "@/components/v2/TabGroupScaffold";
 import SuggestionFrames from "@/components/v2/SuggestionFrames";
-import {getActionOutput} from "@/store/renderData";
+import {getFinalDragAction} from "@/store/renderData";
+
 export default {
-  props: ['frames' , 'isInner'],
+  props: ['frames' , 'group' , 'rawList'],
+  emits: ['update'],
   components: {
     SuggestionFrames,
     TabGroupScaffold,
@@ -42,25 +44,17 @@ export default {
     }
   },
   computed: {
-    frameList: {
+    finalList: {
       get() {
         return this.data
       },
       set(value) {
         this.data = value
-
-        const output = getActionOutput(this.frames, value)
-        console.log(output)
-
-
-        // @ts-ignore
-        // this.port.postMessage({kind: "move-tab", tab: draggedFrame.id, windowId: draggedFrame.windowId, index: finalIdx, groupId: groupId});
-
       }
     },
     dragOptions() {
       return {
-        animation: 150,
+        animation: 100,
         group: "description",
         disabled: false,
         ghostClass: "ghost"
@@ -69,21 +63,19 @@ export default {
   },
   data(){
     return {
-      drag: false,
       data: this.frames,
-      frameId: -1,
-      frameIdx: -1,
+      drag: false,
+
     }
   },
   methods: {
-    start(ev){
-      this.frameId = parseInt(ev.item.getAttribute('data-id'))
-      console.log(this.frameId)
-      this.frameIdx = ev.oldIndex
-      this.drag = true
-    },
-    dragEnd(){
-      this.drag = false
+    log(ev) {
+      console.log(ev, this.group)
+      const action = getFinalDragAction(ev, this.rawList, this.group ? this.group.id : -1)
+      if (action){
+        // @ts-ignore
+        this.port.postMessage(action);
+      }
     }
   }
 };

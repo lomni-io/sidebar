@@ -6,7 +6,7 @@
     </div>
 
     <!--  TABS HERE  -->
-    <NestedFrames :frames="window.tabs"></NestedFrames>
+    <NestedFrames :frames="window.tabs" :raw-list="window.tabs"></NestedFrames>
 
   </div>
 </template>
@@ -24,7 +24,6 @@ export default defineComponent( {
   components: {NestedFrames, ToolBar, ActiveFrameUnit},
   data(){
     return {
-
     }
   },
   methods: {

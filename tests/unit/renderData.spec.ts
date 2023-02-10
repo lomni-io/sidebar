@@ -5,7 +5,7 @@ import {
     filterFramesBySelection,
     framesFiltered,
     framesSort,
-    generateTagCardinality, getActionOutput,
+    generateTagCardinality, getFinalDragAction,
     getSuggestedFrames,
     GroupFrameRender, joinTitleAndTags, mountWebFrame,
     SuggestedFramesRequest, transformTreeIntoNode, transformTreeNode,
@@ -47,7 +47,7 @@ describe('enrichFrames', () => {
                 groupId: -1,
                 index: -1,
                 windowId: -1,
-                id: '',
+                id: 0,
                 kind: 'web',
                 domain: 'test2.ski.com',
                 preProcessedTags: ['@ski', '@test2'],
@@ -62,7 +62,7 @@ describe('enrichFrames', () => {
             },
             {
                 title: 'a',
-                id: '',
+                id: 0,
                 url: 'https://test.ski.com/abc',
                 groupId: -1,
                 index: -1,
@@ -82,7 +82,7 @@ describe('enrichFrames', () => {
             },
             {
                 title: 'a',
-                id: '',
+                id: 0,
                 groupId: -1,
                 index: -1,
                 windowId: -1,
@@ -123,7 +123,7 @@ describe('enrichFrames', () => {
 
         const activeTabs = [
             {
-                id: '12',
+                id: 12,
                 index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
@@ -143,7 +143,7 @@ describe('enrichFrames', () => {
                 groupId: -1,
                 index: -1,
                 windowId: -1,
-                id: '',
+                id: 0,
                 url: 'https://test2.ski.com',
                 kind: 'web',
                 domain: 'test2.ski.com',
@@ -163,7 +163,7 @@ describe('enrichFrames', () => {
                 groupId: -1,
                 index: 1,
                 windowId: 12,
-                id: '12',
+                id: 12,
                 url: 'https://test.ski.com/abc',
                 bookmarkId: undefined,
                 favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https%3A%2F%2Ftest.ski.com%2Fabc&size=16',
@@ -201,7 +201,7 @@ describe('enrichFrames', () => {
 
         const activeTabs = [
             {
-                id: '1',
+                id: 1,
                 index: 1,
                 audible: false,
                 title: 'abv',
@@ -214,7 +214,7 @@ describe('enrichFrames', () => {
                 selected: false
             },
             {
-                id: '2',
+                id: 2,
                 index: 2,
                 title: 'newHere',
                 url: 'https://test.ski.com/newHere',
@@ -227,7 +227,7 @@ describe('enrichFrames', () => {
                 selected: false
             },
             {
-                id: '4',
+                id: 4,
                 index: 3,
                 title: 'not show this one',
                 url: '',
@@ -247,7 +247,7 @@ describe('enrichFrames', () => {
                 groupId: -1,
                 index: -1,
                 windowId: -1,
-                id: '',
+                id: 0,
                 url: 'https://test2.ski.com',
                 favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https%3A%2F%2Ftest2.ski.com&size=16',
                 kind: 'web',
@@ -267,7 +267,7 @@ describe('enrichFrames', () => {
                 groupId: -1,
                 index: 1,
                 windowId: 12,
-                id: '1',
+                id: 1,
                 url: 'https://test.ski.com/abc',
                 kind: 'web',
                 bookmarkId: undefined,
@@ -301,7 +301,7 @@ describe('enrichFrames', () => {
                 groupId: -1,
                 index: -1,
                 windowId: -1,
-                id: '',
+                id: 0,
                 url: 'https://test2.ski.com',
                 favIconUrl: 'chrome-extension://undefined/_favicon/?pageUrl=https%3A%2F%2Ftest2.ski.com&size=16',
                 kind: 'web',
@@ -332,7 +332,7 @@ describe('enrichFrames', () => {
         const expected = [
             {
                 title: 'a',
-                id: '',
+                id: 0,
                 groupId: -1,
                 index: -1,
                 windowId: -1,
@@ -365,7 +365,7 @@ describe('createWindows', () => {
 
         const activeTabs = [
             {
-                id: '1',
+                id: 1,
                 index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
@@ -378,7 +378,7 @@ describe('createWindows', () => {
                 selected: false
             },
             {
-                id: '2',
+                id: 2,
                 index: 2,
                 title: 'newHere',
                 url: 'https://test2.ski.com',
@@ -391,7 +391,7 @@ describe('createWindows', () => {
                 selected: false
             },
             {
-                id: '4',
+                id: 4,
                 index: 3,
                 title: 'abv',
                 url: 'https://test.ski.com/pinned',
@@ -404,7 +404,7 @@ describe('createWindows', () => {
                 selected: false
             },
             {
-                id: '4',
+                id: 4,
                 index: 4,
                 title: 'abv',
                 url: 'https://test.ski.com/otherWindow',
@@ -417,7 +417,7 @@ describe('createWindows', () => {
                 selected: false
             },
             {
-                id: '4',
+                id: 4,
                 index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/otherWindow',
@@ -457,7 +457,7 @@ describe('createWindows', () => {
                 pinneds: [
                     {
                         title: 'abv',
-                        id: "4",
+                        id: 4,
                         groupId: -1,
                         index: 3,
                         windowId: 12,
@@ -483,7 +483,7 @@ describe('createWindows', () => {
                         domain: "test.ski.com",
                         active: false,
                         audible: true,
-                        id: "1",
+                        id: 1,
                         groupId: -1,
                         index: 1,
                         windowId: 12,
@@ -502,7 +502,7 @@ describe('createWindows', () => {
                         url: 'https://test2.ski.com',
                         active: false,
                         audible: false,
-                        id: "2",
+                        id: 2,
                         groupId: -1,
                         index: 2,
                         windowId: 12,
@@ -530,7 +530,7 @@ describe('createWindows', () => {
                         index: 4,
                         windowId: 13,
                         url: 'https://test.ski.com/otherWindow',
-                        id: "4",
+                        id: 4,
                         domain: "test.ski.com",
                         favIconUrl: 'url favicon',
                         bookmarkId: undefined,
@@ -557,7 +557,7 @@ describe('createWindows', () => {
                         frames: [
                             {
                                 title: 'abv',
-                                id: "4",
+                                id: 4,
                                 groupId: 1,
                                 index: 1,
                                 windowId: 13,
@@ -587,7 +587,7 @@ describe('createWindows', () => {
 
         const activeTabs = [
             {
-                id: '2',
+                id: 2,
                 index: 2,
                 title: 'newHere',
                 url: 'https://test2.ski.com',
@@ -600,7 +600,7 @@ describe('createWindows', () => {
                 selected: false
             },
             {
-                id: '1',
+                id: 1,
                 index: 1,
                 title: 'abv',
                 url: 'https://test.ski.com/abc',
@@ -613,7 +613,7 @@ describe('createWindows', () => {
                 selected: false
             },
             {
-                id: '2',
+                id: 2,
                 index: 2,
                 title: 'newHere',
                 url: 'https://test2.ski.com',
@@ -676,7 +676,7 @@ describe('createWindows', () => {
                                 url: 'https://test2.ski.com',
                                 active: false,
                                 audible: false,
-                                id: "2",
+                                id: 2,
                                 groupId: 1,
                                 index: 2,
                                 windowId: 12,
@@ -697,7 +697,7 @@ describe('createWindows', () => {
                                 domain: "test.ski.com",
                                 active: false,
                                 audible: true,
-                                id: "1",
+                                id: 1,
                                 groupId: 1,
                                 index: 1,
                                 windowId: 12,
@@ -716,7 +716,7 @@ describe('createWindows', () => {
                                 url: 'https://test2.ski.com',
                                 active: false,
                                 audible: false,
-                                id: "2",
+                                id: 2,
                                 groupId: 1,
                                 index: 2,
                                 windowId: 12,
@@ -1307,7 +1307,7 @@ describe('joinTitleAndTags', () => {
 describe('mountWebFrame', () => {
     it('test_1', () => {
         const tab = {
-            id: '12',
+            id: 12,
             index: 1,
             title: 'abv',
             url: 'https://test.ski.com/abc',
@@ -1329,7 +1329,7 @@ describe('mountWebFrame', () => {
         const search = ['#tag1','#tag3', '@domain']
 
         const expected = {
-            id: '12',
+            id: 12,
             windowId: 12,
             groupId: -1,
             index: 1,
@@ -1357,170 +1357,337 @@ describe('mountWebFrame', () => {
 
 describe('getActionOutput', () => {
     it('simple change order', () => {
-        const oldList = [
+        const frames = [
             {
-                id: 1334,
+                id: 12,
+                windowId: 1,
+                kind: 'web',
             },
             {
-                id: 1335,
+                id: 11,
+                windowId: 1,
+                kind: 'web',
             },
             {
-                id: 4421,
+                id: 334,
+                kind: 'group',
                 frames: [
                     {
-                        id: 1388,
+                        id: 13,
+                        windowId: 1,
+                        kind: 'web',
                     },
                     {
-                        id: 1398,
+                        id: 14,
+                        windowId: 1,
+                        kind: 'web',
                     },
-                ],
+                ]
             },
-            {
-                id: 1336,
+        ]
+
+        const ev = {
+            moved: {
+                oldIndex: 0,
+                newIndex: 2,
+                element: {
+                    id: 12,
+                    windowId: 1,
+                    kind: 'web',
+                }
             }
-        ]
-
-        const newList = [
-            {
-                id: 1336,
-            },
-            {
-                id: 1334,
-            },
-            {
-                id: 1335,
-            },
-            {
-                id: 4421,
-                frames: [
-                    {
-                        id: 1388,
-                    },
-                    {
-                        id: 1398,
-                    },
-                ],
-            },
-        ]
-
-        const expected = {
-            id: 1336,
-            index: 0,
-            groupId: -1
         }
 
-        expect(getActionOutput(oldList, newList)).toStrictEqual(expected)
-    })
-
-    it('simple add to group', () => {
-        const oldList = [
-            {
-                id: 1334,
-            },
-            {
-                id: 1335,
-            },
-            {
-                id: 4421,
-                frames: [
-                    {
-                        id: 1388,
-                    },
-                    {
-                        id: 1398,
-                    },
-                ],
-            },
-            {
-                id: 1336,
-            }
-        ]
-
-        const newList = [
-            {
-                id: 1334,
-            },
-            {
-                id: 4421,
-                frames: [
-                    {
-                        id: 1388,
-                    },
-                    {
-                        id: 1398,
-                    },
-                    {
-                        id: 1335,
-                    },
-                ],
-            },
-            {
-                id: 1336,
-            }
-        ]
-
         const expected = {
-            id: 1335,
+            kind: "move-tab",
+            tab: 12,
+            windowId: 1,
             index: 3,
-            groupId: 4421
-        }
-
-        expect(getActionOutput(oldList, newList)).toStrictEqual(expected)
-    })
-
-    it('simple remove on group', () => {
-        const oldList = [
-            {
-                id: 1334,
-            },
-            {
-                id: 1335,
-            },
-            {
-                id: 4421,
-                frames: [
-                    {
-                        id: 1388,
-                    },
-                    {
-                        id: 1398,
-                    },
-                ],
-            },
-            {
-                id: 1336,
-            }
-        ]
-
-        const newList = [
-            {
-                id: 1334,
-            },
-            {
-                id: 1398,
-            },
-            {
-                id: 1335,
-            },
-            {
-                id: 4421,
-                frames: [
-                    {
-                        id: 1388,
-                    },
-                ],
-            },
-            {
-                id: 1336,
-            }
-        ]
-
-        const expected = {
-            id: 1398,
-            index: 1,
             groupId: -1
         }
 
-        expect(getActionOutput(oldList, newList)).toStrictEqual(expected)
+        expect(getFinalDragAction(ev, frames, -1)).toStrictEqual(expected)
     })
+
+    it('simple change order inside group', () => {
+        const frames = [
+            {
+                id: 11,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 334,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 13,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 14,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+        ]
+
+        const ev = {
+            moved: {
+                oldIndex: 0,
+                newIndex: 1,
+                element: {
+                    id: 13,
+                    windowId: 1,
+                    kind: 'web',
+                },
+            }
+        }
+
+        const expected = {
+            kind: "move-tab",
+            tab: 13,
+            windowId: 1,
+            index: 2,
+            groupId: 334
+        }
+
+        expect(getFinalDragAction(ev, frames, 334)).toStrictEqual(expected)
+    })
+
+    it('simple change group order', () => {
+        const frames = [
+            {
+                id: 8,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 11,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 12,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 334,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 20,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 21,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+        ]
+
+        const ev = {
+            moved: {
+                oldIndex: 3,
+                newIndex: 1,
+                element: {
+                    id: 334,
+                    kind: 'group',
+                    windowId: 1,
+                    frames: [
+                        {
+                            id: 20,
+                            windowId: 1,
+                            kind: 'web',
+                        },
+                        {
+                            id: 21,
+                            windowId: 1,
+                            kind: 'web',
+                        },
+                    ]
+                },
+            }
+        }
+
+        const expected = {
+            kind: "move-group",
+            id: 334,
+            windowId: 1,
+            index: 1,
+        }
+
+        expect(getFinalDragAction(ev, frames, -1)).toStrictEqual(expected)
+    })
+
+    it('simple add frame', () => {
+        const frames = [
+            {
+                id: 11,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 334,
+                kind: 'group',
+                frames: [
+                    {},{}
+                ]
+            },
+        ]
+
+        const ev = {
+            added: {
+                newIndex: 2,
+                element: {
+                    id: 12,
+                    windowId: 1,
+                    kind: 'web',
+                }
+            }
+        }
+
+        const expected = {
+            kind: "move-tab",
+            tab: 12,
+            windowId: 1,
+            index: 3,
+            groupId: -1
+        }
+
+        expect(getFinalDragAction(ev, frames, -1)).toStrictEqual(expected)
+    })
+
+    it('simple add frame to group', () => {
+        const frames = [
+            {
+                id: 12,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 11,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 334,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 13,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+        ]
+
+        const ev = {
+            added: {
+                newIndex: 1,
+                element: {
+                    id: 12,
+                    windowId: 1,
+                    kind: 'web',
+                }
+            }
+        }
+
+        const expected = {
+            kind: "move-tab",
+            tab: 12,
+            windowId: 1,
+            index: 2,
+            groupId: 334
+        }
+
+        expect(getFinalDragAction(ev, frames, 334)).toStrictEqual(expected)
+    })
+
+    it('simple change order big', () => {
+        const frames = [
+            {
+                id: 1,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 334,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 13,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 14,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+            {
+                id: 2,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 335,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 15,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 16,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+            {
+                id: 11,
+                windowId: 1,
+                kind: 'web',
+            },
+            {
+                id: 12,
+                windowId: 1,
+                kind: 'web',
+            },
+        ]
+
+        const ev = {
+            moved: {
+                oldIndex: 5,
+                newIndex: 3,
+                element: {
+                    id: 12,
+                    windowId: 1,
+                    kind: 'web',
+                }
+            }
+        }
+
+        const expected = {
+            kind: "move-tab",
+            tab: 12,
+            windowId: 1,
+            index: 4,
+            groupId: -1
+        }
+
+        expect(getFinalDragAction(ev, frames, -1)).toStrictEqual(expected)
+    })
+
 })

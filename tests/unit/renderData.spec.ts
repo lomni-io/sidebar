@@ -365,6 +365,19 @@ describe('createWindows', () => {
 
         const activeTabs = [
             {
+                id: 4,
+                index: 0,
+                title: 'abv',
+                url: 'https://test.ski.com/pinned',
+                active: false,
+                audible: false,
+                favIconUrl: 'url favicon',
+                pinned: true,
+                windowId: 12,
+                groupId: -1,
+                selected: false
+            },
+            {
                 id: 1,
                 index: 1,
                 title: 'abv',
@@ -386,19 +399,6 @@ describe('createWindows', () => {
                 audible: false,
                 favIconUrl: 'favicon testing here',
                 pinned: false,
-                windowId: 12,
-                groupId: -1,
-                selected: false
-            },
-            {
-                id: 4,
-                index: 3,
-                title: 'abv',
-                url: 'https://test.ski.com/pinned',
-                active: false,
-                audible: false,
-                favIconUrl: 'url favicon',
-                pinned: true,
                 windowId: 12,
                 groupId: -1,
                 selected: false
@@ -454,12 +454,12 @@ describe('createWindows', () => {
             {
                 name:  'main',
                 id: 12,
-                pinneds: [
+                tabs: [
                     {
                         title: 'abv',
                         id: 4,
                         groupId: -1,
-                        index: 3,
+                        index: 0,
                         windowId: 12,
                         url: 'https://test.ski.com/pinned',
                         audible: false,
@@ -475,8 +475,6 @@ describe('createWindows', () => {
                         preProcessedTags: ["@test", "@ski"],
                         tags: [],
                     },
-                ],
-                tabs: [
                     {
                         title: 'abv',
                         url: 'https://test.ski.com/abc',
@@ -522,7 +520,6 @@ describe('createWindows', () => {
             {
                 name:  'main',
                 id: 13,
-                pinneds: [],
                 tabs: [
                     {
                         title: 'abv',
@@ -658,7 +655,6 @@ describe('createWindows', () => {
         const expected = [
             {
                 name:  'main',
-                pinneds: [],
                 id: 12,
                 tabs: [
                     {
@@ -1609,6 +1605,53 @@ describe('getActionOutput', () => {
         }
 
         expect(getFinalDragAction(ev, frames, 334)).toStrictEqual(expected)
+    })
+
+    it('simple add frame out of group', () => {
+        const frames = [
+            {
+                id: 334,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 12,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 13,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+            {
+                id: 11,
+                windowId: 1,
+                kind: 'web',
+            },
+        ]
+
+        const ev = {
+            added: {
+                newIndex: 1,
+                element: {
+                    id: 12,
+                    windowId: 1,
+                    kind: 'web',
+                }
+            }
+        }
+
+        const expected = {
+            kind: "move-tab",
+            tab: 12,
+            windowId: 1,
+            index: 1,
+            groupId: -1
+        }
+
+        expect(getFinalDragAction(ev, frames, -1)).toStrictEqual(expected)
     })
 
     it('simple change order big', () => {

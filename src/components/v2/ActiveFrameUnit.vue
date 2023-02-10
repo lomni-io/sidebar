@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <TagContainer @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+      <TagContainer v-if="!frame.isPinned" @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
 
     </div>
   </div>

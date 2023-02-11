@@ -19,19 +19,19 @@
           <div class="frame-volume" title="meeting" v-if="frame.audible">
             <font-awesome-icon icon="volume-up" />
           </div>
-          <div class="frame-header-clone" @click="clone" title="clone frame">
+          <div class="frame-header-clone" @click="clone" v-on:click.stop title="clone frame">
             <font-awesome-icon icon="clone" />
           </div>
-          <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" title="add tab to group">
+          <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" v-on:click.stop title="add tab to group">
             <font-awesome-icon icon="object-group" />
           </div>
-          <div class="frame-header-group" v-if="this.frame.groupId > -1" @click="removeGroupTab" title="add tab to group">
+          <div class="frame-header-group" v-if="this.frame.groupId > -1" @click="removeGroupTab" v-on:click.stop title="add tab to group">
             <font-awesome-icon icon="object-ungroup" />
           </div>
-          <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" title="unpin current tab">
+          <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" v-on:click.stop title="unpin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
-          <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" title="pin current tab">
+          <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" v-on:click.stop title="pin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
           <div class="frame-header-star star" v-if="frame.bookmarkId" @click="removeBookmark" title="remove from bookmark">
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <TagContainer v-if="!frame.isPinned" @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+      <TagContainer v-if="!frame.isPinned" @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag" v-on:click.stop></TagContainer>
 
     </div>
   </div>
@@ -132,7 +132,7 @@ export default defineComponent( {
     },
     clone(){
       // @ts-ignore
-      this.port.postMessage({kind: "open-and-update", url: this.frame.url, windowId: this.frame.windowId, index: this.frame.index+1, groupId: this.frame.groupId});
+      this.port.postMessage({kind: "duplicate-tab", id: this.frame.id});
     },
     unpinTab(){
       // @ts-ignore

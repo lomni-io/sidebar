@@ -11,7 +11,7 @@
         <!--   GROUP TABS HERE   -->
         <div v-if="element.kind === 'group'">
           <TabGroupScaffold :title="element.title" :color="element.color" :collapsed="element.collapsed" :group="element" :count-frames="element.frames.length">
-            <NestedFrames :frames="element.frames" :group="element" :raw-list="rawList"></NestedFrames>
+            <GroupTabs :frames="element.frames" :group="element" :raw-list="rawList"></GroupTabs>
             <SuggestionFrames :frames="element.suggestedFrames" :group="element"></SuggestionFrames>
           </TabGroupScaffold>
         </div>
@@ -27,17 +27,19 @@ import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit";
 import TabGroupScaffold from "@/components/v2/TabGroupScaffold";
 import SuggestionFrames from "@/components/v2/SuggestionFrames";
 import {getFinalDragAction} from "@/store/renderData";
+import GroupTabs from "@/components/v2/GroupTabs";
 
 export default {
-  props: ['frames' , 'group' , 'rawList'],
+  props: ['frames', 'rawList'],
   emits: ['update'],
   components: {
+    GroupTabs,
     SuggestionFrames,
     TabGroupScaffold,
     ActiveFrameUnit,
     draggable
   },
-  name: "NestedFrames",
+  name: "RootTabs",
   watch:{
     frames(newFrame){
       this.data = newFrame
@@ -70,8 +72,8 @@ export default {
   },
   methods: {
     log(ev) {
-      console.log(ev, this.group)
-      const action = getFinalDragAction(ev, this.rawList, this.group ? this.group.id : -1)
+      const action = getFinalDragAction(ev, this.rawList, -1)
+
       if (action){
         // @ts-ignore
         this.port.postMessage(action);

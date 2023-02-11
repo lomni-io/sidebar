@@ -1351,7 +1351,7 @@ describe('mountWebFrame', () => {
 })
 
 
-describe('getActionOutput', () => {
+describe('getFinalDragAction', () => {
     it('simple change order', () => {
         const frames = [
             {
@@ -1517,6 +1517,91 @@ describe('getActionOutput', () => {
             id: 334,
             windowId: 1,
             index: 1,
+        }
+
+        expect(getFinalDragAction(ev, frames, -1)).toStrictEqual(expected)
+    })
+
+    it('change group order between groups', () => {
+        const frames = [
+            {
+                id: 333,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 24,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 23,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+            {
+                id: 334,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 20,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 21,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+            {
+                id: 335,
+                kind: 'group',
+                frames: [
+                    {
+                        id: 30,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                    {
+                        id: 31,
+                        windowId: 1,
+                        kind: 'web',
+                    },
+                ]
+            },
+        ]
+
+        const ev = {
+            moved: {
+                oldIndex: 0,
+                newIndex: 2,
+                element: {
+                    id: 333,
+                    kind: 'group',
+                    frames: [
+                        {
+                            id: 24,
+                            windowId: 1,
+                            kind: 'web',
+                        },
+                        {
+                            id: 23,
+                            windowId: 1,
+                            kind: 'web',
+                        },
+                    ]
+                },
+            }
+        }
+
+        const expected = {
+            kind: "move-group",
+            id: 333,
+            windowId: undefined,
+            index: 4,
         }
 
         expect(getFinalDragAction(ev, frames, -1)).toStrictEqual(expected)

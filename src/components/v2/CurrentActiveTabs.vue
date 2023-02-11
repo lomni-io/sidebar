@@ -15,7 +15,7 @@
 import {defineComponent} from "vue";
 import ActiveFrameUnit from "@/components/v2/ActiveFrameUnit.vue";
 import ToolBar from "@/components/v2/ToolBar.vue";
-import NestedFrames from "@/components/v2/NestedTabs.vue";
+import NestedFrames from "@/components/v2/RootTabs.vue";
 
 
 export default defineComponent( {

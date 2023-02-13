@@ -5,7 +5,6 @@ import {GithubAuth} from "@/views/gh_auth";
 import "v-contextmenu/dist/themes/dark.css";
 import {ChromePort} from "@/chrome-port/port";
 import "@/assets/styles/button.scss";
-import "@/assets/styles/color.scss";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
     faArrowUpRightFromSquare,

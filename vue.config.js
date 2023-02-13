@@ -5,4 +5,13 @@ module.exports = defineConfig({
   devServer: {
     allowedHosts: 'all',
   },
+  css: {
+    loaderOptions: {
+      sass: {
+        additionalData: `
+                    @import "@/assets/styles/color.scss";
+                `
+      }
+    }
+  }
 })

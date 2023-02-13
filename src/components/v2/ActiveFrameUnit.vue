@@ -1,5 +1,5 @@
 <template>
-  <div class="frame-info-container" :class="{'open': frame.isSelected}" ref="frame" id="frame" >
+  <div class="frame-info-container" :class="{'open': frame.isSelected, 'sound-enabled': frame.audible}" ref="frame" id="frame" >
 
     <div class="frame-info">
       <div class="frame-header" v-on:click.exact="goToPage">
@@ -16,9 +16,6 @@
         </div>
 
         <div class="frame-header-right" v-if="!editTitle">
-          <div class="frame-volume" title="meeting" v-if="frame.audible">
-            <font-awesome-icon icon="volume-up" />
-          </div>
           <div class="frame-header-clone" @click="clone" v-on:click.stop title="clone frame">
             <font-awesome-icon icon="clone" />
           </div>
@@ -183,6 +180,7 @@ export default defineComponent( {
 
 .frame-info-container{
   padding: 2px 5px 2px 5px;
+  transition: 1s border;
   background-color: var(--background_input);
   border: 1px solid var(--frame_border);
   border-radius: 5px;
@@ -190,6 +188,10 @@ export default defineComponent( {
   position: relative;
   &.open{
     background-color: var(--background_frame_selected);
+  }
+  &.sound-enabled{
+    //animation: colors 60s infinite;
+    border: 1px solid rgba($blue, 0.3);
   }
 }
 

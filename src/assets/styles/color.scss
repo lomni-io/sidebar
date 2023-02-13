@@ -1,3 +1,4 @@
+$blue:#8ab4f8;
 
 @media (prefers-color-scheme: dark) {
   * {
@@ -38,6 +39,7 @@
     --pink: #d01784;
     --red: #d93025;
     --blue: #1973e8;
+    $blue:#1973e8;
     --cyan: #037b83;
     --purple: #a141f4;
     --orange: #fa903d;

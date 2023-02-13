@@ -1,6 +1,5 @@
 <template>
-  <a ref="framePlc"></a>
-  <div class="frame-info-container" :class="{'open': frame.isSelected}" draggable="true" @dragend="dragend" @dragstart="dragstart" ref="frame" id="frame" >
+  <div class="frame-info-container" :class="{'open': frame.isSelected, 'sound-enabled': frame.audible}" ref="frame" id="frame" >
 
     <div class="frame-info">
       <div class="frame-header" v-on:click.exact="goToPage">
@@ -17,22 +16,19 @@
         </div>
 
         <div class="frame-header-right" v-if="!editTitle">
-          <div class="frame-volume" title="meeting" v-if="frame.audible">
-            <font-awesome-icon icon="volume-up" />
-          </div>
-          <div class="frame-header-clone" @click="clone" title="clone frame">
+          <div class="frame-header-clone" @click="clone" v-on:click.stop title="clone frame">
             <font-awesome-icon icon="clone" />
           </div>
-          <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" title="add tab to group">
+          <div class="frame-header-group" v-if="this.frame.groupId === -1" @click="newGroupTab" v-on:click.stop title="add tab to group">
             <font-awesome-icon icon="object-group" />
           </div>
-          <div class="frame-header-group" v-if="this.frame.groupId > -1" @click="removeGroupTab" title="add tab to group">
+          <div class="frame-header-group" v-if="this.frame.groupId > -1" @click="removeGroupTab" v-on:click.stop title="add tab to group">
             <font-awesome-icon icon="object-ungroup" />
           </div>
-          <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" title="unpin current tab">
+          <div class="frame-header-pinned pinned" v-if="frame.isPinned" @click="unpinTab" v-on:click.stop title="unpin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
-          <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" title="pin current tab">
+          <div class="frame-header-pinned" v-if="!frame.isPinned"  @click="pinTab" v-on:click.stop title="pin current tab">
             <font-awesome-icon icon="thumbtack" />
           </div>
           <div class="frame-header-star star" v-if="frame.bookmarkId" @click="removeBookmark" title="remove from bookmark">
@@ -41,13 +37,13 @@
           <div class="frame-header-star" v-if="!frame.bookmarkId" @click="addBookmark" title="add to bookmark">
             <font-awesome-icon icon="star" />
           </div>
-          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" title="close current tab">
+          <div class="frame-header-close" v-if="frame.isOpened" @click="closeTab" v-on:click.stop title="close current tab">
             <font-awesome-icon icon="xmark" />
           </div>
         </div>
       </div>
 
-      <TagContainer @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag"></TagContainer>
+      <TagContainer v-if="!frame.isPinned" @clickedSuggestion="clickedSuggestion" :suggested-tags="frame.suggestedTags" :fixed-tags="frame.preProcessedTags" :tags="frame.tags" @clickedTag="clickedTag" @removeTag="removeTag" v-on:click.stop></TagContainer>
 
     </div>
   </div>
@@ -57,7 +53,6 @@
 
 import {defineComponent} from "vue";
 import {store} from "@/store";
-import {DragItem} from "@/store/dragItem";
 import {joinTitleAndTags, WebFrameRender} from "@/store/renderData";
 import TagContainer from "@/components/v2/TagContainer.vue";
 
@@ -82,19 +77,6 @@ export default defineComponent( {
 
   },
   methods: {
-    dragstart(e: any){
-      if (e.toElement.id === 'frame'){
-        let frame = this.$refs.frame as HTMLDivElement
-        frame.style.opacity = '0.4'
-
-        const dragItem: DragItem = {
-          draggerId: this.frame.id,
-          kind: 'frame',
-          object: this.frame,
-        }
-        store.dispatch('setDragItem', dragItem)
-      }
-    },
     clickedSuggestion(tag: string){
       const tags = [...this.frame.tags, tag]
       const newTitle = joinTitleAndTags(this.frame.title, tags)
@@ -125,12 +107,6 @@ export default defineComponent( {
     copyLink(){
       navigator.clipboard.writeText(this.frame.url)
     },
-    dragend(){
-      let frame = this.$refs.frame as HTMLDivElement
-      frame.style.opacity = '1'
-
-      store.dispatch('setDragItem', null)
-    },
     clickedTag(tag: string){
       store.dispatch('addSearchItem', tag)
     },
@@ -153,7 +129,7 @@ export default defineComponent( {
     },
     clone(){
       // @ts-ignore
-      this.port.postMessage({kind: "open-and-update", url: this.frame.url, windowId: this.frame.windowId, index: this.frame.index+1, groupId: this.frame.groupId});
+      this.port.postMessage({kind: "duplicate-tab", id: this.frame.id});
     },
     unpinTab(){
       // @ts-ignore
@@ -204,6 +180,7 @@ export default defineComponent( {
 
 .frame-info-container{
   padding: 2px 5px 2px 5px;
+  transition: 1s border;
   background-color: var(--background_input);
   border: 1px solid var(--frame_border);
   border-radius: 5px;
@@ -211,6 +188,10 @@ export default defineComponent( {
   position: relative;
   &.open{
     background-color: var(--background_frame_selected);
+  }
+  &.sound-enabled{
+    //animation: colors 60s infinite;
+    border: 1px solid rgba($blue, 0.3);
   }
 }
 

@@ -17,6 +17,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.2",
     "@gabojkz/vue_moveable_v3": "^0.0.3-semantically-released",
     "@kiyoaki_w/vue-context": "^1.0.3",
+    "@marshallswain/vuedraggable": "^4.2.0",
     "@types/chrome": "^0.0.203",
     "ajax": "^0.0.4",
     "ajax-request": "^1.2.3",

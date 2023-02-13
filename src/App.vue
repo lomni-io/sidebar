@@ -24,6 +24,7 @@ body{
   background-color: var(--background_main);
   margin: 0;
   overflow : auto;
+  overflow-x: hidden;
 }
 
 #app {

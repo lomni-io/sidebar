@@ -47,7 +47,7 @@ export interface Tag {
 }
 
 export interface Tab{
-    id: string
+    id: number
     index: number
     url: string
     active: boolean,
@@ -71,7 +71,6 @@ export interface TabGroup{
 export interface Window {
     name:  string
     id: number
-    pinneds: WebFrameRender[]
     tabs: (GroupFrameRender|WebFrameRender)[]
 }
 
@@ -103,7 +102,7 @@ export interface GroupWithTags {
 
 
 export interface WebFrameRender {
-    id: string
+    id: number
     windowId: number
     groupId: number
     index: number
@@ -251,7 +250,6 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
             window = {
                 name: 'main',
                 id: tab.windowId,
-                pinneds: [],
                 tabs: []
             }
             windows.push(window)
@@ -260,7 +258,7 @@ export function createWindows(tabs: Tab[], tabGroups: TabGroup[], bookmarks: Win
         const bookmark = bookmarks.find(bm => bm.url === tab.url)
 
         if (tab.pinned){
-            window.pinneds.push(mountWebFrame(tab, bookmark, search))
+            window.tabs.push(mountWebFrame(tab, bookmark, search))
             return
         }
         if (tab.groupId === -1){
@@ -394,7 +392,7 @@ export function enrichFrames(framesData: WebFrameData[], tabs: Tab[] = [], searc
             const tab = tabs.find(tab => tab.url === webFrame.url)
 
             finalWebFrames.push({
-                id: tab ? tab.id : '',
+                id: tab ? tab.id : 0,
                 index: tab ? tab.index : -1,
                 groupId: tab ? tab.groupId : -1,
                 windowId: tab ? tab.windowId : -1,
@@ -577,4 +575,75 @@ export function framesInputFiltered(frames: {title: string,url: string}[], input
     const filtered = frames.filter(f => f.title.toLowerCase().includes(input))
 
     return filtered.sort((a,b) => a.title.indexOf(input) > b.title.indexOf(input) ? 1 : -1)
+}
+
+
+// TODO refazer, simplificar
+// 1. verificar se é moved ou added, caso
+
+export const getFinalDragAction = (ev: any, frames: any[], groupId: number): any => {
+    const element = ev.moved ? ev.moved.element : ev.added ? ev.added.element : null
+    if (!element){
+        return null
+    }
+
+    frames = removeById(frames, element.id)
+    if (ev.moved){
+        if (groupId === -1){
+            frames.splice(ev.moved.newIndex, 0, element)
+        }else{
+            // add to group
+            const gFrame = frames.find(f => f.id === groupId)
+            gFrame.frames.splice(ev.moved.newIndex, 0, element)
+        }
+
+    }else if (ev.added){
+
+        if (groupId === -1){
+            frames.splice(ev.added.newIndex, 0, element)
+        }else{
+            // add to group
+            const gFrame = frames.find(f => f.id === groupId)
+            gFrame.frames.splice(ev.added.newIndex, 0, element)
+        }
+    }
+    // apply flattern
+    const framesFlatten = flatten(frames, -1)
+
+
+    if (element.kind === 'web'){
+        const idx = framesFlatten.findIndex(f => f.id === element.id)
+        return {kind: "move-tab", tab: element.id, windowId: element.windowId, index: idx, groupId: groupId}
+    }else{
+        const idx = framesFlatten.findIndex(f => f.groupId === element.id)
+        return {kind: "move-group", id: element.id, windowId: element.windowId, index: idx}
+    }
+}
+
+
+export const removeById = (list: any[], id: number): any[] => {
+    list = list.filter(item => item.id !== id)
+    list.forEach(f => {
+        if (f.frames){
+            f.frames = removeById(f.frames, id)
+        }
+    })
+
+    return list
+}
+
+export const flatten = (list: any[], groupId: number): any[] => {
+    const finalList:any[] = []
+    list.forEach(f => {
+        if (f.frames){
+            finalList.push(...flatten(f.frames, f.id))
+        }else{
+            finalList.push({
+                id: f.id,
+                groupId: groupId,
+            })
+        }
+    })
+
+    return finalList
 }

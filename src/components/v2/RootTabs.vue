@@ -57,7 +57,7 @@ export default {
     dragOptions() {
       return {
         animation: 100,
-        group: "description",
+        group: "group",
         disabled: false,
         ghostClass: "ghost"
       };

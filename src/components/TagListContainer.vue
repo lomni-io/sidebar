@@ -115,7 +115,7 @@ export default {
 
 .tag:focus {
   outline: none;
-  filter: var(--hover);
+  background-color: var(--background_tag);
 }
 
 

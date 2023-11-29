@@ -179,7 +179,7 @@ export default defineComponent( {
       padding-left: 3px;
       padding-right: 3px;
       font-size: 0.9em;
-      background-color: #4e4e4e;
+      background-color: var(--background_frame_selected);
       border-radius: 5px;
       cursor: pointer;
       white-space: nowrap;
